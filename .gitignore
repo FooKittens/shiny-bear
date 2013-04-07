@@ -1,6 +1,29 @@
-*.class
+# Compiled Object files
+*.slo
+*.lo
+*.o
 
-# Package Files #
-*.jar
-*.war
-*.ear
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+/SomniumEngine/Output/*.dll
+/SomniumEngine/Output/*.ilk
+/SomniumEngine/Output/*.pdb
+/SomniumEngine/*.opensdf
+/SomniumEngine/*.sdf
+*.tlog
+*.obj
+*.lastbuildstate
+*.log
+*.exe
+*.ilk
+*.pdb
+*.idb
+*.lib
+*.sdf
+*.opensdf
