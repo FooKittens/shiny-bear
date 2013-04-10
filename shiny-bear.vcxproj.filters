@@ -35,9 +35,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sprite.cpp">
-      <Filter>Source\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="source\graphics\DXGraphicsProvider.cpp">
       <Filter>Source\graphics</Filter>
     </ClCompile>

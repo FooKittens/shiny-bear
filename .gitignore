@@ -27,3 +27,7 @@
 *.lib
 *.sdf
 *.opensdf
+*.ipch
+*.unsuccessfulbuild
+
+*.manifest

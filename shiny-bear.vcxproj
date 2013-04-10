@@ -20,7 +20,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\graphics\DXGraphicsProvider.cpp" />
-    <ClCompile Include="Sprite.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A800B216-D6C5-4B48-A2FE-5960FDEEE66D}</ProjectGuid>
@@ -50,6 +49,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(DXSDK_DIR)include\;$(ProjectDir)Source\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
