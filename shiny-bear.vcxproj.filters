@@ -1,2 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" />
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{3760baab-b19a-46c8-a886-3654fa285770}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\graphics">
+      <UniqueIdentifier>{078c7b2e-b2e9-41a4-bfd4-67bb472d2016}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\events">
+      <UniqueIdentifier>{955ccf52-c0f2-444c-b099-9a94f96ecb3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\util">
+      <UniqueIdentifier>{586f6be9-faba-4168-a66f-f0e0d6d833d3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\graphics\Sprite.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\IGraphicsProvider.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="source\graphics\DXGraphicsProvider.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="source\util\SBUtil.h">
+      <Filter>Source\util</Filter>
+    </ClInclude>
+    <ClInclude Include="source\events\EventManager.h">
+      <Filter>Source\events</Filter>
+    </ClInclude>
+    <ClInclude Include="source\graphics\DisplayMode.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Source\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="source\graphics\DXGraphicsProvider.cpp">
+      <Filter>Source\graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -2,13 +2,8 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 #include "Framework\InputManager.h"
+#include "Framework\DXUtil.h"
 
-#if defined(DEBUG) | defined(_DEBUG)
-#define HR(X) \
-  if(FAILED(X)) MessageBox(NULL, TEXT(#X), TEXT("ERROR"), MB_OK | MB_ICONERROR)
-#else
-(X)
-#endif
 
 using namespace framework;
 
@@ -37,7 +32,11 @@ TestApp::TestApp(HINSTANCE hInst, const SIZE &size)
 }
 
 TestApp::~TestApp() {
-
+	RELEASECOM(m_pVBuffer);
+	RELEASECOM(m_pIBuffer);
+	RELEASECOM(m_pDecl);
+	RELEASECOM(m_pTexture);
+	RELEASECOM(m_pEffect);
 }
 
 
@@ -119,25 +118,7 @@ void TestApp::CreateVertexBuffer() {
   ));
 
   VertexPT *pVertices;
-  HR(m_pVBuffer->Lock(0, 0, (void**)&pVertices, D3DLOCK_DISCARD));
-
-  
-  //pVertices[0] = VertexP(-0.5f, +0.5f, -0.5f,
-  //                       1.0f, 1.0f, 0.0f, 0.0f);
-  //pVertices[1] = VertexP(+0.5f, +0.5f, -0.5f,
-  //                       1.0f, 0.0f, 1.0f, 0.0f);
-  //pVertices[2] = VertexP(+0.5f, -0.5f, -0.5f,
-  //                       1.0f, 0.0f, 0.0f, 1.0f);
-  //pVertices[3] = VertexP(-0.5f, -0.5f, -0.5f,
-  //                       1.0f, 1.0f, 0.0f, 1.0f);
-  //pVertices[4] = VertexP(+0.5f, +0.5f, +0.5f,
-  //                       1.0f, 1.0f, 1.0f, 1.0f);
-  //pVertices[5] = VertexP(-0.5f, +0.5f, +0.5f,
-  //                       1.0f, 1.0f, 1.0f, 0.0f);
-  //pVertices[6] = VertexP(-0.5f, -0.5f, +0.5f,
-  //                       1.0f, .0f, 1.0f, 1.0f);
-  //pVertices[7] = VertexP(+0.5f, -0.5f, +0.5f,
-  //                       1.0f, 0.0f, 0.0f, 0.0f);
+  HR(m_pVBuffer->Lock(0, 0, (void**)&pVertices, 0));
 
   pVertices[0] = VertexPT(-0.5f, +0.5f, -0.5f, 0, 0);
   pVertices[1] = VertexPT(+0.5f, +0.5f, -0.5f, 1, 0);
@@ -165,7 +146,7 @@ void TestApp::CreateIndexBuffer() {
   ));
 
   int *pIndices;
-  HR(m_pIBuffer->Lock(0, 0, (void**)&pIndices, D3DLOCK_DISCARD));
+  HR(m_pIBuffer->Lock(0, 0, (void**)&pIndices, 0));
 
   // Front face
   pIndices[0] = 0; pIndices[1] = 1; pIndices[2] = 2;
@@ -235,8 +216,6 @@ void TestApp::DrawScene() {
   HR(pDevice->SetStreamSource(0, m_pVBuffer, 0, sizeof(VertexPT)));
   HR(pDevice->SetIndices(m_pIBuffer));
   HR(pDevice->SetVertexDeclaration(m_pDecl));
-  HR(pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE));
-  HR(pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE));
 
   //HR(pDevice->SetTransform(D3DTS_WORLD, m_pMatWorld));
   //HR(pDevice->SetTransform(D3DTS_VIEW, m_pMatView));
@@ -244,6 +223,11 @@ void TestApp::DrawScene() {
   //HR(pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_FILLMODE, D3DFILL_WIREFRAME));
   //HR(pDevice->SetRenderState(D3DRENDERSTATETYPE::D3DRS_CULLMODE, D3DCULL_CCW));
   
+  HR(pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE));
+  HR(pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA));
+  HR(pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA));
+  HR(pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD));
+
   D3DXMATRIX m = m_matWorld * m_matView * m_matProjection; 
   
   m_pEffect->SetMatrix(m_hFxWVP, &m);

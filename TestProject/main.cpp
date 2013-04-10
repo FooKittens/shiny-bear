@@ -1,4 +1,5 @@
 
+#define DEBUG
 #define D3D_DEBUG_INFO
 
 #include "Framework\Framework.h"
@@ -20,5 +21,4 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev,
   TestApp ta(hInst, sz);
   ta.Initialize();
   ta.Run();
-  
 }
