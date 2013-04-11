@@ -22,7 +22,7 @@ public:
   // Override from IGraphicsProvider
   bool CheckHardware();
 
-  bool IsFullScreen();
+  bool IsFullscreen();
   bool ToggleFullscreen(bool value);
 
   const DisplayMode& GetDisplayMode();
@@ -79,12 +79,13 @@ private:
   DisplayMode m_nextDisplayMode;
   MultiSampleMode m_currentMSAAMode;
   MultiSampleMode m_nextMSAAMode;
+  D3DPRESENT_PARAMETERS m_d3dPresent;
 };
 
 
 // Inlines
-inline bool DXGraphicsProvider::IsFullScreen() {
-
+inline bool DXGraphicsProvider::IsFullscreen() {
+  return m_isFullscreen;
 }
   
 

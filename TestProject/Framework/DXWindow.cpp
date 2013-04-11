@@ -55,6 +55,7 @@ void DXWindow::HandleMessages() {
 // Changes the windows size programmatically, normal resizing is blocked.
 void DXWindow::SetSize(SIZE size) {
   SetWindowPos(m_hwnd, 0, 0, 0, size.cx, size.cy, SWP_NOMOVE);
+  this->m_size = size;
 }
 
 LRESULT CALLBACK DXWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {

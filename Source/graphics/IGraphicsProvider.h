@@ -21,7 +21,6 @@ public:
 
   // Returns the DisplayMode currently in use.
   virtual const DisplayMode& GetDisplayMode() = 0;
-  
   // Set the current Displaymode
   virtual bool SetDisplayMode(const DisplayMode &displayMode) = 0; 
  
@@ -40,11 +39,11 @@ public:
 
   // Should implement functionality to discover if the graphics device
   // has been lost.
-  virtual bool IsDeviceLost();
+  virtual bool IsDeviceLost() = 0;
 
   // Should implement functionality to recover the device on demand,
   // and notify any listeners of the event.
-  virtual bool ResetDevice();
+  virtual bool ResetDevice() = 0;
 
   // Should update any queued changes made to the device.
   virtual void ApplyChanges() = 0;

@@ -2,6 +2,7 @@
 #define GRAPHICSSETTINGS_H
 
 typedef unsigned int UINT;
+typedef unsigned long DWORD;
 
 namespace shinybear {
 
@@ -9,8 +10,8 @@ struct MultiSampleMode {
   MultiSampleMode() : samples(1), quality(0) { }
   MultiSampleMode(UINT sa, UINT qa) : samples(sa), quality(qa) { }
 
-  UINT samples;
-  UINT quality;
+  DWORD samples;
+  DWORD quality;
 };
 
 struct DisplayMode {

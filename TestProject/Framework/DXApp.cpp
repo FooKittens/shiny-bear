@@ -5,6 +5,7 @@
 #include <d3dx9.h>
 #include <cassert>
 #include <cstdio>
+#include <util\SBUtil.h>
 
 
 #define COMRELEASE(X) if(X) X->Release()
@@ -15,6 +16,7 @@ DXApp::DXApp(HINSTANCE hInstance, const SIZE &size)
   : DXWindow(hInstance, size), graphicsProvider(GetWindowHandle()) {
   
   m_displayFps = true;
+  m_pFont = nullptr;
 }
 
 DXApp::~DXApp() {
@@ -28,6 +30,24 @@ void DXApp::Initialize() {
 
   graphicsProvider.Initialize();
 
+  shinybear::DisplayMode dpm;
+  dpm.fullscreen = false;
+  dpm.height = GetSize().cy;
+  dpm.width = GetSize().cx;
+  dpm.refreshRate = 60;
+
+  shinybear::MultiSampleMode msaa;
+  msaa.quality = 0;
+  msaa.samples = 1;
+
+  graphicsProvider.SetDisplayMode(dpm);
+  graphicsProvider.SetMultiSampleMode(msaa);
+  graphicsProvider.ApplyChanges();
+
+  OnDeviceLost();
+}
+
+void DXApp::OnDeviceLost() {
   D3DXFONT_DESC fontDesc;
   fontDesc.CharSet = DEFAULT_CHARSET;
   fontDesc.Height = 22;
@@ -40,8 +60,8 @@ void DXApp::Initialize() {
   fontDesc.Weight = FW_BOLD;
   strcpy(fontDesc.FaceName, "Consolas");
 
+  ReleaseCOM(m_pFont);
   HRESULT hr = D3DXCreateFontIndirect(graphicsProvider.GetDevice(), &fontDesc, &m_pFont);
-  
   assert(SUCCEEDED(hr) && "Failed to create FPS font.");
 }
 
@@ -60,6 +80,12 @@ void DXApp::Run() {
     // Advance the timer.
     m_gameTimer.Tick();
     Update(m_gameTimer.GetElapsedTime());
+
+    if(graphicsProvider.IsDeviceLost()) {
+      graphicsProvider.ResetDevice();
+      OnDeviceLost();
+    }
+
     DrawScene();
 
     if(m_displayFps) {

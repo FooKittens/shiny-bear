@@ -2,7 +2,8 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 #include "Framework\InputManager.h"
-#include "Framework\DXUtil.h"
+#include <util\SBUtil.h>
+#include <cstdio>
 
 
 using namespace framework;
@@ -29,32 +30,53 @@ struct VertexPT {
 TestApp::TestApp(HINSTANCE hInst, const SIZE &size)
   :DXApp(hInst, size) {
 
+    m_currentDisplayIndex = 0;
+    m_currentMSAAIndex = 0;
+    m_pVBuffer = nullptr;
+    m_pIBuffer = nullptr;
+    m_pDecl = nullptr;
+    m_pTexture = nullptr;
+    m_pEffect = nullptr;
 }
 
 TestApp::~TestApp() {
-	RELEASECOM(m_pVBuffer);
-	RELEASECOM(m_pIBuffer);
-	RELEASECOM(m_pDecl);
-	RELEASECOM(m_pTexture);
-	RELEASECOM(m_pEffect);
+	ReleaseCOM(m_pVBuffer);
+	ReleaseCOM(m_pIBuffer);
+	ReleaseCOM(m_pDecl);
+	ReleaseCOM(m_pTexture);
+	ReleaseCOM(m_pEffect);
 }
 
 
 void TestApp::Initialize() {
   DXApp::Initialize();
 
-  IDirect3DDevice9 *pDevice = GetDevice();
+  m_currentDisplayIndex = 0;
+  m_pDisplayModes = GetProvider().GetValidDisplayModes(&m_dpmc);
+  m_pMSAAModes = GetProvider().GetValidMultiSampleModes(&m_msac);
 
-  CreateVertexBuffer();
-  CreateIndexBuffer();
+  UINT idx = 0;
+  srand(timeGetTime());
+  idx = rand() % (m_msac - 1);
 
-  D3DVERTEXELEMENT9 elems[] = {
-    { 0, 0, D3DDECLTYPE_FLOAT3, 0, D3DDECLUSAGE_POSITION, 0 },
-    { 0, 12, D3DDECLTYPE_FLOAT2, 0, D3DDECLUSAGE_TEXCOORD, 0 }, 
-    D3DDECL_END()
-  };
-  
-  HR(pDevice->CreateVertexDeclaration(elems, &m_pDecl));
+  for(int i = 0; i < m_msac; ++i) {
+    char buffer[100];
+    sprintf(buffer, "Samples: %i\tQuality: %i %s\n", m_pMSAAModes[i].samples,
+      m_pMSAAModes[i].quality, i == idx ? "<----- SELECTED" : "");
+    OutputDebugString(buffer);
+  }
+
+  //// Print valid..
+  //for(int i = 0; i < m_dpmc; ++i) {
+  //  char buffer[100];
+  //  sprintf(buffer, "%ix%i\t%i\n", m_pDisplayModes[i].width,
+  //    m_pDisplayModes[i].height, m_pDisplayModes[i].refreshRate);
+  //  OutputDebugString(buffer);
+  //}
+
+  GetProvider().SetDisplayMode(m_pDisplayModes[0]);
+  //GetProvider().SetMultiSampleMode(m_pMSAAModes[idx]);
+  GetProvider().ApplyChanges();
   
 
   D3DXMatrixIdentity(&m_matWorld);
@@ -71,20 +93,13 @@ void TestApp::Initialize() {
   camYRot = -3.141592 / 2;
   camY = 1.0f;
 
-  LoadTexture();
-  CreateEffect();
-
-  D3DXHANDLE hFxText = m_pEffect->GetParameterByName(0, "gText");
-  m_pEffect->SetTexture(hFxText, m_pTexture);
-
-  m_hFxWVP = m_pEffect->GetParameterByName(0, "gWVP");
-
+  OnDeviceLost();
 }
 
 void TestApp::CreateEffect() {
   ID3DXBuffer *errors = nullptr;
   D3DXCreateEffectFromFile(
-    GetDevice(),
+    GetProvider().GetDevice(),
     "SimpleShader.fx",
     0,
     0,
@@ -99,15 +114,45 @@ void TestApp::CreateEffect() {
   }
 }
 
+void TestApp::OnDeviceLost() {
+  DXApp::OnDeviceLost();
+  ReleaseCOM(m_pVBuffer);
+  ReleaseCOM(m_pIBuffer);
+  ReleaseCOM(m_pDecl);
+  ReleaseCOM(m_pTexture);
+  ReleaseCOM(m_pEffect);
+
+  IDirect3DDevice9 *pDevice = GetProvider().GetDevice();
+
+  CreateVertexBuffer();
+  CreateIndexBuffer();
+
+  D3DVERTEXELEMENT9 elems[] = {
+    { 0, 0, D3DDECLTYPE_FLOAT3, 0, D3DDECLUSAGE_POSITION, 0 },
+    { 0, 12, D3DDECLTYPE_FLOAT2, 0, D3DDECLUSAGE_TEXCOORD, 0 }, 
+    D3DDECL_END()
+  };
+  
+  HR(pDevice->CreateVertexDeclaration(elems, &m_pDecl));
+  
+  LoadTexture();
+  CreateEffect();
+
+  D3DXHANDLE hFxText = m_pEffect->GetParameterByName(0, "gText");
+  m_pEffect->SetTexture(hFxText, m_pTexture);
+
+  m_hFxWVP = m_pEffect->GetParameterByName(0, "gWVP");
+}
+
 void TestApp::LoadTexture() {
 
-  HR(D3DXCreateTextureFromFile(GetDevice(), "testAlpha.png", &m_pTexture));
+  HR(D3DXCreateTextureFromFile(GetProvider().GetDevice(), "testAlpha.png", &m_pTexture));
 
 }
 
 void TestApp::CreateVertexBuffer() {
 
-  IDirect3DDevice9 *pDevice = GetDevice();
+  IDirect3DDevice9 *pDevice = GetProvider().GetDevice();
   HR(pDevice->CreateVertexBuffer(
     sizeof(VertexPT) * 8,
     0,
@@ -134,7 +179,7 @@ void TestApp::CreateVertexBuffer() {
 
 void TestApp::CreateIndexBuffer() {
 
-  IDirect3DDevice9 *pDevice = GetDevice();
+  IDirect3DDevice9 *pDevice = GetProvider().GetDevice();
 
   HR(pDevice->CreateIndexBuffer(
     sizeof(int) * 36,
@@ -190,10 +235,54 @@ void TestApp::Update(double dt) {
   D3DXVECTOR3 at(0, 0, 0);
   D3DXVECTOR3 up(0, 1, 0);
   D3DXMatrixLookAtLH(&m_matView, &eye, &at, &up);
+
+  InputManager::GetKeyboardState(&m_newState);
+
+  // Test DisplayModes
+  bool changed = false;
+  if(m_newState.IsKeyDown(Keys::Up) && m_prevState.IsKeyUp(Keys::Up)) {
+    if(m_currentDisplayIndex-- == 0) {
+      m_currentDisplayIndex = m_dpmc - 1;
+    }
+    changed = true;
+  } else if(m_newState.IsKeyDown(Keys::Down) && m_prevState.IsKeyUp(Keys::Down)) {
+    ++m_currentDisplayIndex;
+    if(m_currentDisplayIndex >= m_dpmc) {
+      m_currentDisplayIndex = 0;
+    }
+    changed = true;
+  }
+
+  if(changed) {
+    shinybear::DisplayMode dm = m_pDisplayModes[m_currentDisplayIndex];
+
+    SIZE sz = { dm.width, dm.height };
+    SetSize(sz);
+    D3DVIEWPORT9 vp;
+    vp.Height = GetSize().cy;
+    vp.Width = GetSize().cx;
+    vp.MaxZ = 1.0f;
+    vp.MinZ = 0.0f;
+    vp.X = 0;
+    vp.Y = 0;
+
+    GetProvider().SetDisplayMode(dm);
+    //GetProvider().ToggleFullscreen(true);
+    GetProvider().ApplyChanges();
+    OnDeviceLost();
+    GetProvider().GetDevice()->SetViewport(&vp);
+  }
+  
+  if(m_newState.IsKeyDown(Keys::Esc)) {
+    Exit();
+  }
+
+  m_prevState = m_newState;
+  
 }
 
 void TestApp::DrawScene() {
-  IDirect3DDevice9 *pDevice = GetDevice();
+  IDirect3DDevice9 *pDevice = GetProvider().GetDevice();
   HR(pDevice->BeginScene());
   HR(pDevice->Clear(
     0,
@@ -203,15 +292,6 @@ void TestApp::DrawScene() {
     1.0f,
     0
   ));
-
-  D3DVIEWPORT9 vp;
-  vp.Height = GetSize().cy;
-  vp.Width = GetSize().cx;
-  vp.MaxZ = 1.0f;
-  vp.MinZ = 0.0f;
-  vp.X = 0;
-  vp.Y = 0;
-  pDevice->SetViewport(&vp);
 
   HR(pDevice->SetStreamSource(0, m_pVBuffer, 0, sizeof(VertexPT)));
   HR(pDevice->SetIndices(m_pIBuffer));

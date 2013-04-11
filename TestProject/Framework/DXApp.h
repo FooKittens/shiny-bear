@@ -42,6 +42,8 @@ protected:
   inline virtual const GameTimer& GetTimer() { return m_gameTimer; }
   inline virtual void SetDisplayFps(bool val) { m_displayFps = val; }
   
+  virtual void OnDeviceLost();
+
 private:
   bool m_isRunning;
   bool m_displayFps;

@@ -19,6 +19,10 @@ DXGraphicsProvider::DXGraphicsProvider(HWND hTargetWindow) {
   m_adapterIndex = D3DADAPTER_DEFAULT;
 }
 
+DXGraphicsProvider::~DXGraphicsProvider() {
+
+}
+
 bool DXGraphicsProvider::Initialize() {
   m_pD3DCreate = Direct3DCreate9(D3D_SDK_VERSION);
   
@@ -32,25 +36,36 @@ bool DXGraphicsProvider::CheckHardware() {
   return true;
 }
 
-bool DXGraphicsProvider::IsFullScreen() {
-  return m_isFullscreen;
-}
 
 bool DXGraphicsProvider::ToggleFullscreen(bool value) {
   // Attempted to set the current mode again?
   if(value == m_isFullscreen) {
     return false;
   }
-  
+  m_isFullscreen = value;
   m_nextDisplayMode.fullscreen = value;
   return true;
 }
 
 bool DXGraphicsProvider::IsDeviceLost() {
+
+  HRESULT hr = m_pDevice->TestCooperativeLevel();
+  assert(hr != D3DERR_DRIVERINTERNALERROR && "Graphics Device driver"
+    " suffered an unrecoverable error!");
+
+  if(hr == D3DERR_DEVICELOST) {
+    return true;
+  } else if(hr == D3DERR_DEVICENOTRESET) {
+    m_pDevice->Reset(&m_d3dPresent);
+  }
+
+  
+
   return false;
 }
 
 bool DXGraphicsProvider::ResetDevice() {
+  ApplyChanges();
   return true;
 }
 
@@ -83,6 +98,7 @@ DisplayMode *DXGraphicsProvider::GetValidDisplayModes(UINT *numModes) {
   *numModes = validCount;
 
   return pValidatedModes;
+  //return pModes;
 }
 
 // Returns all the displaymodes the adapter supports for 
@@ -100,7 +116,7 @@ DisplayMode *DXGraphicsProvider::GetAllDisplayModes(UINT *pNumModes) {
   // Initialize a list of displaymodes for the default adapter.
   D3DDISPLAYMODE d3dMode;
   for(UINT i = 0; i < modeCount; ++i) {
-    DisplayMode mode = pModes[i];
+    DisplayMode &mode = pModes[i];
     HR(m_pD3DCreate->EnumAdapterModes(m_adapterIndex, kDefaultFormat, i, &d3dMode));
     mode.width = d3dMode.Width;
     mode.height = d3dMode.Height;
@@ -161,9 +177,7 @@ bool DXGraphicsProvider::IsDisplayModeValid(const DisplayMode &mode) {
       kDefaultFormat, kDefaultFormat, !mode.fullscreen);
 
   // See if format failed.
-  if(FAILED(hr)) {
-    return false;
-  }
+  assert(SUCCEEDED(hr));
 
   return SUCCEEDED(hr);
 }
@@ -209,7 +223,7 @@ MultiSampleMode *DXGraphicsProvider::GetAllMSAAModes(UINT *numModes) {
   // Setup all MSAA modes.
   for(UINT quality = 0; quality <= kMaxQuality; ++quality) {
     for(UINT samples = 0; samples <= kMaxSamples; ++samples) {
-      MultiSampleMode *pMode = &pModes[quality * kMaxSamples + samples];
+      MultiSampleMode *pMode = &pModes[quality * (kMaxSamples + 1) + samples];
 
       pMode->quality = quality;
       pMode->samples = samples;
@@ -301,7 +315,7 @@ D3DMULTISAMPLE_TYPE DXGraphicsProvider::GetMultiSampleType(
 // Shorthand to test a if a multisample mode is valid.
 bool DXGraphicsProvider::IsMSAAValid(const MultiSampleMode &mode) {
   // Type needed for DirectX.
-  DWORD quality = mode.quality;
+  DWORD quality;
 
   HRESULT hr = m_pD3DCreate->CheckDeviceMultiSampleType(
     m_adapterIndex,
@@ -312,7 +326,7 @@ bool DXGraphicsProvider::IsMSAAValid(const MultiSampleMode &mode) {
     &quality
   );
 
-  return SUCCEEDED(hr);
+  return SUCCEEDED(hr) && mode.quality <= quality;
 }
 
 bool DXGraphicsProvider::SetMultiSampleMode(const MultiSampleMode &mode) {
@@ -326,21 +340,22 @@ void DXGraphicsProvider::ApplyChanges() {
   D3DCAPS9 deviceCaps;
   HR(m_pD3DCreate->GetDeviceCaps(m_adapterIndex, D3DDEVTYPE_HAL, &deviceCaps));
 
-  D3DPRESENT_PARAMETERS dpp;
-  dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
-  dpp.BackBufferCount = 1;
-  dpp.BackBufferFormat = kDefaultFormat;
-  dpp.BackBufferHeight = m_nextDisplayMode.height;
-  dpp.BackBufferWidth = m_nextDisplayMode.width;
-  dpp.EnableAutoDepthStencil = false;
-  dpp.Flags = 0;
-  dpp.FullScreen_RefreshRateInHz = m_nextDisplayMode.refreshRate;
-  dpp.hDeviceWindow = m_hTargetWindow;
-  dpp.MultiSampleQuality = m_nextMSAAMode.quality;
-  dpp.MultiSampleType = GetMultiSampleType(m_nextMSAAMode);
-  dpp.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
-  dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
-  dpp.Windowed = !m_nextDisplayMode.fullscreen;
+  UINT refresh = !m_nextDisplayMode.fullscreen ? 0 : m_nextDisplayMode.refreshRate;
+
+  m_d3dPresent.AutoDepthStencilFormat = D3DFMT_D24S8;
+  m_d3dPresent.BackBufferCount = 1;
+  m_d3dPresent.BackBufferFormat = kDefaultFormat;
+  m_d3dPresent.BackBufferHeight = m_nextDisplayMode.height;
+  m_d3dPresent.BackBufferWidth = m_nextDisplayMode.width;
+  m_d3dPresent.EnableAutoDepthStencil = true;
+  m_d3dPresent.Flags = 0;
+  m_d3dPresent.FullScreen_RefreshRateInHz = refresh;
+  m_d3dPresent.hDeviceWindow = m_hTargetWindow;
+  m_d3dPresent.MultiSampleQuality = m_nextMSAAMode.quality;
+  m_d3dPresent.MultiSampleType = GetMultiSampleType(m_nextMSAAMode);
+  m_d3dPresent.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
+  m_d3dPresent.SwapEffect = D3DSWAPEFFECT_DISCARD;
+  m_d3dPresent.Windowed = !m_nextDisplayMode.fullscreen;
 
   // Check for hardware vertex processing.
   DWORD flags = 0;
@@ -355,9 +370,9 @@ void DXGraphicsProvider::ApplyChanges() {
 
   // Release the previous device.
   ReleaseCOM(m_pDevice);
-  
+
   HR(m_pD3DCreate->CreateDevice(m_adapterIndex, D3DDEVTYPE_HAL,
-    m_hTargetWindow, flags, &dpp, &m_pDevice));
+    m_hTargetWindow, flags, &m_d3dPresent, &m_pDevice));
 
   m_currentDisplayMode = m_nextDisplayMode;
   m_currentMSAAMode = m_nextMSAAMode;
