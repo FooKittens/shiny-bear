@@ -48,21 +48,23 @@ void DXApp::Initialize() {
 }
 
 void DXApp::OnDeviceLost() {
-  D3DXFONT_DESC fontDesc;
-  fontDesc.CharSet = DEFAULT_CHARSET;
-  fontDesc.Height = 22;
-  fontDesc.Width = 14;
-  fontDesc.Italic = false;
-  fontDesc.MipLevels = 0;
-  fontDesc.OutputPrecision = OUT_DEFAULT_PRECIS;
-  fontDesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-  fontDesc.Quality = DEFAULT_QUALITY;
-  fontDesc.Weight = FW_BOLD;
-  strcpy(fontDesc.FaceName, "Consolas");
+  graphicsProvider.ResetDevice();
 
-  ReleaseCOM(m_pFont);
-  HRESULT hr = D3DXCreateFontIndirect(graphicsProvider.GetDevice(), &fontDesc, &m_pFont);
-  assert(SUCCEEDED(hr) && "Failed to create FPS font.");
+  //D3DXFONT_DESC fontDesc;
+  //fontDesc.CharSet = DEFAULT_CHARSET;
+  //fontDesc.Height = 22;
+  //fontDesc.Width = 14;
+  //fontDesc.Italic = false;
+  //fontDesc.MipLevels = 0;
+  //fontDesc.OutputPrecision = OUT_DEFAULT_PRECIS;
+  //fontDesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+  //fontDesc.Quality = DEFAULT_QUALITY;
+  //fontDesc.Weight = FW_BOLD;
+  //strcpy(fontDesc.FaceName, "Consolas");
+
+  //ReleaseCOM(m_pFont);
+  //HRESULT hr = D3DXCreateFontIndirect(graphicsProvider.GetDevice(), &fontDesc, &m_pFont);
+  //assert(SUCCEEDED(hr) && "Failed to create FPS font.");
 }
 
 void DXApp::Run() {

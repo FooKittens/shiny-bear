@@ -12,7 +12,6 @@ const D3DFORMAT DXGraphicsProvider::kDefaultFormat = D3DFMT_X8R8G8B8;
 DXGraphicsProvider::DXGraphicsProvider(HWND hTargetWindow) {
   m_pD3DCreate = nullptr;
   m_hTargetWindow = hTargetWindow;
-  m_isFullscreen = false;
   m_pDevice = nullptr;
 
   // Default to the default adapter.
@@ -36,13 +35,11 @@ bool DXGraphicsProvider::CheckHardware() {
   return true;
 }
 
-
 bool DXGraphicsProvider::ToggleFullscreen(bool value) {
   // Attempted to set the current mode again?
-  if(value == m_isFullscreen) {
+  if(IsFullscreen() == value) {
     return false;
   }
-  m_isFullscreen = value;
   m_nextDisplayMode.fullscreen = value;
   return true;
 }
@@ -58,8 +55,6 @@ bool DXGraphicsProvider::IsDeviceLost() {
   } else if(hr == D3DERR_DEVICENOTRESET) {
     m_pDevice->Reset(&m_d3dPresent);
   }
-
-  
 
   return false;
 }
@@ -174,7 +169,7 @@ bool DXGraphicsProvider::IsDisplayModeValid(const DisplayMode &mode) {
   assert(m_pD3DCreate && "No D3DCreate object!");
 
   HRESULT hr = m_pD3DCreate->CheckDeviceType(m_adapterIndex, D3DDEVTYPE_HAL,
-      kDefaultFormat, kDefaultFormat, !mode.fullscreen);
+      kDefaultFormat, kDefaultFormat, FALSE);
 
   // See if format failed.
   assert(SUCCEEDED(hr));
@@ -321,7 +316,7 @@ bool DXGraphicsProvider::IsMSAAValid(const MultiSampleMode &mode) {
     m_adapterIndex,
     D3DDEVTYPE_HAL,
     kDefaultFormat,
-    !m_isFullscreen,
+    IsFullscreen(),
     GetMultiSampleType(mode),
     &quality
   );
@@ -371,8 +366,16 @@ void DXGraphicsProvider::ApplyChanges() {
   // Release the previous device.
   ReleaseCOM(m_pDevice);
 
-  HR(m_pD3DCreate->CreateDevice(m_adapterIndex, D3DDEVTYPE_HAL,
+  if(IsFullscreen()) {
+    HRESULT hr = m_pD3DCreate->CreateDevice(m_adapterIndex, D3DDEVTYPE_HAL,
+      m_hTargetWindow, flags, &m_d3dPresent, &m_pDevice);
+
+    if(FAILED(hr)) abort();
+  } else {
+    HR(m_pD3DCreate->CreateDevice(m_adapterIndex, D3DDEVTYPE_HAL,
     m_hTargetWindow, flags, &m_d3dPresent, &m_pDevice));
+  }
+
 
   m_currentDisplayMode = m_nextDisplayMode;
   m_currentMSAAMode = m_nextMSAAMode;

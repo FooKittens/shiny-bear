@@ -74,7 +74,6 @@ private:
   HWND m_hTargetWindow;
   IDirect3D9 *m_pD3DCreate;
   IDirect3DDevice9 *m_pDevice;
-  bool m_isFullscreen;
   DisplayMode m_currentDisplayMode;
   DisplayMode m_nextDisplayMode;
   MultiSampleMode m_currentMSAAMode;
@@ -85,7 +84,7 @@ private:
 
 // Inlines
 inline bool DXGraphicsProvider::IsFullscreen() {
-  return m_isFullscreen;
+  return m_currentDisplayMode.fullscreen;
 }
   
 
