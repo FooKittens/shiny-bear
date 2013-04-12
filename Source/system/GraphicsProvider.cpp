@@ -1,4 +1,4 @@
-#include "graphics\DXGraphicsProvider.h"
+#include "system\GraphicsProvider.h"
 #include "util\SBUtil.h"
 #include <d3d9.h>
 #include <Windows.h>
@@ -7,9 +7,9 @@
 namespace shinybear {
 
 // Constant default format used by DirectX
-const D3DFORMAT DXGraphicsProvider::kDefaultFormat = D3DFMT_X8R8G8B8;
+const D3DFORMAT GraphicsProvider::kDefaultFormat = D3DFMT_X8R8G8B8;
 
-DXGraphicsProvider::DXGraphicsProvider(HWND hTargetWindow) {
+GraphicsProvider::GraphicsProvider(HWND hTargetWindow) {
   m_pD3DCreate = nullptr;
   m_hTargetWindow = hTargetWindow;
   m_pDevice = nullptr;
@@ -18,11 +18,11 @@ DXGraphicsProvider::DXGraphicsProvider(HWND hTargetWindow) {
   m_adapterIndex = D3DADAPTER_DEFAULT;
 }
 
-DXGraphicsProvider::~DXGraphicsProvider() {
+GraphicsProvider::~GraphicsProvider() {
 
 }
 
-bool DXGraphicsProvider::Initialize() {
+bool GraphicsProvider::Initialize() {
   m_pD3DCreate = Direct3DCreate9(D3D_SDK_VERSION);
   
   assert(m_pD3DCreate && "Failed to create Direct3D9 object!");
@@ -30,12 +30,12 @@ bool DXGraphicsProvider::Initialize() {
   return true;
 }
 
-bool DXGraphicsProvider::CheckHardware() {
+bool GraphicsProvider::CheckHardware() {
 
   return true;
 }
 
-bool DXGraphicsProvider::ToggleFullscreen(bool value) {
+bool GraphicsProvider::ToggleFullscreen(bool value) {
   // Attempted to set the current mode again?
   if(IsFullscreen() == value) {
     return false;
@@ -44,7 +44,7 @@ bool DXGraphicsProvider::ToggleFullscreen(bool value) {
   return true;
 }
 
-bool DXGraphicsProvider::IsDeviceLost() {
+bool GraphicsProvider::IsDeviceLost() {
 
   HRESULT hr = m_pDevice->TestCooperativeLevel();
   assert(hr != D3DERR_DRIVERINTERNALERROR && "Graphics Device driver"
@@ -59,21 +59,21 @@ bool DXGraphicsProvider::IsDeviceLost() {
   return false;
 }
 
-bool DXGraphicsProvider::ResetDevice() {
+bool GraphicsProvider::ResetDevice() {
   ApplyChanges();
   return true;
 }
 
-const DisplayMode& DXGraphicsProvider::GetDisplayMode() {
+const DisplayMode& GraphicsProvider::GetDisplayMode() {
   return m_currentDisplayMode;
 }
 
-const MultiSampleMode& DXGraphicsProvider::GetMultiSampleMode() {
+const MultiSampleMode& GraphicsProvider::GetMultiSampleMode() {
   return m_currentMSAAMode;
 }
 
 // Returns an array of all the valid 
-DisplayMode *DXGraphicsProvider::GetValidDisplayModes(UINT *numModes) {
+DisplayMode *GraphicsProvider::GetValidDisplayModes(UINT *numModes) {
   assert(m_pD3DCreate && "GraphicsProvider must be"
     " initialized before getting displaymode!");
 
@@ -97,7 +97,7 @@ DisplayMode *DXGraphicsProvider::GetValidDisplayModes(UINT *numModes) {
 }
 
 // Returns all the displaymodes the adapter supports for 
-DisplayMode *DXGraphicsProvider::GetAllDisplayModes(UINT *pNumModes) {
+DisplayMode *GraphicsProvider::GetAllDisplayModes(UINT *pNumModes) {
   // Get mode count
   UINT modeCount = m_pD3DCreate->GetAdapterModeCount(m_adapterIndex, kDefaultFormat);
   
@@ -125,7 +125,7 @@ DisplayMode *DXGraphicsProvider::GetAllDisplayModes(UINT *pNumModes) {
 // Filters out all invalid displaymodes from the input array
 // Returns an array with the valid modes, and the size of that array in its
 // output parameter.
-DisplayMode* DXGraphicsProvider::FilterInvalidDisplayModes(DisplayMode *pModes,
+DisplayMode* GraphicsProvider::FilterInvalidDisplayModes(DisplayMode *pModes,
   UINT modeCount, UINT *numValid) {
 
   // This list will hold the state(valid/invalid) of each displaymode.
@@ -164,7 +164,7 @@ DisplayMode* DXGraphicsProvider::FilterInvalidDisplayModes(DisplayMode *pModes,
 }
 
 // Helper function for determining if a displaymode is valid.
-bool DXGraphicsProvider::IsDisplayModeValid(const DisplayMode &mode) {
+bool GraphicsProvider::IsDisplayModeValid(const DisplayMode &mode) {
 
   assert(m_pD3DCreate && "No D3DCreate object!");
 
@@ -177,7 +177,7 @@ bool DXGraphicsProvider::IsDisplayModeValid(const DisplayMode &mode) {
   return SUCCEEDED(hr);
 }
 
-bool DXGraphicsProvider::SetDisplayMode(const DisplayMode &mode) {
+bool GraphicsProvider::SetDisplayMode(const DisplayMode &mode) {
   
   assert(IsDisplayModeValid(mode) && "Displaymode is not valid!");
 
@@ -186,7 +186,7 @@ bool DXGraphicsProvider::SetDisplayMode(const DisplayMode &mode) {
   return true;
 }
 
-MultiSampleMode *DXGraphicsProvider::GetValidMultiSampleModes(UINT *numModes) {
+MultiSampleMode *GraphicsProvider::GetValidMultiSampleModes(UINT *numModes) {
 
   UINT modeCount;
   MultiSampleMode *pModes = GetAllMSAAModes(&modeCount);
@@ -205,7 +205,7 @@ MultiSampleMode *DXGraphicsProvider::GetValidMultiSampleModes(UINT *numModes) {
 }
 
 // Returns all MSAA modes, from [0, 16] quality and [0, 16] samples.
-MultiSampleMode *DXGraphicsProvider::GetAllMSAAModes(UINT *numModes) {
+MultiSampleMode *GraphicsProvider::GetAllMSAAModes(UINT *numModes) {
   const UINT kMaxSamples = 16;
   const UINT kMaxQuality = 16;
 
@@ -231,7 +231,7 @@ MultiSampleMode *DXGraphicsProvider::GetAllMSAAModes(UINT *numModes) {
 
 // Returns an array containing the valid MSAA modes from input array.
 // Stores the size of the new array in numValid.
-MultiSampleMode *DXGraphicsProvider::FilterInvalidMSAAModes(
+MultiSampleMode *GraphicsProvider::FilterInvalidMSAAModes(
   MultiSampleMode *pModes, UINT count, UINT *numValid) {
 
   // Store results for wether an array index is valid or not.
@@ -264,7 +264,7 @@ MultiSampleMode *DXGraphicsProvider::FilterInvalidMSAAModes(
 
 // Helper for retrieving the correct DirectX multisample type from
 // a sample count.
-D3DMULTISAMPLE_TYPE DXGraphicsProvider::GetMultiSampleType(
+D3DMULTISAMPLE_TYPE GraphicsProvider::GetMultiSampleType(
   const MultiSampleMode &mode) {
 
   if(mode.samples > 16) {
@@ -308,7 +308,7 @@ D3DMULTISAMPLE_TYPE DXGraphicsProvider::GetMultiSampleType(
 }
 
 // Shorthand to test a if a multisample mode is valid.
-bool DXGraphicsProvider::IsMSAAValid(const MultiSampleMode &mode) {
+bool GraphicsProvider::IsMSAAValid(const MultiSampleMode &mode) {
   // Type needed for DirectX.
   DWORD quality;
 
@@ -324,14 +324,14 @@ bool DXGraphicsProvider::IsMSAAValid(const MultiSampleMode &mode) {
   return SUCCEEDED(hr) && mode.quality <= quality;
 }
 
-bool DXGraphicsProvider::SetMultiSampleMode(const MultiSampleMode &mode) {
+bool GraphicsProvider::SetMultiSampleMode(const MultiSampleMode &mode) {
   assert(IsMSAAValid(mode) && "Multisample type not valid!");
 
   m_nextMSAAMode = mode;
   return true;
 }
 
-void DXGraphicsProvider::ApplyChanges() {
+void GraphicsProvider::ApplyChanges() {
   D3DCAPS9 deviceCaps;
   HR(m_pD3DCreate->GetDeviceCaps(m_adapterIndex, D3DDEVTYPE_HAL, &deviceCaps));
 

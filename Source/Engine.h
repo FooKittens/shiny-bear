@@ -1,18 +1,14 @@
-#ifndef SPRITE_H
-#define SPRITE_H
+#ifndef ENGINE_H
+#define ENGINE_H
 
 namespace shinybear {
 
-class Sprite {
+class Engine {
 public:
-  Sprite();
-
-protected:
 
 private:
 
 };
 
 } // namespace shinybear
-
 #endif

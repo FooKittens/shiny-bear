@@ -4,7 +4,7 @@
 #include "GameTimer.h"
 #include "DXWindow.h"
 #include <Windows.h>
-#include <graphics\DXGraphicsProvider.h>
+#include <system\GraphicsProvider.h>
 
 struct IDirect3D9;
 struct IDirect3DDevice9;
@@ -38,7 +38,7 @@ protected:
   LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
 
   // Used to retrieve some objects for drawing etc.
-  inline virtual shinybear::DXGraphicsProvider& GetProvider();
+  inline virtual shinybear::GraphicsProvider& GetProvider();
   inline virtual const GameTimer& GetTimer() { return m_gameTimer; }
   inline virtual void SetDisplayFps(bool val) { m_displayFps = val; }
   
@@ -50,10 +50,10 @@ private:
   double m_frameCount, m_lastFrameCount, m_fpsTimer;
   GameTimer m_gameTimer;
   ID3DXFont *m_pFont;
-  shinybear::DXGraphicsProvider graphicsProvider;
+  shinybear::GraphicsProvider graphicsProvider;
 };
 
-inline shinybear::DXGraphicsProvider& DXApp::GetProvider() {
+inline shinybear::GraphicsProvider& DXApp::GetProvider() {
   return graphicsProvider;
 }
 

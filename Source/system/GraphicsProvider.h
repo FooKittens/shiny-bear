@@ -1,8 +1,6 @@
 #ifndef DXGRAPHICSPROVIDER_H
 #define DXGRAPHICSPROVIDER_H
-
-#include "graphics\IGraphicsProvider.h"
-#include "graphics\DisplayMode.h"
+#include "system\DisplayMode.h"
 #include <d3d9.h>
 #include <Windows.h>
 
@@ -12,10 +10,10 @@
 
 namespace shinybear {
 
-class DXGraphicsProvider : public IGraphicsProvider {
+class GraphicsProvider {
 public:
-  DXGraphicsProvider(HWND hTargetWindow);
-  ~DXGraphicsProvider();
+  GraphicsProvider(HWND hTargetWindow);
+  ~GraphicsProvider();
   // Override from IGraphicsProvider
   bool Initialize();
 
@@ -83,7 +81,7 @@ private:
 
 
 // Inlines
-inline bool DXGraphicsProvider::IsFullscreen() {
+inline bool GraphicsProvider::IsFullscreen() {
   return m_currentDisplayMode.fullscreen;
 }
   

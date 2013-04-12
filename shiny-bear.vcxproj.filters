@@ -13,30 +13,39 @@
     <Filter Include="Source\util">
       <UniqueIdentifier>{586f6be9-faba-4168-a66f-f0e0d6d833d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\system">
+      <UniqueIdentifier>{0afc599f-dc42-42d9-8774-49051523fa75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\input">
+      <UniqueIdentifier>{cc6ebc8b-1514-404b-82f7-622f19288678}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\graphics\Sprite.h">
-      <Filter>Source\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\graphics\IGraphicsProvider.h">
-      <Filter>Source\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="source\graphics\DXGraphicsProvider.h">
-      <Filter>Source\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="source\util\SBUtil.h">
       <Filter>Source\util</Filter>
     </ClInclude>
     <ClInclude Include="source\events\EventManager.h">
       <Filter>Source\events</Filter>
     </ClInclude>
-    <ClInclude Include="source\graphics\DisplayMode.h">
-      <Filter>Source\graphics</Filter>
+    <ClInclude Include="Source\system\DisplayMode.h">
+      <Filter>Source\system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\system\GraphicsProvider.h">
+      <Filter>Source\system</Filter>
+    </ClInclude>
+    <ClInclude Include="source\system\GameWindow.h">
+      <Filter>Source\system</Filter>
+    </ClInclude>
+    <ClInclude Include="source\Engine.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\graphics\DXGraphicsProvider.cpp">
-      <Filter>Source\graphics</Filter>
+    <ClCompile Include="Source\system\GraphicsProvider.cpp">
+      <Filter>Source\system</Filter>
+    </ClCompile>
+    <ClCompile Include="source\system\GameWindow.cpp">
+      <Filter>Source\system</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

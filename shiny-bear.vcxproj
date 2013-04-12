@@ -11,15 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="source\Engine.h" />
     <ClInclude Include="source\events\EventManager.h" />
-    <ClInclude Include="source\graphics\DXGraphicsProvider.h" />
-    <ClInclude Include="source\graphics\DisplayMode.h" />
-    <ClInclude Include="Source\graphics\IGraphicsProvider.h" />
-    <ClInclude Include="Source\graphics\Sprite.h" />
+    <ClInclude Include="Source\system\DisplayMode.h" />
+    <ClInclude Include="source\system\GameWindow.h" />
+    <ClInclude Include="Source\system\GraphicsProvider.h" />
     <ClInclude Include="source\util\SBUtil.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\graphics\DXGraphicsProvider.cpp" />
+    <ClCompile Include="source\system\GameWindow.cpp" />
+    <ClCompile Include="Source\system\GraphicsProvider.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A800B216-D6C5-4B48-A2FE-5960FDEEE66D}</ProjectGuid>

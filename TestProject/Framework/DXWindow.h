@@ -24,8 +24,8 @@ public:
   }
 
 protected:
-
   LRESULT virtual CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
+
 private:
   // Used to delegate calls to the instance method.
 	static LRESULT CALLBACK StaticWinProc(HWND, UINT, WPARAM, LPARAM);
