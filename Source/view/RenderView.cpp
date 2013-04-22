@@ -25,13 +25,13 @@ void RenderView::Update()
   }
 }
 
-void RenderView::StopRendering(bool val) {
+void RenderView::StopRendering(bool val)
+{
   m_doRender = !val;
 }
 
 bool RenderView::HandleEvent(const EventPtr &evt)
 {
-
   if(evt->GetType() == FocusChangedEvent::kEventType)
   {
     FocusChangedEvent *pEvent = dynamic_cast<FocusChangedEvent*>(evt.get());
