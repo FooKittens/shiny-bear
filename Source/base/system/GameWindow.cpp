@@ -72,7 +72,7 @@ void GameWindow::HandleMessages() {
 
 LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
   
-  OutputDbgFormat("WindowsMessage: [%i]", msg);
+  // OutputDbgFormat("WindowsMessage: [%i]", msg);
   
   switch(msg) {
   case WM_ACTIVATEAPP:
@@ -87,13 +87,12 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
     }
   case WM_WTSSESSION_CHANGE:
     if(wparam == WTS_SESSION_LOCK) {
-      EventManager::PushImmediateEvent(EventPtr(new SessionStateChangedEvent(SS_LOCKED)));
+      EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_LOCKED)));
     } else if(wparam == WTS_SESSION_UNLOCK) {
-      EventManager::PushImmediateEvent(EventPtr(new SessionStateChangedEvent(SS_UNLOCKED)));
+      EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_UNLOCKED)));
     }
     return 0;
   case WM_DESTROY:
-    
     EventManager::PushEvent(EventPtr(DBG_NEW WindowClosedEvent()));
     return 0;
   }

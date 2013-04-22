@@ -22,8 +22,11 @@ public:
 protected:
   GraphicsProvider *m_pProvider;
   SceneComposer m_composer;
-private:
 
+  virtual void StopRendering(bool val);
+
+private:
+  bool m_doRender;
 };
 
 } // namespace shinybear

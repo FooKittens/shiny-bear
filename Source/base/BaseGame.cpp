@@ -169,14 +169,14 @@ bool BaseGame::HandleEvent(const EventPtr &evt) {
     if(newState == SessionState::SS_LOCKED)
     {
       // The desktop has been locked. Which will cause the graphics device to be lost.
-      EventManager::PushImmediateEvent(EventPtr(new DeviceLostEvent()));
+      EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
     }
     else if(newState == SessionState::SS_UNLOCKED)
     {
       if(m_pGraphicsProvider->IsDeviceLost())
       {
         m_pGraphicsProvider->ApplyChanges();
-        EventManager::PushImmediateEvent(EventPtr(new DeviceLostEvent()));
+        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
       }
     }
 
@@ -193,11 +193,11 @@ bool BaseGame::HandleEvent(const EventPtr &evt) {
     {
       if(m_pGraphicsProvider->IsDeviceLost())
       {
-        EventManager::PushImmediateEvent(EventPtr(new DeviceLostEvent()));
+        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
         // Recreate the device.
         m_pGraphicsProvider->ApplyChanges();
 
-        EventManager::PushImmediateEvent(EventPtr(new DeviceResetEvent()));
+        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceResetEvent()));
       }
     }
   }

@@ -54,7 +54,6 @@ bool GraphicsProvider::IsDeviceLost() {
     " suffered an unrecoverable error!");
 
   if(hr == D3DERR_DEVICELOST) {
-    Sleep(2500);
     return true;
   } else if(hr == D3DERR_DEVICENOTRESET) {
     m_pDevice->Reset(&m_d3dPresent);
