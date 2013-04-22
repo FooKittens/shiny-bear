@@ -3,7 +3,7 @@
 
 #include <Windows.h>
 
-namespace framework {
+namespace shinybear {
 
 // Measures time in seconds.
 class GameTimer {

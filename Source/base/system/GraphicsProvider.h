@@ -1,11 +1,9 @@
 #ifndef DXGRAPHICSPROVIDER_H
 #define DXGRAPHICSPROVIDER_H
-#include "system\DisplayMode.h"
+#include "base\system\DisplayMode.h"
 #include <d3d9.h>
 #include <Windows.h>
-
-
-// Forward declarations
+#include "view\graphics\Color4f.h"
 
 
 namespace shinybear {
@@ -14,11 +12,9 @@ class GraphicsProvider {
 public:
   GraphicsProvider(HWND hTargetWindow);
   ~GraphicsProvider();
-  // Override from IGraphicsProvider
-  bool Initialize();
 
-  // Override from IGraphicsProvider
-  bool CheckHardware();
+  // Called to first initialize the game in Run().
+  bool Initialize();
 
   bool IsFullscreen();
   bool ToggleFullscreen(bool value);
@@ -30,15 +26,27 @@ public:
   bool SetMultiSampleMode(const MultiSampleMode &mode);
 
   bool IsDeviceLost();
+
+  // Performs a hard-reset of the device by recreating it.
   bool ResetDevice();
 
+  // Re-creates the device with new settings if any.
   void ApplyChanges();
 
-  // TODO REMOVE
+  // TODO REMOVE - This is just used for testing, DirectX functionality should be hidden.
   IDirect3DDevice9 *GetDevice() { return m_pDevice; }
 
   DisplayMode* GetValidDisplayModes(UINT *numModes);
   MultiSampleMode* GetValidMultiSampleModes(UINT *numModes);
+
+  // Rendering Functions
+#pragma region RenderingFunctions
+  
+  void Clear(const Color4f &color);
+  void Present();
+
+
+#pragma endregion 
 private:
   // Default format.
   static const D3DFORMAT kDefaultFormat;
@@ -67,7 +75,6 @@ private:
   // Helper function to convert from integer sample input to a DirectX type.
   D3DMULTISAMPLE_TYPE GetMultiSampleType(const MultiSampleMode &mode);
 
-
   UINT m_adapterIndex;
   HWND m_hTargetWindow;
   IDirect3D9 *m_pD3DCreate;
@@ -83,6 +90,16 @@ private:
 // Inlines
 inline bool GraphicsProvider::IsFullscreen() {
   return m_currentDisplayMode.fullscreen;
+}
+
+inline void GraphicsProvider::Clear(const Color4f &color) {
+  
+  m_pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL | D3DCLEAR_TARGET,
+    color, 1.0f, 0);
+}
+
+inline void GraphicsProvider::Present() {
+  m_pDevice->Present(0, 0, 0, 0);
 }
   
 

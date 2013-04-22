@@ -1,9 +1,5 @@
-
-#define DEBUG
-#define D3D_DEBUG_INFO
-
-#include "Framework\Framework.h"
 #include "TestApp.h"
+#include <base\BaseGame.h>
 #include <Windows.h>
 #include <crtdbg.h>
 
@@ -17,8 +13,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev,
       _CRTDBG_LEAK_CHECK_DF );
 #endif               
 
-  SIZE sz = { 800, 600 };
-  TestApp ta(hInst, sz);
-  ta.Initialize();
-  ta.Run();
+  shinybear::BaseGame *pGame = new TestApp();
+  pGame->Run();
+
+  delete pGame;
 }

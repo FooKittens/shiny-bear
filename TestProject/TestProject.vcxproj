@@ -65,10 +65,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Framework\DXApp.cpp" />
-    <ClCompile Include="Framework\DXWindow.cpp" />
-    <ClCompile Include="Framework\GameTimer.cpp" />
-    <ClCompile Include="Framework\InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TestApp.cpp" />
   </ItemGroup>
@@ -76,12 +72,6 @@
     <None Include="SimpleShader.fx" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Framework\DXApp.h" />
-    <ClInclude Include="Framework\DXUtil.h" />
-    <ClInclude Include="Framework\DXWindow.h" />
-    <ClInclude Include="Framework\Framework.h" />
-    <ClInclude Include="Framework\GameTimer.h" />
-    <ClInclude Include="Framework\InputManager.h" />
     <ClInclude Include="TestApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

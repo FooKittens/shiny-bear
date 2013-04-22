@@ -1,5 +1,4 @@
-
-#include "InputManager.h"
+#include "view\input\InputManager.h"
 #include <Windows.h>
 #include <cassert>
 
@@ -19,7 +18,6 @@ void InputManager::Initialize() {
   );
 
   assert(s_hookHandle && "Failed to attach keyboard hook!");
-  
 }
 
 void InputManager::GetKeyboardState(KeyboardState *pState) {

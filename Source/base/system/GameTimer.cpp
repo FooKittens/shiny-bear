@@ -1,7 +1,7 @@
-#include "GameTimer.h"
+#include "base\system\GameTimer.h"
 #include <cassert>
 
-namespace framework {
+namespace shinybear {
 
 GameTimer::GameTimer() {
   m_isHighPerformance = false;

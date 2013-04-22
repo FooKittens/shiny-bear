@@ -1,8 +1,13 @@
-#include "system\GraphicsProvider.h"
+#include "base\system\GraphicsProvider.h"
+#include "events\EventManager.h"
+#include "events\eventtypes\GraphicsProviderEvents.h"
 #include "util\SBUtil.h"
 #include <d3d9.h>
 #include <Windows.h>
 #include <cassert>
+#include <crtdbg.h>
+
+
 
 namespace shinybear {
 
@@ -19,7 +24,8 @@ GraphicsProvider::GraphicsProvider(HWND hTargetWindow) {
 }
 
 GraphicsProvider::~GraphicsProvider() {
-
+  RELEASECOM(m_pD3DCreate);
+  RELEASECOM(m_pDevice);
 }
 
 bool GraphicsProvider::Initialize() {
@@ -27,11 +33,7 @@ bool GraphicsProvider::Initialize() {
   
   assert(m_pD3DCreate && "Failed to create Direct3D9 object!");
 
-  return true;
-}
-
-bool GraphicsProvider::CheckHardware() {
-
+  EventManager::RegisterEventType(DeviceLostEvent::kEventType);
   return true;
 }
 
@@ -59,6 +61,7 @@ bool GraphicsProvider::IsDeviceLost() {
   return false;
 }
 
+// Performs a hard-reset of the device by recreating it.
 bool GraphicsProvider::ResetDevice() {
   ApplyChanges();
   return true;
@@ -106,7 +109,7 @@ DisplayMode *GraphicsProvider::GetAllDisplayModes(UINT *pNumModes) {
     return nullptr;
   }
 
-  DisplayMode *pModes = new DisplayMode[modeCount];
+  DisplayMode *pModes = DBG_NEW DisplayMode[modeCount];
 
   // Initialize a list of displaymodes for the default adapter.
   D3DDISPLAYMODE d3dMode;
@@ -129,7 +132,7 @@ DisplayMode* GraphicsProvider::FilterInvalidDisplayModes(DisplayMode *pModes,
   UINT modeCount, UINT *numValid) {
 
   // This list will hold the state(valid/invalid) of each displaymode.
-  bool *pIndexStates = new bool[modeCount];
+  bool *pIndexStates = DBG_NEW bool[modeCount];
   int validCount = 0;
 
   // Checks each display mode and counts how many are valid.
@@ -144,7 +147,7 @@ DisplayMode* GraphicsProvider::FilterInvalidDisplayModes(DisplayMode *pModes,
   }
 
   // Will hold the valid displaymodes.
-  DisplayMode *pValidModes = new DisplayMode[validCount];
+  DisplayMode *pValidModes = DBG_NEW DisplayMode[validCount];
   int validIndex = 0;
 
   // Loop through all modes and set the valid modes.
@@ -213,7 +216,7 @@ MultiSampleMode *GraphicsProvider::GetAllMSAAModes(UINT *numModes) {
   const UINT kMaxModes = (kMaxSamples + 1) * (kMaxQuality + 1);
 
   // Array with enough space to hold all the different combinations.
-  MultiSampleMode *pModes = new MultiSampleMode[kMaxModes];
+  MultiSampleMode *pModes = DBG_NEW MultiSampleMode[kMaxModes];
 
   // Setup all MSAA modes.
   for(UINT quality = 0; quality <= kMaxQuality; ++quality) {
@@ -235,7 +238,7 @@ MultiSampleMode *GraphicsProvider::FilterInvalidMSAAModes(
   MultiSampleMode *pModes, UINT count, UINT *numValid) {
 
   // Store results for wether an array index is valid or not.
-  bool *pIndexStates = new bool[count];
+  bool *pIndexStates = DBG_NEW bool[count];
   UINT validCount = 0;
   for(UINT i = 0; i < count; ++i) {
     pIndexStates[i] = false;
@@ -248,7 +251,7 @@ MultiSampleMode *GraphicsProvider::FilterInvalidMSAAModes(
 
   
   // Store the valid modes in a new array.
-  MultiSampleMode *pValid = new MultiSampleMode[validCount];
+  MultiSampleMode *pValid = DBG_NEW MultiSampleMode[validCount];
   UINT vi = 0;
   for(UINT i = 0; i < count; ++i) {
     if(pIndexStates[i]) {
@@ -364,7 +367,7 @@ void GraphicsProvider::ApplyChanges() {
     flags |= D3DCREATE_PUREDEVICE;
 
   // Release the previous device.
-  ReleaseCOM(m_pDevice);
+  RELEASECOM(m_pDevice);
 
   if(IsFullscreen()) {
     HRESULT hr = m_pD3DCreate->CreateDevice(m_adapterIndex, D3DDEVTYPE_HAL,

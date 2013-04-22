@@ -13,25 +13,10 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Framework">
-      <UniqueIdentifier>{8f0c208b-ea4e-472c-9c92-605f8c2cff97}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\DXApp.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\DXWindow.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\GameTimer.cpp">
-      <Filter>Framework</Filter>
-    </ClCompile>
-    <ClCompile Include="Framework\InputManager.cpp">
-      <Filter>Framework</Filter>
     </ClCompile>
     <ClCompile Include="TestApp.cpp">
       <Filter>Source Files</Filter>
@@ -45,24 +30,6 @@
   <ItemGroup>
     <ClInclude Include="TestApp.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\DXApp.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\DXWindow.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\Framework.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\GameTimer.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\InputManager.h">
-      <Filter>Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="Framework\DXUtil.h">
-      <Filter>Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

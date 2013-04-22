@@ -1,4 +1,8 @@
-#include "system\GameWindow.h"
+#include "base\system\GameWindow.h"
+#include "events\EventManager.h"
+#include "events\eventtypes\WindowEvents.h"
+#include "util\SBUtil.h"
+#include <cassert>
 
 using std::string;
 
@@ -8,7 +12,7 @@ namespace shinybear {
 const char *GameWindow::s_className = "GAMEWINDOW_CLASS";
 
 GameWindow::GameWindow(const Size &size) {
-
+  m_size = size;
   m_isVisible = false;
 
   // Set up window class parameters.
@@ -37,27 +41,20 @@ GameWindow::GameWindow(const Size &size) {
     this
   );
   
+  EventManager::RegisterEventType(WindowClosedEvent::kEventType);
+
 }
 
 GameWindow::~GameWindow() {
 
 }
 
-// Frees resources used by window, simply triggers the destructor of our singleton.
-void GameWindow::Cleanup() {
-  delete s_singleton;
-}
-
-void GameWindow::Create(const Size &size) {
-  s_singleton = new GameWindow(size);
-}
-
 void GameWindow::Show() {
-  ShowWindow(s_singleton->m_hwnd, TRUE);
+  ShowWindow(m_hwnd, TRUE);
 }
 
 void GameWindow::Hide() {
-  ShowWindow(s_singleton->m_hwnd, FALSE);
+  ShowWindow(m_hwnd, FALSE);
 }
 
 void GameWindow::HandleMessages() {
@@ -69,11 +66,11 @@ void GameWindow::HandleMessages() {
   }
 }
 
-LRESULT CALLBACK GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
   switch(msg) {
   case WM_DESTROY:
-    // User closed window.
-    PostQuitMessage(0);
+    
+    EventManager::PushEvent(EventPtr(DBG_NEW WindowClosedEvent()));
     return 0;
   }
 
@@ -82,7 +79,27 @@ LRESULT CALLBACK GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
 // Simply forwards the window proc to a member version.
 LRESULT CALLBACK GameWindow::StaticWinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-  return s_singleton->WindowProc(hwnd, msg, wparam, lparam);
+  
+  // Store the pointer to the window in the windows long on wm_create
+  if(msg == WM_CREATE) {
+
+    // Retrieve pointer from lparam
+    GameWindow *pWindow = (GameWindow*)((LPCREATESTRUCT)lparam)->lpCreateParams;
+
+    assert(pWindow && "Did not find window in lparam!");
+
+    // Store the window in the variable maintained by windows.
+    SetWindowLong(hwnd, GWL_USERDATA, (LONG)pWindow);
+  }
+
+  // Retrieve window from windowlong.
+  GameWindow *pWindow = (GameWindow*)GetWindowLong(hwnd, GWL_USERDATA);
+
+  if(pWindow) {
+    return pWindow->WindowProc(hwnd, msg, wparam, lparam);
+  }
+  
+  return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
 
