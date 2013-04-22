@@ -8,8 +8,7 @@ public:
 
   static VoxelMesh *FromFile(const char *pFileName);
   //static VoxelMesh *FromResource(); // TODO
-
-
+  
 protected:
 
 private:

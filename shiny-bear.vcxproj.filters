@@ -102,6 +102,9 @@
     <ClInclude Include="source\view\graphics\Color4f.h">
       <Filter>Source\view\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="source\view\graphics\VoxelMesh.h">
+      <Filter>Source\view\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\view\input\InputManager.cpp">

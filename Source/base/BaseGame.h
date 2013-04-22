@@ -67,7 +67,7 @@ private:
   GameWindow *m_pGameWindow;
   bool m_isRunning;
   bool m_isQuitting;
-  bool m_isPaused;
+  bool m_isPaused; 
   wchar_t *m_pConfigPath;
   
 };

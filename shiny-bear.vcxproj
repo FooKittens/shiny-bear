@@ -30,6 +30,7 @@
     <ClInclude Include="source\util\SBUtil.h" />
     <ClInclude Include="source\view\graphics\Color4f.h" />
     <ClInclude Include="Source\view\graphics\SceneComposer.h" />
+    <ClInclude Include="source\view\graphics\VoxelMesh.h" />
     <ClInclude Include="source\view\IGameView.h" />
     <ClInclude Include="Source\view\input\InputManager.h" />
     <ClInclude Include="source\view\RenderView.h" />
@@ -89,6 +90,9 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalDependencies>wtsapi32.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

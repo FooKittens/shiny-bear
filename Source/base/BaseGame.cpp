@@ -69,6 +69,8 @@ bool BaseGame::Initialize() {
 
   // Register for window events.
   EventManager::RegisterEventListener(WindowClosedEvent::kEventType, this);
+  EventManager::RegisterEventListener(SessionStateChangedEvent::kEventType, this);
+  EventManager::RegisterEventListener(FocusChangedEvent::kEventType, this);
 
   // Create the directx wrapper.
   m_pGraphicsProvider = DBG_NEW GraphicsProvider(m_pGameWindow->GetWindowHandle());
@@ -111,7 +113,6 @@ bool BaseGame::Run() {
   while(m_isRunning) {
     // Handle Windows Messages.
     m_pGameWindow->HandleMessages();
-
     // Process events on the eventqueue.
     EventManager::ProcessEvents();
 
@@ -121,15 +122,6 @@ bool BaseGame::Run() {
     }
     // Call OnUpdate for derived class.
     OnUpdate(m_pGameTimer->GetElapsedTime());
-
-    if(m_pGraphicsProvider->IsDeviceLost()) {
-      EventManager::PushImmediateEvent(EventPtr(new DeviceLostEvent()));
-
-      // Recreate the device.
-      m_pGraphicsProvider->ApplyChanges();
-
-      EventManager::PushImmediateEvent(EventPtr(new DeviceResetEvent()));
-    }
 
     // Update all gameviews.
     UpdateViews();
@@ -162,20 +154,65 @@ void BaseGame::Resume() {
 
 bool BaseGame::HandleEvent(const EventPtr &evt) {
 
-  if(evt->GetType() == WindowClosedEvent::kEventType) {
+  if(evt->GetType() == WindowClosedEvent::kEventType)
+  {
     Exit();
     return false;
+  }
+  else if(evt->GetType() == SessionStateChangedEvent::kEventType)
+  {
+    SessionStateChangedEvent *sEvent = dynamic_cast<SessionStateChangedEvent*>(evt.get());
+
+    // Retrieve the new sessionstate.
+    SessionState newState = sEvent->GetNewState();
+
+    if(newState == SessionState::SS_LOCKED)
+    {
+      // The desktop has been locked. Which will cause the graphics device to be lost.
+      EventManager::PushImmediateEvent(EventPtr(new DeviceLostEvent()));
+    }
+    else if(newState == SessionState::SS_UNLOCKED)
+    {
+      if(m_pGraphicsProvider->IsDeviceLost())
+      {
+        m_pGraphicsProvider->ApplyChanges();
+        EventManager::PushImmediateEvent(EventPtr(new DeviceLostEvent()));
+      }
+    }
+
+  } 
+  else if(evt->GetType() == FocusChangedEvent::kEventType)
+  {
+    FocusChangedEvent *fEvent = dynamic_cast<FocusChangedEvent*>(evt.get());
+
+    if(fEvent->GetNewState() == FocusState::FS_LOSTFOCUS)
+    {
+
+    }
+    else if(fEvent->GetNewState() == FocusState::FS_GAINEDFOCUS)
+    {
+      if(m_pGraphicsProvider->IsDeviceLost())
+      {
+        EventManager::PushImmediateEvent(EventPtr(new DeviceLostEvent()));
+        // Recreate the device.
+        m_pGraphicsProvider->ApplyChanges();
+
+        EventManager::PushImmediateEvent(EventPtr(new DeviceResetEvent()));
+      }
+    }
   }
 
   return false;
 }
 
-void BaseGame::AttachView(IGameView *pView) {
+void BaseGame::AttachView(IGameView *pView)
+{
   m_views.push_back(pView);
   OutputDbgFormat("View  [%s] attached.", pView->GetName());
 }
 
-void BaseGame::RemoveView(IGameView *pView) {
+void BaseGame::RemoveView(IGameView *pView)
+{
   auto it = m_views.begin();
   auto end = m_views.end();
   while(it != end) {
@@ -188,7 +225,8 @@ void BaseGame::RemoveView(IGameView *pView) {
   OutputDbgFormat("View [%s] detached.", pView->GetName());
 }
 
-inline void BaseGame::UpdateViews() {
+inline void BaseGame::UpdateViews()
+{
   auto it = m_views.begin();
   auto end = m_views.end();
   while(it != end) {

@@ -34,6 +34,7 @@ bool GraphicsProvider::Initialize() {
   assert(m_pD3DCreate && "Failed to create Direct3D9 object!");
 
   EventManager::RegisterEventType(DeviceLostEvent::kEventType);
+  EventManager::RegisterEventType(DeviceResetEvent::kEventType);
   return true;
 }
 
@@ -53,6 +54,7 @@ bool GraphicsProvider::IsDeviceLost() {
     " suffered an unrecoverable error!");
 
   if(hr == D3DERR_DEVICELOST) {
+    Sleep(2500);
     return true;
   } else if(hr == D3DERR_DEVICENOTRESET) {
     m_pDevice->Reset(&m_d3dPresent);

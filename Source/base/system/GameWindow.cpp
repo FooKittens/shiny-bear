@@ -3,6 +3,7 @@
 #include "events\eventtypes\WindowEvents.h"
 #include "util\SBUtil.h"
 #include <cassert>
+#include <WtsApi32.h>
 
 using std::string;
 
@@ -42,7 +43,10 @@ GameWindow::GameWindow(const Size &size) {
   );
   
   EventManager::RegisterEventType(WindowClosedEvent::kEventType);
+  EventManager::RegisterEventType(SessionStateChangedEvent::kEventType);
+  EventManager::RegisterEventType(FocusChangedEvent::kEventType);
 
+  WTSRegisterSessionNotification(m_hwnd, NOTIFY_FOR_THIS_SESSION);
 }
 
 GameWindow::~GameWindow() {
@@ -67,7 +71,27 @@ void GameWindow::HandleMessages() {
 }
 
 LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+  
+  OutputDbgFormat("WindowsMessage: [%i]", msg);
+  
   switch(msg) {
+  case WM_ACTIVATEAPP:
+    if(wparam == TRUE) {
+      EventManager::PushImmediateEvent(
+        EventPtr(new FocusChangedEvent(FocusState::FS_GAINEDFOCUS))
+      );
+    } else {
+      EventManager::PushImmediateEvent(
+        EventPtr(new FocusChangedEvent(FocusState::FS_LOSTFOCUS))
+      );
+    }
+  case WM_WTSSESSION_CHANGE:
+    if(wparam == WTS_SESSION_LOCK) {
+      EventManager::PushImmediateEvent(EventPtr(new SessionStateChangedEvent(SS_LOCKED)));
+    } else if(wparam == WTS_SESSION_UNLOCK) {
+      EventManager::PushImmediateEvent(EventPtr(new SessionStateChangedEvent(SS_UNLOCKED)));
+    }
+    return 0;
   case WM_DESTROY:
     
     EventManager::PushEvent(EventPtr(DBG_NEW WindowClosedEvent()));
