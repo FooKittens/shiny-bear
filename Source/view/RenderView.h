@@ -10,7 +10,8 @@ namespace shinybear {
 
 // A view that renders the gamelogic.
 // Potential playerviews can derive from this.
-class RenderView : public IGameView, public IEventListener {
+class RenderView : public IGameView, public IEventListener
+{
 public:
   RenderView(GraphicsProvider *provider);
 

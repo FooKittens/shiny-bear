@@ -4,9 +4,11 @@
 #include "base\system\DisplayMode.h"
 #include <fstream>
 
-namespace shinybear {
+namespace shinybear
+{
 
-struct Config {
+struct Config
+{
   Config() {}
   Config(std::wfstream &in);
 

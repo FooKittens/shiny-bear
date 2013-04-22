@@ -6,14 +6,17 @@ using std::wfstream;
 using std::endl;
 using std::wstring;
 
-namespace shinybear {
+namespace shinybear
+{
 
 
-Config::Config(wfstream &in) {
+Config::Config(wfstream &in)
+{
   this->FromText(in);
 }
 
-void Config::ToText(wfstream &out) const {
+void Config::ToText(wfstream &out) const
+{
   out << L"--DisplayMode--" << endl
       << L"width = " << displayMode.width << endl
       << L"height = " << displayMode.height << endl
@@ -27,7 +30,8 @@ void Config::ToText(wfstream &out) const {
   out.flush();
 }
 
-void Config::FromText(wfstream &in) {
+void Config::FromText(wfstream &in)
+{
   
   wstring input;
 
@@ -46,7 +50,8 @@ void Config::FromText(wfstream &in) {
   in >> input >> input >> multiSampleMode.quality;
 }
 
-Config Config::GetDefault() {
+Config Config::GetDefault()
+{
   Config config;
   config.displayMode.fullscreen = false;
   config.displayMode.height = 480;

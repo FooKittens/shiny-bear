@@ -16,7 +16,8 @@
 #define SAFEDELETE(X) delete X; X = 0
 
 // Function for checking if a file exists
-namespace shinybear {
+namespace shinybear
+{
 
 // Used to determine if a file exists
 bool FileExists(const wchar_t *pPath, size_t len);

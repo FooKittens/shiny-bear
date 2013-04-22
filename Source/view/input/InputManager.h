@@ -5,7 +5,8 @@
 
 namespace framework { struct KeyboardState; }
 
-namespace framework {
+namespace framework
+{
 
 enum Keys
 {
@@ -91,18 +92,21 @@ enum Keys
 
 };
 
-class InputManager {
+class InputManager
+{
 
 public:
   static const int kKeyCount = 256;
 
   static void Initialize();
 
-  inline static bool IsKeyDown(Keys k) {
+  inline static bool IsKeyDown(Keys k)
+  {
     return static_cast<bool>(s_keys[k]);
   }
 
-  inline static bool IsKeyUp(Keys k) {
+  inline static bool IsKeyUp(Keys k)
+  {
     return static_cast<bool>(!s_keys[k]);
   }
 
@@ -118,31 +122,37 @@ private:
   static HHOOK s_hookHandle;
 };
 
-struct KeyboardState {
+struct KeyboardState
+{
 
 public:
   friend class InputManager;
 
   KeyboardState()
-    :keys(){
+    :keys()
+  {
 
     memset(keys, 0, sizeof(int) * InputManager::kKeyCount);
   }
 
-  KeyboardState(const KeyboardState &copy) {
+  KeyboardState(const KeyboardState &copy)
+  {
     // Safe, we wont' be changing the copy at all.
     int *pk = keys, *pc = const_cast<KeyboardState&>(copy).keys;
   
-    for(int i = 0; i < InputManager::kKeyCount; ++i) {
+    for(int i = 0; i < InputManager::kKeyCount; ++i)
+    {
       *pk++ = *pc++;
     }
   }
 
-  const KeyboardState& operator=(const KeyboardState &rhs) {
+  const KeyboardState& operator=(const KeyboardState &rhs)
+  {
     // Safe, we wont' be changing the copy at all.
     int *pk = keys, *pc = const_cast<KeyboardState&>(rhs).keys;
   
-    for(int i = 0; i < InputManager::kKeyCount; ++i) {
+    for(int i = 0; i < InputManager::kKeyCount; ++i)
+    {
       *pk++ = *pc++;
     }
 

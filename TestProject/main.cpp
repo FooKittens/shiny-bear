@@ -5,7 +5,8 @@
 
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev,
-  char *cmdLine, int cmdshow) {     
+  char *cmdLine, int cmdshow)
+{     
   
   // Enable memory leak checks
 #if defined(DEBUG) | defined (_DEBUG)

@@ -4,16 +4,19 @@
 #include <Windows.h>
 #include <string>
 
-namespace shinybear {
+namespace shinybear
+{
 
 typedef unsigned int UINT;
 
-struct Size {
+struct Size
+{
   UINT width;
   UINT height;
 };
 
-class GameWindow {
+class GameWindow
+{
 public:
   GameWindow(const Size &size);
   ~GameWindow();
@@ -55,16 +58,19 @@ private:
 };
 
 // --------- Inlines ----------
-inline void GameWindow::SetSize(const Size &size) {
+inline void GameWindow::SetSize(const Size &size)
+{
   m_size = size;
   SetWindowPos(m_hwnd, 0, 0, 0, size.width, size.height, SWP_NOMOVE);
 }
 
-inline void GameWindow::SetTitle(const char *title) {
+inline void GameWindow::SetTitle(const char *title)
+{
   SetWindowText(m_hwnd, title);
 }
 
-inline HWND GameWindow::GetWindowHandle() {
+inline HWND GameWindow::GetWindowHandle()
+{
   return m_hwnd;
 }
 

@@ -3,23 +3,27 @@
 uniform extern float4x4 gWVP;
 texture gText;
 
-sampler t2samp = sampler_state {
+sampler t2samp = sampler_state
+{
   Texture = gText;
   MinFilter = Linear;
   MagFilter = Linear;
 };
 
-struct VSInput {
+struct VSInput
+{
   float3 pos : POSITION0;
   float2 texCoords : TEXCOORD0;
 };
 
-struct VSOutput {
+struct VSOutput
+{
   float4 pos : POSITION0;
   float2 texCoords : TEXCOORD0;
 };
 
-VSOutput VS(VSInput input) {
+VSOutput VS(VSInput input)
+{
 
   VSOutput ov = (VSOutput)0;
 
@@ -28,13 +32,16 @@ VSOutput VS(VSInput input) {
   return ov;
 }
 
-float4 PS(VSOutput input) : COLOR {
+float4 PS(VSOutput input) : COLOR
+{
   return tex2D(t2samp, input.texCoords);
 }
 
-technique SimpleTechnique {
+technique SimpleTechnique
+{
 
-  pass P0 {
+  pass P0
+  {
 
     vertexShader = compile vs_2_0 VS();
     pixelShader = compile ps_2_0 PS();

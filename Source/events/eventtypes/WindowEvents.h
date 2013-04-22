@@ -3,21 +3,25 @@
 
 #include "events\IEvent.h"
 
-namespace shinybear {
+namespace shinybear
+{
 
-class WindowClosedEvent : public IEvent {
+class WindowClosedEvent : public IEvent
+{
 public:
   static const EventType kEventType;
 
   const EventType& GetType() const { return kEventType; }
 };
 
-enum SessionState {
+enum SessionState
+{
   SS_UNLOCKED = 0,
   SS_LOCKED = 1,
 };
 
-class SessionStateChangedEvent : public IEvent {
+class SessionStateChangedEvent : public IEvent
+{
 public:
   static const EventType kEventType;
   
@@ -31,12 +35,14 @@ private:
   SessionState m_newState;
 };
 
-enum FocusState {
+enum FocusState
+{
   FS_LOSTFOCUS = 0,
   FS_GAINEDFOCUS = 1
 };
 
-class FocusChangedEvent : public IEvent {
+class FocusChangedEvent : public IEvent
+{
 public:
   static const EventType kEventType;
 

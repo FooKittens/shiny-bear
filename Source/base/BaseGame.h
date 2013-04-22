@@ -7,14 +7,17 @@
 #include <list>
 
 // Forward declarations
-namespace shinybear {
+namespace shinybear
+{
   class GameTimer; class GraphicsProvider;
   class GameWindow; class IGameView;
 }
 
-namespace shinybear {
+namespace shinybear
+{
 
-class BaseGame : public IEventListener {
+class BaseGame : public IEventListener
+{
 public:
   BaseGame();
   virtual ~BaseGame();
@@ -75,15 +78,18 @@ private:
 
 // Inlines
 
-inline GameWindow *BaseGame::GetWindow() const {
+inline GameWindow *BaseGame::GetWindow() const
+{
   return m_pGameWindow;
 }
 
-inline GraphicsProvider *BaseGame::GetGraphicsProvider() const {
+inline GraphicsProvider *BaseGame::GetGraphicsProvider() const
+{
   return m_pGraphicsProvider;
 }
 
-inline bool BaseGame::IsPaused() const {
+inline bool BaseGame::IsPaused() const
+{
   return m_isPaused;
 }
 

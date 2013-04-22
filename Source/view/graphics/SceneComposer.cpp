@@ -1,23 +1,28 @@
 #include "view\graphics\SceneComposer.h"
 #include "base\system\GraphicsProvider.h"
 
-namespace shinybear {
+namespace shinybear
+{
 
-SceneComposer::SceneComposer(GraphicsProvider *pProvider) {
+SceneComposer::SceneComposer(GraphicsProvider *pProvider)
+{
   m_pProvider = pProvider;
 }
 
-SceneComposer::~SceneComposer() {
+SceneComposer::~SceneComposer() 
+{
 
 }
 
-bool SceneComposer::HandleEvent(const EventPtr &evt) {
+bool SceneComposer::HandleEvent(const EventPtr &evt) 
+{
 
 
   return false;
 }
 
-void SceneComposer::RenderScene() {
+void SceneComposer::RenderScene() 
+{
 
 }
 

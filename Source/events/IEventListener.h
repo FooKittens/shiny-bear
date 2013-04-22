@@ -3,10 +3,12 @@
 
 #include "events\IEvent.h"
 
-namespace shinybear {
+namespace shinybear
+{
 
 // Interface used by eventlisteners
-class IEventListener {
+class IEventListener
+{
 public:
   virtual const char *GetName() const = 0;
   virtual bool HandleEvent(const EventPtr &event) = 0;

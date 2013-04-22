@@ -4,9 +4,11 @@
 typedef unsigned int UINT;
 typedef unsigned long DWORD;
 
-namespace shinybear {
+namespace shinybear
+{
 
-struct MultiSampleMode {
+struct MultiSampleMode
+{
   MultiSampleMode() : samples(1), quality(0) { }
   MultiSampleMode(UINT sa, UINT qa) : samples(sa), quality(qa) { }
 
@@ -14,15 +16,18 @@ struct MultiSampleMode {
   DWORD quality;
 };
 
-struct DisplayMode {
-  DisplayMode() {
+struct DisplayMode
+{
+  DisplayMode()
+  {
     width = 640;
     height = 480;
     refreshRate = 60;
     fullscreen = false;
   }
   
-  DisplayMode(UINT w, UINT h, UINT hz, bool fullscreen) {
+  DisplayMode(UINT w, UINT h, UINT hz, bool fullscreen)
+  {
       width = w;
       height = h;
       refreshRate = hz;
