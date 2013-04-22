@@ -8,7 +8,8 @@
 
 namespace shinybear { class RenderView; }
 
-class TestApp : public shinybear::BaseGame {
+class TestApp : public shinybear::BaseGame
+{
 public:
   TestApp();
   virtual ~TestApp();

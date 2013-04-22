@@ -7,12 +7,14 @@
 
 using std::string;
 
-namespace shinybear {
+namespace shinybear
+{
 
 // name used by windows to identify the class internally.
 const char *GameWindow::s_className = "GAMEWINDOW_CLASS";
 
-GameWindow::GameWindow(const Size &size) {
+GameWindow::GameWindow(const Size &size)
+{
   m_size = size;
   m_isVisible = false;
 
@@ -49,46 +51,59 @@ GameWindow::GameWindow(const Size &size) {
   WTSRegisterSessionNotification(m_hwnd, NOTIFY_FOR_THIS_SESSION);
 }
 
-GameWindow::~GameWindow() {
+GameWindow::~GameWindow()
+{
 
 }
 
-void GameWindow::Show() {
+void GameWindow::Show()
+{
   ShowWindow(m_hwnd, TRUE);
 }
 
-void GameWindow::Hide() {
+void GameWindow::Hide()
+{
   ShowWindow(m_hwnd, FALSE);
 }
 
-void GameWindow::HandleMessages() {
+void GameWindow::HandleMessages()
+{
   MSG msg = { 0 };
 
-  while(PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+  while(PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+  {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
   }
 }
 
-LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
   
   // OutputDbgFormat("WindowsMessage: [%i]", msg);
   
-  switch(msg) {
+  switch(msg)
+  {
   case WM_ACTIVATEAPP:
-    if(wparam == TRUE) {
+    if(wparam == TRUE)
+    {
       EventManager::PushImmediateEvent(
-        EventPtr(new FocusChangedEvent(FocusState::FS_GAINEDFOCUS))
+        EventPtr(DBG_NEW FocusChangedEvent(FocusState::FS_GAINEDFOCUS))
       );
-    } else {
+    }
+    else
+    {
       EventManager::PushImmediateEvent(
-        EventPtr(new FocusChangedEvent(FocusState::FS_LOSTFOCUS))
+        EventPtr(DBG_NEW FocusChangedEvent(FocusState::FS_LOSTFOCUS))
       );
     }
   case WM_WTSSESSION_CHANGE:
-    if(wparam == WTS_SESSION_LOCK) {
+    if(wparam == WTS_SESSION_LOCK)
+    {
       EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_LOCKED)));
-    } else if(wparam == WTS_SESSION_UNLOCK) {
+    }
+    else if(wparam == WTS_SESSION_UNLOCK)
+    {
       EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_UNLOCKED)));
     }
     return 0;
@@ -101,10 +116,12 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 }
 
 // Simply forwards the window proc to a member version.
-LRESULT CALLBACK GameWindow::StaticWinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
+LRESULT CALLBACK GameWindow::StaticWinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
   
   // Store the pointer to the window in the windows long on wm_create
-  if(msg == WM_CREATE) {
+  if(msg == WM_CREATE)
+  {
 
     // Retrieve pointer from lparam
     GameWindow *pWindow = (GameWindow*)((LPCREATESTRUCT)lparam)->lpCreateParams;
@@ -118,7 +135,8 @@ LRESULT CALLBACK GameWindow::StaticWinProc(HWND hwnd, UINT msg, WPARAM wparam, L
   // Retrieve window from windowlong.
   GameWindow *pWindow = (GameWindow*)GetWindowLong(hwnd, GWL_USERDATA);
 
-  if(pWindow) {
+  if(pWindow)
+  {
     return pWindow->WindowProc(hwnd, msg, wparam, lparam);
   }
   

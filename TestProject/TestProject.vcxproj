@@ -69,9 +69,6 @@
     <ClCompile Include="TestApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SimpleShader.fx" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="TestApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

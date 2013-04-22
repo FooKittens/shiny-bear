@@ -3,9 +3,11 @@
 
 #include <fstream>
 
-namespace shinybear {
+namespace shinybear
+{
 
-enum SerializationFlags {
+enum SerializationFlags
+{
   SF_BINARY = 0,
   SF_ASCII = 1,
 };
@@ -13,7 +15,8 @@ enum SerializationFlags {
 typedef unsigned char ubyte;
 
 // Interface for Serializable classes.
-class ISerializable {
+class ISerializable
+{
 public:
   // Used to serialize to a stream
   virtual void Serialize(std::ofstream&);

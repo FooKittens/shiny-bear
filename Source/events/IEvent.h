@@ -5,10 +5,12 @@
 #include <string>
 #include <memory>
 
-namespace shinybear {
+namespace shinybear
+{
 
 // Interface implemented by anything that should act as an event.
-class IEvent {
+class IEvent
+{
 public:
   virtual const EventType& GetType() const = 0;
 };

@@ -6,9 +6,11 @@
 #include "view\graphics\Color4f.h"
 
 
-namespace shinybear {
+namespace shinybear
+{
 
-class GraphicsProvider {
+class GraphicsProvider
+{
 public:
   GraphicsProvider(HWND hTargetWindow);
   ~GraphicsProvider();
@@ -88,17 +90,20 @@ private:
 
 
 // Inlines
-inline bool GraphicsProvider::IsFullscreen() {
+inline bool GraphicsProvider::IsFullscreen()
+{
   return m_currentDisplayMode.fullscreen;
 }
 
-inline void GraphicsProvider::Clear(const Color4f &color) {
+inline void GraphicsProvider::Clear(const Color4f &color)
+{
   
   m_pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL | D3DCLEAR_TARGET,
     color, 1.0f, 0);
 }
 
-inline void GraphicsProvider::Present() {
+inline void GraphicsProvider::Present()
+{
   m_pDevice->Present(0, 0, 0, 0);
 }
   

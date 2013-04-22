@@ -10,11 +10,13 @@
 #include "events\IEventListener.h"
 
 
-namespace shinybear {
+namespace shinybear
+{
 
 
 
-class EventManager {
+class EventManager
+{
 public:
 
   // Creates the singleton instance.
@@ -81,37 +83,45 @@ private:
 };
 
 // Inlines
-inline void EventManager::RegisterEventType(const EventType &evtType) {
+inline void EventManager::RegisterEventType(const EventType &evtType)
+{
   pSingleton->SafeRegisterEventType(evtType);
 }
 
-inline void EventManager::UnRegisterEventType(const EventType &evtType) {
+inline void EventManager::UnRegisterEventType(const EventType &evtType)
+{
   pSingleton->SafeUnRegisterEventType(evtType);
 }
 
 inline void EventManager::RegisterEventListener(const EventType &evtType,
-  IEventListener *pListener) {
+  IEventListener *pListener)
+{
   pSingleton->SafeRegisterEventListener(evtType, pListener);
 }
 
 inline void EventManager::UnRegisterEventListener(const EventType &evtType,
-  IEventListener *pListener) {
+  IEventListener *pListener)
+{
   pSingleton->SafeUnRegisterEventListener(evtType, pListener);
 }
 
-inline void EventManager::PushEvent(EventPtr &evt) {
+inline void EventManager::PushEvent(EventPtr &evt)
+{
   pSingleton->SafePushEvent(evt);
 }
 
-inline void EventManager::PushImmediateEvent(EventPtr &evt) {
+inline void EventManager::PushImmediateEvent(EventPtr &evt)
+{
   pSingleton->SafePushImmediateEvent(evt);
 }
 
-inline void EventManager::CancelEvent(const EventType &evtType, bool all) {
+inline void EventManager::CancelEvent(const EventType &evtType, bool all)
+{
   pSingleton->SafeCancelEvent(evtType, all);
 }
 
-inline void EventManager::ProcessEvents() {
+inline void EventManager::ProcessEvents()
+{
   pSingleton->SafeProcessEvents();
 }
 

@@ -3,16 +3,19 @@
 
 #include "events\IEvent.h"
 
-namespace shinybear {
+namespace shinybear
+{
 
-class DeviceLostEvent : public IEvent {
+class DeviceLostEvent : public IEvent
+{
 public:
   static const EventType kEventType;
 
   const EventType &GetType() const;
 };
 
-class DeviceResetEvent : public IEvent {
+class DeviceResetEvent : public IEvent
+{
 public:
   static const EventType kEventType;
   const EventType &GetType() const;

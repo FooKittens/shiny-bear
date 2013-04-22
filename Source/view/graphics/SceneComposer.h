@@ -6,9 +6,11 @@
 
 namespace shinybear { class GraphicsProvider; }
 
-namespace shinybear {
+namespace shinybear 
+{
 
-class SceneComposer : public IEventListener {
+class SceneComposer : public IEventListener
+{
 public:
   SceneComposer(GraphicsProvider *pProvider);
   ~SceneComposer();

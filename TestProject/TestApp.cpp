@@ -3,15 +3,18 @@
 
 using namespace shinybear;
 
-TestApp::TestApp() {
+TestApp::TestApp() 
+{
 
 }
 
-TestApp::~TestApp() {
+TestApp::~TestApp()
+{
   delete m_pRenderView;
 }
 
-bool TestApp::OnInitialize() {
+bool TestApp::OnInitialize() 
+{
 
   m_pRenderView = new RenderView(GetGraphicsProvider());
 
@@ -20,7 +23,8 @@ bool TestApp::OnInitialize() {
 }
 
 
-void TestApp::OnUpdate(double elapsedSeconds) {
+void TestApp::OnUpdate(double elapsedSeconds) 
+{
 
 }
 

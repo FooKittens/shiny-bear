@@ -4,15 +4,18 @@
 #include <Windows.h>
 #include "util\SBUtil.h"
 
-namespace shinybear {
+namespace shinybear
+{
 
 EventManager *EventManager::pSingleton = nullptr;
 
-EventManager::EventManager() {
+EventManager::EventManager()
+{
 
 }
 
-EventManager::~EventManager() {
+EventManager::~EventManager()
+{
   m_activeEvents.clear();
   m_activeEvents.shrink_to_fit();
   m_eventQueue.clear();
@@ -20,18 +23,21 @@ EventManager::~EventManager() {
   m_listenerMap.clear();  
 }
 
-void EventManager::CleanUp() {
+void EventManager::CleanUp()
+{
   delete pSingleton;
 }
 
-void EventManager::Initialize() {
+void EventManager::Initialize()
+{
   assert(pSingleton == nullptr && "EventManager already initialized!");
 
   pSingleton = DBG_NEW EventManager();
 }
 
 // Registers an eventtype to make it valid for listening and pushing.
-void EventManager::SafeRegisterEventType(const EventType &evtType) {
+void EventManager::SafeRegisterEventType(const EventType &evtType)
+{
   // We want to notice redundant attempts to register the same type.
   assert(!IsEventTypeRegistered(evtType) && "EventType already registered!");
   
@@ -41,14 +47,17 @@ void EventManager::SafeRegisterEventType(const EventType &evtType) {
 }
 
 // UnRegisters an eventtype so the EventManager won't recognize it anymore.
-void EventManager::SafeUnRegisterEventType(const EventType &evtType) {
+void EventManager::SafeUnRegisterEventType(const EventType &evtType)
+{
   // Make sure the eventtype is registered.
   assert(IsEventTypeRegistered(evtType) && "EventType not registered!");
 
   // Find the eventtype.
   auto it = m_registeredEvents.begin();
-  while(it != m_registeredEvents.end()) {
-    if(it->m_hashCode == evtType.m_hashCode) {
+  while(it != m_registeredEvents.end())
+  {
+    if(it->m_hashCode == evtType.m_hashCode)
+    {
       // remove it from the vector.
       m_registeredEvents.erase(it);
       break;
@@ -61,16 +70,20 @@ void EventManager::SafeUnRegisterEventType(const EventType &evtType) {
 
 // Adds an EventListener to the list for a certain event.
 void EventManager::SafeRegisterEventListener(const EventType &evtType,
-  IEventListener *pListener) {
+  IEventListener *pListener)
+{
 
   // Make sure the eventtype is registered.
   assert(IsEventTypeRegistered(evtType) && "EventType not registered!");
 
   // See if a mapping currently exists for the eventtype
   auto lMap = m_listenerMap.find(evtType.GetID());
-  if(lMap != m_listenerMap.end()) {
+  if(lMap != m_listenerMap.end())
+  {
     lMap->second.push_back(pListener);
-  } else {
+  }
+  else
+  {
     // No mapping exists, we have to create one.
     EventMapping evtMap(evtType.GetID(), ListenerRegistry());
     evtMap.second.push_back(pListener);
@@ -83,7 +96,8 @@ void EventManager::SafeRegisterEventListener(const EventType &evtType,
 
 // Removes an EventListener from the list of the eventType
 void EventManager::SafeUnRegisterEventListener(const EventType &evtType,
-  IEventListener *pListener) {
+  IEventListener *pListener)
+{
   
   // Make sure the eventtype is registered.
   assert(IsEventTypeRegistered(evtType) && "EventType not registered!");
@@ -92,15 +106,18 @@ void EventManager::SafeUnRegisterEventListener(const EventType &evtType,
   assert(lMap != m_listenerMap.end() && "No mapping exists for eventtype!");
 
   auto it = lMap->second.begin();
-  while(it != lMap->second.end()) {
-    if(*it == pListener) {
+  while(it != lMap->second.end())
+  {
+    if(*it == pListener)
+    {
       // Remove the listener from the list.
       lMap->second.erase(it);
 
       // Check if this was the last listener.
       // In that case we can remove the mapping,
       // which should make searches faster.
-      if(lMap->second.size() == 0) {
+      if(lMap->second.size() == 0)
+      {
         m_listenerMap.erase(lMap);
       }
       break;
@@ -112,7 +129,8 @@ void EventManager::SafeUnRegisterEventListener(const EventType &evtType,
     evtType.GetName());
 }
 
-void EventManager::SafePushEvent(EventPtr evt) {
+void EventManager::SafePushEvent(EventPtr evt)
+{
   // Make sure the eventtype is registered.
   assert(IsEventTypeRegistered(evt->GetType()) && "EventType not registered!");
 
@@ -120,7 +138,8 @@ void EventManager::SafePushEvent(EventPtr evt) {
   OutputDbgFormat("Event[%s] was pushed.", evt->GetType().GetName());
 }
 
-void EventManager::SafePushImmediateEvent(EventPtr evt) {
+void EventManager::SafePushImmediateEvent(EventPtr evt)
+{
   // Make sure the eventtype is registered.
   assert(IsEventTypeRegistered(evt->GetType()) && "EventType not registered!");
   
@@ -128,14 +147,17 @@ void EventManager::SafePushImmediateEvent(EventPtr evt) {
   
   // If there are is not mapping for the event,
   // it makes no sense to process it further.
-  if(lMap != m_listenerMap.end()) {
+  if(lMap != m_listenerMap.end())
+  {
 
     // Iterate over the listener registry for this eventtype.
     auto it = lMap->second.begin();
-    while(it != lMap->second.end()) {
+    while(it != lMap->second.end())
+    {
 
       // If a listener swallows an event, no others will be notified.
-      if((*it)->HandleEvent(evt)) {
+      if((*it)->HandleEvent(evt))
+      {
         OutputDbgFormat("Event[%s] was sent to listener [%s]", 
           evt->GetType().GetName(), (*it)->GetName());
         break;
@@ -149,28 +171,34 @@ void EventManager::SafePushImmediateEvent(EventPtr evt) {
   auto wildMap = m_listenerMap.find(EventType::kWildCard.GetID());
   // If there are is not mapping for the event,
   // it makes no sense to process it further.
-  if(wildMap != m_listenerMap.end()) {
+  if(wildMap != m_listenerMap.end())
+  {
 
     // Iterate over the listener registry for wildcards.
     auto it = wildMap->second.begin();
-    while(it != wildMap->second.end()) {
+    while(it != wildMap->second.end())
+    {
 
       // If a listener swallows an event, no others will be notified.
-      if((*it)->HandleEvent(evt)) {
+      if((*it)->HandleEvent(evt))
+      {
         break;
       }
     }
   }
 }
 
-void EventManager::SafeCancelEvent(const EventType &evtType, bool all) {
+void EventManager::SafeCancelEvent(const EventType &evtType, bool all)
+{
   // Make sure the eventtype is registered.
   assert(IsEventTypeRegistered(evtType) && "EventType not registered!");
   
   // Remove all events of the matching type if specified.
-  if(all) {
+  if(all)
+  {
     std::remove_if(m_eventQueue.begin(), m_eventQueue.end(),
-      [&evtType](EventPtr ptr) {
+      [&evtType](EventPtr ptr)
+    {
       return ptr->GetType() == evtType;
     });
 
@@ -178,11 +206,15 @@ void EventManager::SafeCancelEvent(const EventType &evtType, bool all) {
       evtType.GetName());
 
     return;
-  } else {
+  }
+  else
+  {
     // Remove the last event pushed to the queue of the correct type.
     auto it = m_eventQueue.rbegin();
-    while(it != m_eventQueue.rend()) {
-      if((*it)->GetType() == evtType) {
+    while(it != m_eventQueue.rend())
+    {
+      if((*it)->GetType() == evtType)
+      {
         m_eventQueue.erase(it.base());
         break;
       }
@@ -191,13 +223,15 @@ void EventManager::SafeCancelEvent(const EventType &evtType, bool all) {
   }
 }
 
-void EventManager::SafeProcessEvents() {
+void EventManager::SafeProcessEvents()
+{
 
   // Swap the event lists, since new events will likely
   // trigger from our processing, we dont want an infinite loop.
   m_activeEvents.swap(m_eventQueue);
 
-  while(m_activeEvents.size() > 0) {
+  while(m_activeEvents.size() > 0)
+  {
     // Get the element that has been on the queue for the longest time.
     EventPtr ptr = m_activeEvents.front();
 
@@ -209,16 +243,20 @@ void EventManager::SafeProcessEvents() {
   }
 }
 
-bool EventManager::IsEventTypeRegistered(const EventType &evtType) const {
+bool EventManager::IsEventTypeRegistered(const EventType &evtType) const
+{
   
   // If there are no events, no event could be registered..
-  if(m_registeredEvents.size() == 0) {
+  if(m_registeredEvents.size() == 0)
+  {
     return false;
   }
 
   auto it = m_registeredEvents.begin();
-  while(it != m_registeredEvents.end()) {
-    if(*it++ == evtType) {
+  while(it != m_registeredEvents.end())
+  {
+    if(*it++ == evtType)
+    {
       return true;
     }
   }

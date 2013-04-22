@@ -1,13 +1,15 @@
 
 #include "events\eventtypes\WindowEvents.h"
 
-namespace shinybear {
+namespace shinybear
+{
 
 const EventType WindowClosedEvent::kEventType = EventType("evt_windowclosed");
 
 
 const EventType SessionStateChangedEvent::kEventType = EventType("evt_sessionchanged");
-SessionState SessionStateChangedEvent::GetNewState() const {
+SessionState SessionStateChangedEvent::GetNewState() const
+{
   return m_newState;
 }
 

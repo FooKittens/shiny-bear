@@ -1,9 +1,11 @@
 #ifndef SHINYBEAR_VOXELMESH_H
 #define SHINYBEAR_VOXELMESH_H
 
-namespace shinybear {
+namespace shinybear
+{
 
-class VoxelMesh {
+class VoxelMesh
+{
 public:
 
   static VoxelMesh *FromFile(const char *pFileName);

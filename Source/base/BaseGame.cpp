@@ -11,36 +11,42 @@
 
 
 
-namespace shinybear {
+namespace shinybear
+{
 
 // Global const string for the expected config file name
 const wchar_t *g_kConfigFileName = L"Engine.cfg";
 
-BaseGame::BaseGame() {
+BaseGame::BaseGame()
+{
   GetAbsolutePath(g_kConfigFileName, &m_pConfigPath);
 }
 
-BaseGame::~BaseGame() {
+BaseGame::~BaseGame()
+{
   SAFEDELETE(m_pGameTimer);
   SAFEDELETE(m_pGraphicsProvider);
   SAFEDELETE(m_pGameWindow);
   delete[] m_pConfigPath;
 }
 
-void BaseGame::SaveConfig(const Config &cfg) const {
+void BaseGame::SaveConfig(const Config &cfg) const
+{
   std::wfstream stream;
   stream.open(m_pConfigPath, std::ios::trunc | std::ios::out);
   cfg.ToText(stream);
   stream.close();
 }
 
-void BaseGame::LoadConfig(Config *pConfig) const {
+void BaseGame::LoadConfig(Config *pConfig) const
+{
  
   size_t configPathLen = wcslen(m_pConfigPath);
 
   // If the config file does not exist, we save a default one.
   // TODO : Should calculate a more appropriate resolution.
-  if(!FileExists(m_pConfigPath, configPathLen)) {
+  if(!FileExists(m_pConfigPath, configPathLen))
+  {
     SaveConfig(Config::GetDefault());
   }
   
@@ -51,7 +57,8 @@ void BaseGame::LoadConfig(Config *pConfig) const {
 }
 
 // Loads the config file and sets up the initial gamestate.
-bool BaseGame::Initialize() {
+bool BaseGame::Initialize()
+{
   Config cfg = Config::GetDefault();
   LoadConfig(&cfg);
 
@@ -74,19 +81,23 @@ bool BaseGame::Initialize() {
 
   // Create the directx wrapper.
   m_pGraphicsProvider = DBG_NEW GraphicsProvider(m_pGameWindow->GetWindowHandle());
-  if(m_pGraphicsProvider->Initialize()) {  
+  if(m_pGraphicsProvider->Initialize())
+  {  
 
     m_pGraphicsProvider->SetDisplayMode(cfg.displayMode);
     m_pGraphicsProvider->SetMultiSampleMode(cfg.multiSampleMode);
     m_pGraphicsProvider->ApplyChanges();
 
-  } else {
+  }
+  else
+  {
     // TODO: Handle GraphicsProvider errors.
     return false;
   }
 
   // Call derived method.
-  if(!OnInitialize()) {
+  if(!OnInitialize())
+  {
     // TODO: Handle customized application init failure.
     return false;
   }
@@ -98,9 +109,11 @@ bool BaseGame::Initialize() {
 // It initializes all subsystems, and then calls
 // OnInitialize in the derived class after which it will then
 // begin the game loop.
-bool BaseGame::Run() {
+bool BaseGame::Run()
+{
 
-  if(!Initialize()) {
+  if(!Initialize())
+  {
     // TODO : Present useful information to user about initialization failure.
     return false;
   }
@@ -110,14 +123,16 @@ bool BaseGame::Run() {
   
   m_isRunning   = true;
   m_isQuitting  = false;
-  while(m_isRunning) {
+  while(m_isRunning)
+  {
     // Handle Windows Messages.
     m_pGameWindow->HandleMessages();
     // Process events on the eventqueue.
     EventManager::ProcessEvents();
 
     // Don't tick the timer if we're paused.
-    if(!m_isPaused) {
+    if(!m_isPaused)
+    {
      m_pGameTimer->Tick();
     }
     // Call OnUpdate for derived class.
@@ -126,7 +141,8 @@ bool BaseGame::Run() {
     // Update all gameviews.
     UpdateViews();
 
-    if(m_isQuitting) {
+    if(m_isQuitting)
+    {
       // TODO : Prepare for exit..
 
       EventManager::CleanUp();
@@ -138,21 +154,25 @@ bool BaseGame::Run() {
   return true;
 }
 
-void BaseGame::Exit() {
+void BaseGame::Exit()
+{
   m_isQuitting = true;
 }
 
-void BaseGame::Pause() {
+void BaseGame::Pause()
+{
   m_isPaused = true;
   m_pGameTimer->Pause();
 }
 
-void BaseGame::Resume() {
+void BaseGame::Resume()
+{
   m_isPaused = false;
   m_pGameTimer->Resume();
 }
 
-bool BaseGame::HandleEvent(const EventPtr &evt) {
+bool BaseGame::HandleEvent(const EventPtr &evt)
+{
 
   if(evt->GetType() == WindowClosedEvent::kEventType)
   {
@@ -215,8 +235,10 @@ void BaseGame::RemoveView(IGameView *pView)
 {
   auto it = m_views.begin();
   auto end = m_views.end();
-  while(it != end) {
-    if(*it++ = pView) {
+  while(it != end)
+  {
+    if(*it++ = pView) 
+    {
       m_views.erase(it);
       break;
     }
@@ -229,7 +251,8 @@ inline void BaseGame::UpdateViews()
 {
   auto it = m_views.begin();
   auto end = m_views.end();
-  while(it != end) {
+  while(it != end)
+  {
     (*it++)->Update();
   }
 }
