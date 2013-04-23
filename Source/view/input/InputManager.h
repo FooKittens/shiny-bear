@@ -3,9 +3,9 @@
 
 #include <windows.h>
 
-namespace framework { struct KeyboardState; }
+namespace shinybear { struct KeyboardState; }
 
-namespace framework
+namespace shinybear
 {
 
 enum Keys
@@ -116,7 +116,7 @@ public:
   static void GetKeyboardState(KeyboardState *pState);
 private:
   
-
+  static LRESULT CALLBACK InputHook(int code, WPARAM wparam, LPARAM lparam);
   static LRESULT CALLBACK KeyboardHook(int keycode, WPARAM wparam, LPARAM lparam);
   static int s_keys[kKeyCount];
   static HHOOK s_hookHandle;

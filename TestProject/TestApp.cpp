@@ -5,7 +5,7 @@ using namespace shinybear;
 
 TestApp::TestApp() 
 {
-
+  OnInitialize();
 }
 
 TestApp::~TestApp()

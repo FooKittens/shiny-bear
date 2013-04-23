@@ -5,6 +5,7 @@
 #include "base\system\GraphicsProvider.h"
 #include "events\IEventListener.h"
 #include "view\graphics\SceneComposer.h"
+#include "view\input\InputManager.h"
 
 namespace shinybear {
 

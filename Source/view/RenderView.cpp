@@ -2,6 +2,8 @@
 #include "events\EventManager.h"
 #include "events\eventtypes\WindowEvents.h"
 #include "events\eventtypes\GraphicsProviderEvents.h"
+#include "view\input\InputManager.h"
+#include "util\SBUtil.h"
 
 namespace shinybear {
 
@@ -47,7 +49,5 @@ bool RenderView::HandleEvent(const EventPtr &evt)
 
   return false;
 }
-
-
 
 } // namespace shinybear

@@ -5,6 +5,7 @@
 
 #include <windows.h>
 #include <d3dx9.h>
+#include "PlayerView.h"
 
 namespace shinybear { class RenderView; }
 
@@ -19,7 +20,7 @@ protected:
 
   void OnUpdate(double elapsedSeconds);
 private:
-  shinybear::RenderView *m_pRenderView;
+  PlayerView *m_pPlayerView;
 };
 
 #endif
