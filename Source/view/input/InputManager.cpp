@@ -23,12 +23,12 @@ void InputManager::Initialize(const GameWindow &pGameWindow)
 
   Rid[1].usUsagePage = 0x01;
   Rid[1].usUsage = 0x02;
-  Rid[1].dwFlags = RIDEV_NOLEGACY; // adds HID mouse and also ignores legacy mouse messages
+  Rid[1].dwFlags = 0; // adds HID mouse and also ignores legacy mouse messages
   Rid[1].hwndTarget = handle;
 
   Rid[2].usUsagePage = 0x01;
   Rid[2].usUsage = 0x06;
-  Rid[2].dwFlags = RIDEV_NOLEGACY; // adds HID keyboard and also ignores legacy keyboard messages
+  Rid[2].dwFlags = 0; // adds HID keyboard and also ignores legacy keyboard messages
   Rid[2].hwndTarget = handle;
 
   assert (RegisterRawInputDevices(Rid, 3, sizeof(Rid[0])) &&
@@ -58,10 +58,10 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
 
   LPVOID data;
 
-  if (GetRawInputData(hInput, RID_INPUT, data, &size, sizeof(RAWINPUTHEADER)))
-  {
-    assert(false && "Failed to get raw input data!");
-  }
+  //if (GetRawInputData(hInput, RID_INPUT, data, &size, sizeof(RAWINPUTHEADER)))
+  //{
+  //  assert(false && "Failed to get raw input data!");
+  //}
 
   assert("WOHOO");
 }
