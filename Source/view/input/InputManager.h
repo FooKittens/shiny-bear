@@ -3,9 +3,9 @@
 
 #include <windows.h>
 
-namespace framework { struct KeyboardState; }
+namespace shinybear { struct KeyboardState; class BaseGame; class GameWindow; }
 
-namespace framework
+namespace shinybear
 {
 
 enum Keys
@@ -96,9 +96,10 @@ class InputManager
 {
 
 public:
-  static const int kKeyCount = 256;
+  friend class BaseGame;
+  friend class GameWindow;
 
-  static void Initialize();
+  static const int kKeyCount = 256;
 
   inline static bool IsKeyDown(Keys k)
   {
@@ -114,12 +115,13 @@ public:
   // to find out the required size of pKeys.
   // If the size is not >= kKeyCount the function will do nothing.
   static void GetKeyboardState(KeyboardState *pState);
-private:
-  
 
-  static LRESULT CALLBACK KeyboardHook(int keycode, WPARAM wparam, LPARAM lparam);
+private:
+  static void Initialize(const GameWindow &pGameWindow);
+
+  static void HandleInput(const HRAWINPUT &hInput);
+
   static int s_keys[kKeyCount];
-  static HHOOK s_hookHandle;
 };
 
 struct KeyboardState

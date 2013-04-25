@@ -1,5 +1,8 @@
 #include "TestApp.h"
+#include <base\system\GameWindow.h>
 #include <view\RenderView.h>
+#include <Windows.h>
+
 
 using namespace shinybear;
 
@@ -10,15 +13,15 @@ TestApp::TestApp()
 
 TestApp::~TestApp()
 {
-  delete m_pRenderView;
+  delete m_pPlayerView;
 }
 
 bool TestApp::OnInitialize() 
 {
 
-  m_pRenderView = new RenderView(GetGraphicsProvider());
+  m_pPlayerView = new PlayerView(GetGraphicsProvider());
 
-  AttachView(m_pRenderView);
+  AttachView(m_pPlayerView);
   return true;
 }
 

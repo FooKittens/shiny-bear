@@ -28,7 +28,7 @@ public:
   void SetSize(const Size &size);
 
   // Retrieves a handle to the window for lowlevel access.
-  HWND GetWindowHandle();
+  HWND GetWindowHandle() const;
   
   void SetTitle(const char *title);
   
@@ -69,7 +69,7 @@ inline void GameWindow::SetTitle(const char *title)
   SetWindowText(m_hwnd, title);
 }
 
-inline HWND GameWindow::GetWindowHandle()
+inline HWND GameWindow::GetWindowHandle() const
 {
   return m_hwnd;
 }
