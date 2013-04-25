@@ -2,19 +2,18 @@
 #define PLAYERVIEW_H
 
 #include "view\RenderView.h"
+#include "base\system\GraphicsProvider.h"
+#include "view\input\InputManager.h"
 
-
-class PlayerView : RenderView
+class PlayerView : public shinybear::RenderView
 {
 public:
-  PlayerView();
-  virtual ~PlayerView();
-
+  PlayerView(shinybear::GraphicsProvider *provider);
+  ~PlayerView();
 protected:
 
 private:
-  void OnInitialize();
 
-}
+};
 
 #endif

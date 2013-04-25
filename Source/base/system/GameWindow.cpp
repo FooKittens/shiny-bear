@@ -1,6 +1,7 @@
 #include "base\system\GameWindow.h"
 #include "events\EventManager.h"
 #include "events\eventtypes\WindowEvents.h"
+#include "view\input\InputManager.h"
 #include "util\SBUtil.h"
 #include <cassert>
 #include <WtsApi32.h>
@@ -107,6 +108,14 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
       EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_UNLOCKED)));
     }
     return 0;
+  case WM_INPUT:
+    if(wparam == RIM_INPUT)
+    {
+      HRAWINPUT hInput = reinterpret_cast<HRAWINPUT>(lparam);
+      InputManager::HandleInput(hInput);
+    }
+    
+    return DefWindowProc(hwnd, msg, wparam, lparam);
   case WM_DESTROY:
     EventManager::PushEvent(EventPtr(DBG_NEW WindowClosedEvent()));
     return 0;

@@ -2,18 +2,17 @@
 #define TESTAPP_H
 
 #include <base\BaseGame.h>
+#include "PlayerView.h"
 
 #include <windows.h>
 #include <d3dx9.h>
-#include "PlayerView.h"
 
-namespace shinybear { class RenderView; }
 
 class TestApp : public shinybear::BaseGame
 {
 public:
   TestApp();
-  virtual ~TestApp();
+  ~TestApp();
 
 protected:
   bool OnInitialize();

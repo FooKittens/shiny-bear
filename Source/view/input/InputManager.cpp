@@ -1,25 +1,40 @@
 #include "view\input\InputManager.h"
+#include "base\system\GameWindow.h"
+
 #include <Windows.h>
 #include <cassert>
 
 namespace shinybear 
 {
 
-HHOOK InputManager::s_hookHandle = 0;
 int InputManager::s_keys[InputManager::kKeyCount] = { 0 };
 
 
-void InputManager::Initialize()
+void InputManager::Initialize(const GameWindow &pGameWindow)
 {
-  // Register wndproc hook
-  s_hookHandle = SetWindowsHookEx(
-    WH_CALLWNDPROC,
-    &InputManager::InputHook,
-    GetModuleHandle(NULL),
-    GetCurrentThreadId()
-  );
+  HWND handle = pGameWindow.GetWindowHandle();
 
-  assert(s_hookHandle && "Failed to attach wndproc hook!");
+  RAWINPUTDEVICE Rid[3];
+  
+  Rid[0].usUsagePage = 0x01;
+  Rid[0].usUsage = 0x05;
+  Rid[0].dwFlags = 0; // adds game pad
+  Rid[0].hwndTarget = handle;
+
+  Rid[1].usUsagePage = 0x01;
+  Rid[1].usUsage = 0x02;
+  Rid[1].dwFlags = RIDEV_NOLEGACY; // adds HID mouse and also ignores legacy mouse messages
+  Rid[1].hwndTarget = handle;
+
+  Rid[2].usUsagePage = 0x01;
+  Rid[2].usUsage = 0x06;
+  Rid[2].dwFlags = RIDEV_NOLEGACY; // adds HID keyboard and also ignores legacy keyboard messages
+  Rid[2].hwndTarget = handle;
+
+  assert (RegisterRawInputDevices(Rid, 3, sizeof(Rid[0])) &&
+    "Failed to register for raw input!");
+
+  return;
 }
 
 void InputManager::GetKeyboardState(KeyboardState *pState) 
@@ -30,56 +45,25 @@ void InputManager::GetKeyboardState(KeyboardState *pState)
   for(int i = 0; i < kKeyCount; ++i)
   {
     *pc++ = *pk++;
-  } 
+  }
 }
 
-LRESULT CALLBACK InputManager::InputHook(int code, WPARAM w, LPARAM l)
+void InputManager::HandleInput(const HRAWINPUT &hInput)
 {
-  if(code < 0)
+  UINT size = 0;
+  if (GetRawInputData(hInput, RID_HEADER, NULL, &size, sizeof(RAWINPUTHEADER)))
   {
-    return CallNextHookEx(s_hookHandle, code, w, l);
+    assert(false && "Failed to get raw input header!");
   }
 
-  if(code == HC_ACTION)
+  LPVOID data;
+
+  if (GetRawInputData(hInput, RID_INPUT, data, &size, sizeof(RAWINPUTHEADER)))
   {
-    LPCWPSTRUCT pWndproc = (CWPSTRUCT*)l;
-
-    switch (pWndproc->message)
-    {
-      // Register for raw input
-      case WM_CREATE:
-      {
-        RAWINPUTDEVICE Rid[2];
-        // Keyboard
-        Rid[0].usUsagePage = 1;
-        Rid[0].usUsage = 6;
-        Rid[0].dwFlags = 0;
-        Rid[0].hwndTarget = pWndproc->hwnd;
-
-        // Mouse
-        Rid[1].usUsagePage = 1;
-        Rid[1].usUsage = 2;
-        Rid[1].dwFlags = 0;
-        Rid[1].hwndTarget = pWndproc->hwnd;
-        if (!RegisterRawInputDevices(Rid,2,sizeof(RAWINPUTDEVICE)))
-        {
-          // TODO error handling
-        }
-        return CallNextHookEx(s_hookHandle, code, w, l);
-      }
-
-      case WM_INPUT:
-      {
-        if (pWndproc->wParam == RIM_INPUT) // window was in foreground
-        {
-          LPRAWINPUT input = (RAWINPUT*)pWndproc->lParam;
-          return CallNextHookEx(s_hookHandle, code, w, l);
-        }
-      }
-    } // wndproc
+    assert(false && "Failed to get raw input data!");
   }
 
-  return CallNextHookEx(s_hookHandle, code, w, l);
+  assert("WOHOO");
 }
 
 //LRESULT CALLBACK InputManager::KeyboardHook(int code, WPARAM w, LPARAM l)
@@ -97,6 +81,5 @@ LRESULT CALLBACK InputManager::InputHook(int code, WPARAM w, LPARAM l)
 //
 //  return CallNextHookEx(s_hookHandle, code, w, l);
 //}
-
 
 } // namespace framework

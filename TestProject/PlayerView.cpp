@@ -1,12 +1,13 @@
 #include "view\RenderView.h"
 #include "PlayerView.h"
+#include "base\system\GraphicsProvider.h"
+#include "view\input\InputManager.h"
 
-PlayerView::PlayerView()
+PlayerView::PlayerView(shinybear::GraphicsProvider *provider)
+  :RenderView(provider)
 {
-  OnInitialize();
 }
 
-void PlayerView::OnInitialize()
+PlayerView::~PlayerView()
 {
-
 }
