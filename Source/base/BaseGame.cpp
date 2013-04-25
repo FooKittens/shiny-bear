@@ -7,6 +7,7 @@
 #include "events\eventtypes\GraphicsProviderEvents.h"
 #include "util\SBUtil.h"
 #include "view\IGameView.h"
+#include "logic\ILogic.h"
 #include <fstream>
 
 
@@ -20,6 +21,7 @@ const wchar_t *g_kConfigFileName = L"Engine.cfg";
 BaseGame::BaseGame()
 {
   GetAbsolutePath(g_kConfigFileName, &m_pConfigPath);
+  m_pLogic = nullptr;
 }
 
 BaseGame::~BaseGame()
@@ -76,18 +78,15 @@ bool BaseGame::Initialize()
 
   // Register for window events.
   EventManager::RegisterEventListener(WindowClosedEvent::kEventType, this);
-  EventManager::RegisterEventListener(SessionStateChangedEvent::kEventType, this);
   EventManager::RegisterEventListener(FocusChangedEvent::kEventType, this);
 
   // Create the directx wrapper.
   m_pGraphicsProvider = DBG_NEW GraphicsProvider(m_pGameWindow->GetWindowHandle());
   if(m_pGraphicsProvider->Initialize())
   {  
-
     m_pGraphicsProvider->SetDisplayMode(cfg.displayMode);
     m_pGraphicsProvider->SetMultiSampleMode(cfg.multiSampleMode);
     m_pGraphicsProvider->ApplyChanges();
-
   }
   else
   {
@@ -135,8 +134,30 @@ bool BaseGame::Run()
     {
      m_pGameTimer->Tick();
     }
-    // Call OnUpdate for derived class.
-    OnUpdate(m_pGameTimer->GetElapsedTime());
+
+    // If the user has set a logic object, we'll update it.
+    if(m_pLogic)
+    {
+      m_pLogic->Update(m_pGameTimer->GetElapsedTime());
+    }
+
+    // Check the state of the graphicsprovider.
+    // This will reset the device if necessary.
+    if(m_pGraphicsProvider->IsDeviceLost())
+    {
+      // If the device is hard-lost, which means it needs to be created,
+      // we'll only do so if we have focus. This is a pseudo fix for 
+      // attempting to recreate the device when the screen is locked by 
+      // a UAC dialog for instance.
+      if(m_hasFocus)
+      {
+        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
+        // Recreate the device.
+        m_pGraphicsProvider->ApplyChanges();
+
+        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceResetEvent()));
+      }
+    }
 
     // Update all gameviews.
     UpdateViews();
@@ -173,57 +194,50 @@ void BaseGame::Resume()
 
 bool BaseGame::HandleEvent(const EventPtr &evt)
 {
-
   if(evt->GetType() == WindowClosedEvent::kEventType)
   {
     Exit();
     return false;
-  }
-  else if(evt->GetType() == SessionStateChangedEvent::kEventType)
-  {
-    SessionStateChangedEvent *sEvent = dynamic_cast<SessionStateChangedEvent*>(evt.get());
-
-    // Retrieve the new sessionstate.
-    SessionState newState = sEvent->GetNewState();
-
-    if(newState == SessionState::SS_LOCKED)
-    {
-      // The desktop has been locked. Which will cause the graphics device to be lost.
-      EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
-    }
-    else if(newState == SessionState::SS_UNLOCKED)
-    {
-      if(m_pGraphicsProvider->IsDeviceLost())
-      {
-        m_pGraphicsProvider->ApplyChanges();
-        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
-      }
-    }
-
   } 
   else if(evt->GetType() == FocusChangedEvent::kEventType)
   {
     FocusChangedEvent *fEvent = dynamic_cast<FocusChangedEvent*>(evt.get());
+    HandleFocusEvent(fEvent);
+  }
 
-    if(fEvent->GetNewState() == FocusState::FS_LOSTFOCUS)
+  return false;
+}
+
+#pragma region EventHandlerFunctions
+
+// When gaining focus this function checks if the device
+// has been lost, if so it will recreate it.
+bool BaseGame::HandleFocusEvent(FocusChangedEvent *pEvent)
+{
+  if(pEvent->GetNewState() == FS_LOSTFOCUS)
+  {
+    m_hasFocus = false;
+  }
+  else if(pEvent->GetNewState() == FS_GAINEDFOCUS)
+  {
+    m_hasFocus = true;
+    if(m_pGraphicsProvider->IsDeviceLost())
     {
+      // Notify all listeners that the device has been lost.
+      // This will allow them to discard their resources.
+      EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
+        
+      // Recreate the device.
+      m_pGraphicsProvider->ApplyChanges();
 
-    }
-    else if(fEvent->GetNewState() == FocusState::FS_GAINEDFOCUS)
-    {
-      if(m_pGraphicsProvider->IsDeviceLost())
-      {
-        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
-        // Recreate the device.
-        m_pGraphicsProvider->ApplyChanges();
-
-        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceResetEvent()));
-      }
+      // Notify listeners that a new device is availble.
+      EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceResetEvent()));
     }
   }
 
   return false;
 }
+#pragma endregion
 
 void BaseGame::AttachView(IGameView *pView)
 {
@@ -247,7 +261,12 @@ void BaseGame::RemoveView(IGameView *pView)
   OutputDbgFormat("View [%s] detached.", pView->GetName());
 }
 
-inline void BaseGame::UpdateViews()
+void BaseGame::SetLogic(ILogic *pLogic) {
+  m_pLogic = pLogic;
+  OutputDbgFormat("Logic pointer was changed.");
+}
+
+void BaseGame::UpdateViews()
 {
   auto it = m_views.begin();
   auto end = m_views.end();

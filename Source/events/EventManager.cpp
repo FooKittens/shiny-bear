@@ -98,7 +98,6 @@ void EventManager::SafeRegisterEventListener(const EventType &evtType,
 void EventManager::SafeUnRegisterEventListener(const EventType &evtType,
   IEventListener *pListener)
 {
-  
   // Make sure the eventtype is registered.
   assert(IsEventTypeRegistered(evtType) && "EventType not registered!");
 
@@ -149,17 +148,16 @@ void EventManager::SafePushImmediateEvent(EventPtr evt)
   // it makes no sense to process it further.
   if(lMap != m_listenerMap.end())
   {
-
     // Iterate over the listener registry for this eventtype.
     auto it = lMap->second.begin();
     while(it != lMap->second.end())
     {
+      OutputDbgFormat("Event[%s] was sent to listener [%s]", 
+        evt->GetType().GetName(), (*it)->GetName());
 
       // If a listener swallows an event, no others will be notified.
       if((*it)->HandleEvent(evt))
       {
-        OutputDbgFormat("Event[%s] was sent to listener [%s]", 
-          evt->GetType().GetName(), (*it)->GetName());
         break;
       }
 
@@ -173,12 +171,10 @@ void EventManager::SafePushImmediateEvent(EventPtr evt)
   // it makes no sense to process it further.
   if(wildMap != m_listenerMap.end())
   {
-
     // Iterate over the listener registry for wildcards.
     auto it = wildMap->second.begin();
     while(it != wildMap->second.end())
     {
-
       // If a listener swallows an event, no others will be notified.
       if((*it)->HandleEvent(evt))
       {

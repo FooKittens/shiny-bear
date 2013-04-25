@@ -11,6 +11,7 @@ namespace shinybear
 {
   class GameTimer; class GraphicsProvider;
   class GameWindow; class IGameView;
+  class FocusChangedEvent; class ILogic;
 }
 
 namespace shinybear
@@ -41,9 +42,11 @@ protected:
   virtual void AttachView(IGameView *pView);
   virtual void RemoveView(IGameView *pView);
 
-  // Called every game-loop so the derived game can update its variables.
-  virtual void OnUpdate(double elapsedSeconds) = 0;
-   
+  // Changes the current logic object.
+  virtual void SetLogic(ILogic *pLogic);
+  
+  virtual bool HasFocus() const; 
+
   // Retrieve the games window.
   virtual GameWindow *GetWindow() const;
   virtual GraphicsProvider *GetGraphicsProvider() const;
@@ -62,15 +65,22 @@ private:
   // Used to avoid cluttering the mainloop, updates all views.
   void UpdateViews();
 
+  // EventHandlerFunctions
+  bool HandleFocusEvent(FocusChangedEvent *pEvent);
+
   // Holds the views for the MVC type model of the engine.
   std::list<IGameView*> m_views;
+
+  // Holds the logic/model for the MVC style.
+  ILogic *m_pLogic;
 
   GameTimer *m_pGameTimer;
   GraphicsProvider *m_pGraphicsProvider;
   GameWindow *m_pGameWindow;
   bool m_isRunning;
   bool m_isQuitting;
-  bool m_isPaused; 
+  bool m_isPaused;
+  bool m_hasFocus;
   wchar_t *m_pConfigPath;
   
 };
@@ -91,6 +101,10 @@ inline GraphicsProvider *BaseGame::GetGraphicsProvider() const
 inline bool BaseGame::IsPaused() const
 {
   return m_isPaused;
+}
+
+inline bool BaseGame::HasFocus() const {
+  return m_hasFocus;
 }
 
 

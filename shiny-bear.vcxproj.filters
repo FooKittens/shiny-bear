@@ -34,6 +34,12 @@
     <Filter Include="Source\events\eventtypes">
       <UniqueIdentifier>{a31b000c-ea9f-4f40-b6f9-f823f89b4749}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\logic\world">
+      <UniqueIdentifier>{a06324c1-7296-4422-a7eb-0d5b1a98cd91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\view\graphics\material">
+      <UniqueIdentifier>{6a1f1914-4be5-4304-b05c-7d64cadc8f06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -105,6 +111,33 @@
     <ClInclude Include="source\view\graphics\VoxelMesh.h">
       <Filter>Source\view\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="source\logic\ILogic.h">
+      <Filter>Source\logic</Filter>
+    </ClInclude>
+    <ClInclude Include="source\logic\world\Cluster.h">
+      <Filter>Source\logic\world</Filter>
+    </ClInclude>
+    <ClInclude Include="source\logic\world\Block.h">
+      <Filter>Source\logic\world</Filter>
+    </ClInclude>
+    <ClInclude Include="source\logic\world\WorldManager.h">
+      <Filter>Source\logic\world</Filter>
+    </ClInclude>
+    <ClInclude Include="source\logic\world\IActivator.h">
+      <Filter>Source\logic\world</Filter>
+    </ClInclude>
+    <ClInclude Include="source\logic\actor\IActor.h">
+      <Filter>Source\logic\actor</Filter>
+    </ClInclude>
+    <ClInclude Include="source\view\graphics\Mesh.h">
+      <Filter>Source\view\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="source\events\eventtypes\WorldEvents.h">
+      <Filter>Source\events\eventtypes</Filter>
+    </ClInclude>
+    <ClInclude Include="source\view\graphics\VertexTypes.h">
+      <Filter>Source\view\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\view\input\InputManager.cpp">
@@ -145,6 +178,15 @@
     </ClCompile>
     <ClCompile Include="source\view\RenderView.cpp">
       <Filter>Source\view</Filter>
+    </ClCompile>
+    <ClCompile Include="source\logic\world\Cluster.cpp">
+      <Filter>Source\logic\world</Filter>
+    </ClCompile>
+    <ClCompile Include="source\logic\world\WorldManager.cpp">
+      <Filter>Source\logic\world</Filter>
+    </ClCompile>
+    <ClCompile Include="source\events\eventtypes\WorldEvents.cpp">
+      <Filter>Source\events\eventtypes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -79,7 +79,6 @@ void GameWindow::HandleMessages()
 
 LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-  
   // OutputDbgFormat("WindowsMessage: [%i]", msg);
   
   switch(msg)

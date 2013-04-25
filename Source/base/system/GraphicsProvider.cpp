@@ -3,6 +3,7 @@
 #include "events\eventtypes\GraphicsProviderEvents.h"
 #include "util\SBUtil.h"
 #include <d3d9.h>
+#include <d3dx9.h>
 #include <Windows.h>
 #include <cassert>
 #include <crtdbg.h>
@@ -28,7 +29,7 @@ GraphicsProvider::GraphicsProvider(HWND hTargetWindow)
 GraphicsProvider::~GraphicsProvider()
 {
   RELEASECOM(m_pD3DCreate);
-  RELEASECOM(m_pDevice);
+  RELEASECOM(m_pDevice);  
 }
 
 bool GraphicsProvider::Initialize()
@@ -55,14 +56,12 @@ bool GraphicsProvider::ToggleFullscreen(bool value)
 
 bool GraphicsProvider::IsDeviceLost()
 {
-
   HRESULT hr = m_pDevice->TestCooperativeLevel();
   assert(hr != D3DERR_DRIVERINTERNALERROR && "Graphics Device driver"
     " suffered an unrecoverable error!");
 
   if(hr == D3DERR_DEVICELOST)
   {
-    Sleep(2500);
     return true;
   }
   else if(hr == D3DERR_DEVICENOTRESET)
