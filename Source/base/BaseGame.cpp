@@ -8,6 +8,7 @@
 #include "util\SBUtil.h"
 #include "view\IGameView.h"
 #include "logic\ILogic.h"
+#include "view\input\InputManager.h"
 #include <fstream>
 
 
@@ -75,6 +76,9 @@ bool BaseGame::Initialize()
   size.width = cfg.displayMode.width;
   size.height = cfg.displayMode.height;
   m_pGameWindow = DBG_NEW GameWindow(size);
+
+  // Initialize input manager.
+  InputManager::Initialize(*m_pGameWindow);
 
   // Register for window events.
   EventManager::RegisterEventListener(WindowClosedEvent::kEventType, this);
