@@ -4,23 +4,8 @@
     <Filter Include="Source">
       <UniqueIdentifier>{3760baab-b19a-46c8-a886-3654fa285770}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\events">
-      <UniqueIdentifier>{955ccf52-c0f2-444c-b099-9a94f96ecb3e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\util">
       <UniqueIdentifier>{586f6be9-faba-4168-a66f-f0e0d6d833d3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\logic">
-      <UniqueIdentifier>{a1f7dbc7-c267-4a5a-9a2e-14c05b29084e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\view">
-      <UniqueIdentifier>{94a9ba21-5431-495a-8a66-cb89a62501e4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\view\input">
-      <UniqueIdentifier>{cc6ebc8b-1514-404b-82f7-622f19288678}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\view\graphics">
-      <UniqueIdentifier>{078c7b2e-b2e9-41a4-bfd4-67bb472d2016}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\base">
       <UniqueIdentifier>{bdcbb83a-184c-466d-b2ff-b868efa51b33}</UniqueIdentifier>
@@ -28,31 +13,10 @@
     <Filter Include="Source\base\system">
       <UniqueIdentifier>{1cbca2d9-35e8-4d91-8272-997d331e8099}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\logic\actor">
-      <UniqueIdentifier>{a7ceb087-7689-4a98-9dcd-7a2aff1aa99a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\events\eventtypes">
-      <UniqueIdentifier>{a31b000c-ea9f-4f40-b6f9-f823f89b4749}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\logic\world">
-      <UniqueIdentifier>{a06324c1-7296-4422-a7eb-0d5b1a98cd91}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\view\graphics\material">
-      <UniqueIdentifier>{6a1f1914-4be5-4304-b05c-7d64cadc8f06}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\view\graphics\scene">
-      <UniqueIdentifier>{9839b90b-ca5b-4ce6-8534-57df5d90c0c0}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
       <Filter>Source\util</Filter>
-    </ClInclude>
-    <ClInclude Include="source\events\EventManager.h">
-      <Filter>Source\events</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\view\input\InputManager.h">
-      <Filter>Source\view\input</Filter>
     </ClInclude>
     <ClInclude Include="Source\base\system\DisplayMode.h">
       <Filter>Source\base\system</Filter>
@@ -66,29 +30,8 @@
     <ClInclude Include="source\base\BaseGame.h">
       <Filter>Source\base</Filter>
     </ClInclude>
-    <ClInclude Include="source\view\IGameView.h">
-      <Filter>Source\view</Filter>
-    </ClInclude>
-    <ClInclude Include="source\logic\BaseGameLogic.h">
-      <Filter>Source\logic</Filter>
-    </ClInclude>
-    <ClInclude Include="source\logic\actor\ActorList.h">
-      <Filter>Source\logic\actor</Filter>
-    </ClInclude>
-    <ClInclude Include="source\logic\actor\BaseActor.h">
-      <Filter>Source\logic\actor</Filter>
-    </ClInclude>
     <ClInclude Include="Source\base\system\GameTimer.h">
       <Filter>Source\base\system</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\events\EventType.h">
-      <Filter>Source\events</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\events\IEvent.h">
-      <Filter>Source\events</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\events\IEventListener.h">
-      <Filter>Source\events</Filter>
     </ClInclude>
     <ClInclude Include="source\util\ISerializable.h">
       <Filter>Source\util</Filter>
@@ -96,56 +39,14 @@
     <ClInclude Include="source\base\Config.h">
       <Filter>Source\base</Filter>
     </ClInclude>
-    <ClInclude Include="source\events\eventtypes\WindowEvents.h">
-      <Filter>Source\events\eventtypes</Filter>
+    <ClInclude Include="Source\util\Color4f.h">
+      <Filter>Source\util</Filter>
     </ClInclude>
-    <ClInclude Include="source\events\eventtypes\GraphicsProviderEvents.h">
-      <Filter>Source\events\eventtypes</Filter>
-    </ClInclude>
-    <ClInclude Include="source\view\RenderView.h">
-      <Filter>Source\view</Filter>
-    </ClInclude>
-    <ClInclude Include="source\view\graphics\Color4f.h">
-      <Filter>Source\view\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="source\view\graphics\VoxelMesh.h">
-      <Filter>Source\view\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="source\logic\ILogic.h">
-      <Filter>Source\logic</Filter>
-    </ClInclude>
-    <ClInclude Include="source\logic\world\Cluster.h">
-      <Filter>Source\logic\world</Filter>
-    </ClInclude>
-    <ClInclude Include="source\logic\world\Block.h">
-      <Filter>Source\logic\world</Filter>
-    </ClInclude>
-    <ClInclude Include="source\logic\world\WorldManager.h">
-      <Filter>Source\logic\world</Filter>
-    </ClInclude>
-    <ClInclude Include="source\logic\world\IActivator.h">
-      <Filter>Source\logic\world</Filter>
-    </ClInclude>
-    <ClInclude Include="source\logic\actor\IActor.h">
-      <Filter>Source\logic\actor</Filter>
-    </ClInclude>
-    <ClInclude Include="source\view\graphics\Mesh.h">
-      <Filter>Source\view\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="source\events\eventtypes\WorldEvents.h">
-      <Filter>Source\events\eventtypes</Filter>
-    </ClInclude>
-    <ClInclude Include="source\view\graphics\VertexTypes.h">
-      <Filter>Source\view\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\view\graphics\scene\SceneComposer.h">
-      <Filter>Source\view\graphics\scene</Filter>
+    <ClInclude Include="Source\util\input\InputManager.h">
+      <Filter>Source\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\view\input\InputManager.cpp">
-      <Filter>Source\view\input</Filter>
-    </ClCompile>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
       <Filter>Source\base\system</Filter>
     </ClCompile>
@@ -164,32 +65,8 @@
     <ClCompile Include="source\util\SBUtil.cpp">
       <Filter>Source\util</Filter>
     </ClCompile>
-    <ClCompile Include="source\events\EventManager.cpp">
-      <Filter>Source\events</Filter>
-    </ClCompile>
-    <ClCompile Include="source\events\eventtypes\WindowEvents.cpp">
-      <Filter>Source\events\eventtypes</Filter>
-    </ClCompile>
-    <ClCompile Include="source\events\EventType.cpp">
-      <Filter>Source\events</Filter>
-    </ClCompile>
-    <ClCompile Include="source\events\eventtypes\GraphicsProviderEvents.cpp">
-      <Filter>Source\events\eventtypes</Filter>
-    </ClCompile>
-    <ClCompile Include="source\view\RenderView.cpp">
-      <Filter>Source\view</Filter>
-    </ClCompile>
-    <ClCompile Include="source\logic\world\Cluster.cpp">
-      <Filter>Source\logic\world</Filter>
-    </ClCompile>
-    <ClCompile Include="source\logic\world\WorldManager.cpp">
-      <Filter>Source\logic\world</Filter>
-    </ClCompile>
-    <ClCompile Include="source\events\eventtypes\WorldEvents.cpp">
-      <Filter>Source\events\eventtypes</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\view\graphics\scene\SceneComposer.cpp">
-      <Filter>Source\view\graphics\scene</Filter>
+    <ClCompile Include="Source\util\input\InputManager.cpp">
+      <Filter>Source\util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

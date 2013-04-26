@@ -1,8 +1,6 @@
 #include "base\system\GameWindow.h"
-#include "events\EventManager.h"
-#include "events\eventtypes\WindowEvents.h"
-#include "view\input\InputManager.h"
 #include "util\SBUtil.h"
+#include "util\input\InputManager.h"
 #include <cassert>
 #include <WtsApi32.h>
 
@@ -37,19 +35,13 @@ GameWindow::GameWindow(const Size &size)
     WS_OVERLAPPED | WS_SYSMENU,
     CW_USEDEFAULT,
     CW_USEDEFAULT,
-    size.width,
-    size.height,
+    m_size.width,
+    m_size.height,
     NULL,
     NULL,
     GetModuleHandle(NULL),
     this
   );
-  
-  //EventManager::RegisterEventType(WindowClosedEvent::kEventType);
-  //EventManager::RegisterEventType(SessionStateChangedEvent::kEventType);
-  //EventManager::RegisterEventType(FocusChangedEvent::kEventType);
-
-  WTSRegisterSessionNotification(m_hwnd, NOTIFY_FOR_THIS_SESSION);
 }
 
 GameWindow::~GameWindow()
@@ -85,39 +77,18 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
   switch(msg)
   {
   case WM_ACTIVATEAPP:
-    //if(wparam == TRUE)
-    //{
-    //  EventManager::PushImmediateEvent(
-    //    EventPtr(DBG_NEW FocusChangedEvent(FS_GAINEDFOCUS))
-    //  );
-    //}
-    //else
-    //{
-    //  EventManager::PushImmediateEvent(
-    //    EventPtr(DBG_NEW FocusChangedEvent(FS_LOSTFOCUS))
-    //  );
-    //}
+
     return DefWindowProc(hwnd, msg, wparam, lparam);
-  case WM_WTSSESSION_CHANGE:
-    //if(wparam == WTS_SESSION_LOCK)
-    //{
-    //  EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_LOCKED)));
-    //}
-    //else if(wparam == WTS_SESSION_UNLOCK)
-    //{
-    //  EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_UNLOCKED)));
-    //}
-    return 0;
   case WM_INPUT:
     if(wparam == RIM_INPUT)
     {
       HRAWINPUT hInput = reinterpret_cast<HRAWINPUT>(lparam);
-      //InputManager::HandleInput(hInput);
+      InputManager::HandleInput(hInput);
     }
     
     return DefWindowProc(hwnd, msg, wparam, lparam);
   case WM_DESTROY:
-    //EventManager::PushEvent(EventPtr(DBG_NEW WindowClosedEvent()));
+
     return 0;
   }
 
@@ -131,7 +102,6 @@ LRESULT CALLBACK GameWindow::StaticWinProc(HWND hwnd, UINT msg, WPARAM wparam, L
   // Store the pointer to the window in the windows long on wm_create
   if(msg == WM_CREATE)
   {
-
     // Retrieve pointer from lparam
     GameWindow *pWindow = (GameWindow*)((LPCREATESTRUCT)lparam)->lpCreateParams;
 

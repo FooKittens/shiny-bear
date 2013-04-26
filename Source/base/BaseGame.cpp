@@ -2,13 +2,8 @@
 #include "base\system\GameTimer.h"
 #include "base\system\GameWindow.h"
 #include "base\system\GraphicsProvider.h"
-#include "events\EventManager.h"
-#include "events\eventtypes\WindowEvents.h"
-#include "events\eventtypes\GraphicsProviderEvents.h"
 #include "util\SBUtil.h"
-#include "view\IGameView.h"
-#include "logic\ILogic.h"
-#include "view\input\InputManager.h"
+#include "util\input\InputManager.h"
 #include <fstream>
 
 
@@ -22,7 +17,7 @@ const wchar_t *g_kConfigFileName = L"Engine.cfg";
 BaseGame::BaseGame()
 {
   GetAbsolutePath(g_kConfigFileName, &m_pConfigPath);
-  m_pLogic = nullptr;
+
 }
 
 BaseGame::~BaseGame()
@@ -65,9 +60,6 @@ bool BaseGame::Initialize()
   Config cfg = Config::GetDefault();
   LoadConfig(&cfg);
 
-  EventManager::Initialize();
-  EventManager::RegisterEventType(EventType::kWildCard);
-
   // Create the gametimer.
   m_pGameTimer = DBG_NEW GameTimer();
 
@@ -81,8 +73,6 @@ bool BaseGame::Initialize()
   InputManager::Initialize(*m_pGameWindow);
 
   // Register for window events.
-  EventManager::RegisterEventListener(WindowClosedEvent::kEventType, this);
-  EventManager::RegisterEventListener(FocusChangedEvent::kEventType, this);
 
   // Create the directx wrapper.
   m_pGraphicsProvider = DBG_NEW GraphicsProvider(m_pGameWindow->GetWindowHandle());
@@ -137,6 +127,8 @@ bool BaseGame::Run()
      m_pGameTimer->Tick();
     }
 
+    OnUpdate(m_pGameTimer->GetElapsedTime());
+
     // Check the state of the graphicsprovider.
     // This will reset the device if necessary.
     if(m_pGraphicsProvider->IsDeviceLost())
@@ -151,14 +143,11 @@ bool BaseGame::Run()
       }
     }
 
-    // Update all gameviews.
-    UpdateViews();
+
 
     if(m_isQuitting)
     {
       // TODO : Prepare for exit..
-
-      EventManager::CleanUp();
 
       m_isRunning = false;
     }
@@ -182,90 +171,6 @@ void BaseGame::Resume()
 {
   m_isPaused = false;
   m_pGameTimer->Resume();
-}
-
-bool BaseGame::HandleEvent(const EventPtr &evt)
-{
-  if(evt->GetType() == WindowClosedEvent::kEventType)
-  {
-    Exit();
-    return false;
-  } 
-  else if(evt->GetType() == FocusChangedEvent::kEventType)
-  {
-    FocusChangedEvent *fEvent = dynamic_cast<FocusChangedEvent*>(evt.get());
-    HandleFocusEvent(fEvent);
-  }
-
-  return false;
-}
-
-#pragma region EventHandlerFunctions
-
-// When gaining focus this function checks if the device
-// has been lost, if so it will recreate it.
-bool BaseGame::HandleFocusEvent(FocusChangedEvent *pEvent)
-{
-  if(pEvent->GetNewState() == FS_LOSTFOCUS)
-  {
-    m_hasFocus = false;
-  }
-  else if(pEvent->GetNewState() == FS_GAINEDFOCUS)
-  {
-    m_hasFocus = true;
-    if(m_pGraphicsProvider->IsDeviceLost())
-    {
-      // Notify all listeners that the device has been lost.
-      // This will allow them to discard their resources.
-      EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
-        
-      // Recreate the device.
-      m_pGraphicsProvider->ApplyChanges();
-
-      // Notify listeners that a new device is availble.
-      EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceResetEvent()));
-    }
-  }
-
-  return false;
-}
-#pragma endregion
-
-void BaseGame::AttachView(IGameView *pView)
-{
-  m_views.push_back(pView);
-  OutputDbgFormat("View  [%s] attached.", pView->GetName());
-}
-
-void BaseGame::RemoveView(IGameView *pView)
-{
-  auto it = m_views.begin();
-  auto end = m_views.end();
-  while(it != end)
-  {
-    if(*it++ = pView) 
-    {
-      m_views.erase(it);
-      break;
-    }
-  }
-
-  OutputDbgFormat("View [%s] detached.", pView->GetName());
-}
-
-void BaseGame::SetLogic(ILogic *pLogic) {
-  m_pLogic = pLogic;
-  OutputDbgFormat("Logic pointer was changed.");
-}
-
-void BaseGame::UpdateViews()
-{
-  auto it = m_views.begin();
-  auto end = m_views.end();
-  while(it != end)
-  {
-    (*it++)->Update();
-  }
 }
 
 } // namespace shinybear

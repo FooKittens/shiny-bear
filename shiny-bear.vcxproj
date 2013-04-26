@@ -17,32 +17,10 @@
     <ClInclude Include="Source\base\system\GameTimer.h" />
     <ClInclude Include="Source\base\system\GameWindow.h" />
     <ClInclude Include="Source\base\system\GraphicsProvider.h" />
-    <ClInclude Include="source\events\EventManager.h" />
-    <ClInclude Include="Source\events\EventType.h" />
-    <ClInclude Include="source\events\eventtypes\GraphicsProviderEvents.h" />
-    <ClInclude Include="source\events\eventtypes\WindowEvents.h" />
-    <ClInclude Include="source\events\eventtypes\WorldEvents.h" />
-    <ClInclude Include="Source\events\IEvent.h" />
-    <ClInclude Include="Source\events\IEventListener.h" />
-    <ClInclude Include="source\logic\actor\ActorList.h" />
-    <ClInclude Include="source\logic\actor\BaseActor.h" />
-    <ClInclude Include="source\logic\actor\IActor.h" />
-    <ClInclude Include="source\logic\BaseGameLogic.h" />
-    <ClInclude Include="source\logic\ILogic.h" />
-    <ClInclude Include="source\logic\world\Block.h" />
-    <ClInclude Include="source\logic\world\Cluster.h" />
-    <ClInclude Include="source\logic\world\IActivator.h" />
-    <ClInclude Include="source\logic\world\WorldManager.h" />
+    <ClInclude Include="Source\util\Color4f.h" />
+    <ClInclude Include="Source\util\input\InputManager.h" />
     <ClInclude Include="source\util\ISerializable.h" />
     <ClInclude Include="source\util\SBUtil.h" />
-    <ClInclude Include="source\view\graphics\Color4f.h" />
-    <ClInclude Include="source\view\graphics\Mesh.h" />
-    <ClInclude Include="Source\view\graphics\scene\SceneComposer.h" />
-    <ClInclude Include="source\view\graphics\VertexTypes.h" />
-    <ClInclude Include="source\view\graphics\VoxelMesh.h" />
-    <ClInclude Include="source\view\IGameView.h" />
-    <ClInclude Include="Source\view\input\InputManager.h" />
-    <ClInclude Include="source\view\RenderView.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\base\BaseGame.cpp" />
@@ -50,17 +28,8 @@
     <ClCompile Include="Source\base\system\GameTimer.cpp" />
     <ClCompile Include="Source\base\system\GameWindow.cpp" />
     <ClCompile Include="Source\base\system\GraphicsProvider.cpp" />
-    <ClCompile Include="source\events\EventManager.cpp" />
-    <ClCompile Include="source\events\EventType.cpp" />
-    <ClCompile Include="source\events\eventtypes\GraphicsProviderEvents.cpp" />
-    <ClCompile Include="source\events\eventtypes\WindowEvents.cpp" />
-    <ClCompile Include="source\events\eventtypes\WorldEvents.cpp" />
-    <ClCompile Include="source\logic\world\Cluster.cpp" />
-    <ClCompile Include="source\logic\world\WorldManager.cpp" />
+    <ClCompile Include="Source\util\input\InputManager.cpp" />
     <ClCompile Include="source\util\SBUtil.cpp" />
-    <ClCompile Include="Source\view\graphics\scene\SceneComposer.cpp" />
-    <ClCompile Include="Source\view\input\InputManager.cpp" />
-    <ClCompile Include="source\view\RenderView.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A800B216-D6C5-4B48-A2FE-5960FDEEE66D}</ProjectGuid>

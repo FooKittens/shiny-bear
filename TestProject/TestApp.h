@@ -2,8 +2,6 @@
 #define TESTAPP_H
 
 #include <base\BaseGame.h>
-#include "PlayerView.h"
-
 #include <windows.h>
 #include <d3dx9.h>
 
@@ -19,7 +17,6 @@ protected:
 
   void OnUpdate(double elapsedSeconds);
 private:
-  PlayerView *m_pPlayerView;
 };
 
 #endif

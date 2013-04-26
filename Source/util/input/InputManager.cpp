@@ -56,7 +56,7 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
     assert(false && "Failed to get raw input header!");
   }
 
-  LPVOID data;
+  LPVOID data = nullptr;
 
   if (GetRawInputData(hInput, RID_INPUT, data, &size, sizeof(RAWINPUTHEADER)))
   {

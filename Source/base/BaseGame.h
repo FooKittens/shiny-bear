@@ -2,9 +2,6 @@
 #define SHINYBEAR_BASEGAME_H
 
 #include "base\Config.h"
-#include "events\IEventListener.h"
-
-#include <list>
 
 // Forward declarations
 namespace shinybear
@@ -17,7 +14,7 @@ namespace shinybear
 namespace shinybear
 {
 
-class BaseGame : public GameWindow
+class BaseGame
 {
 public:
   BaseGame();
@@ -30,6 +27,9 @@ protected:
   // Derivative games should overshadow this method,
   // and perform their initial initialization here.
   virtual bool OnInitialize() = 0;
+  virtual void OnUpdate(double) = 0;
+  //virtual void OnRender() = 0;
+
 
   // Called to close application.
   virtual void Exit();
@@ -53,6 +53,7 @@ private:
 
   GameTimer *m_pGameTimer;
   GraphicsProvider *m_pGraphicsProvider;
+  GameWindow *m_pGameWindow;
   bool m_isRunning;
   bool m_isQuitting;
   bool m_isPaused;

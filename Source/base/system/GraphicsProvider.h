@@ -3,8 +3,7 @@
 #include "base\system\DisplayMode.h"
 #include <d3d9.h>
 #include <Windows.h>
-#include "view\graphics\Color4f.h"
-
+#include "util\Color4f.h"
 
 namespace shinybear
 {
