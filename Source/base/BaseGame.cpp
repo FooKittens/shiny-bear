@@ -130,19 +130,11 @@ bool BaseGame::Run()
   {
     // Handle Windows Messages.
     m_pGameWindow->HandleMessages();
-    // Process events on the eventqueue.
-    EventManager::ProcessEvents();
 
     // Don't tick the timer if we're paused.
     if(!m_isPaused)
     {
      m_pGameTimer->Tick();
-    }
-
-    // If the user has set a logic object, we'll update it.
-    if(m_pLogic)
-    {
-      m_pLogic->Update(m_pGameTimer->GetElapsedTime());
     }
 
     // Check the state of the graphicsprovider.
@@ -155,11 +147,7 @@ bool BaseGame::Run()
       // a UAC dialog for instance.
       if(m_hasFocus)
       {
-        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceLostEvent()));
-        // Recreate the device.
-        m_pGraphicsProvider->ApplyChanges();
 
-        EventManager::PushImmediateEvent(EventPtr(DBG_NEW DeviceResetEvent()));
       }
     }
 

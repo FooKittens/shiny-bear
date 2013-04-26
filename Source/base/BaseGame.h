@@ -17,7 +17,7 @@ namespace shinybear
 namespace shinybear
 {
 
-class BaseGame : public IEventListener
+class BaseGame : public GameWindow
 {
 public:
   BaseGame();
@@ -26,9 +26,6 @@ public:
   // Should be called from main to start the application
   bool Run();
 
-  // For Listener interface.
-  const char *GetName() const { return "BaseGame"; }
-  bool HandleEvent(const EventPtr &evt);
 protected:
   // Derivative games should overshadow this method,
   // and perform their initial initialization here.
@@ -36,14 +33,6 @@ protected:
 
   // Called to close application.
   virtual void Exit();
-
-  // Attaches a gameview that should do work related to
-  // presenting the gamestate to the user.
-  virtual void AttachView(IGameView *pView);
-  virtual void RemoveView(IGameView *pView);
-
-  // Changes the current logic object.
-  virtual void SetLogic(ILogic *pLogic);
   
   virtual bool HasFocus() const; 
 
@@ -62,27 +51,13 @@ private:
 
   bool Initialize();
 
-  // Used to avoid cluttering the mainloop, updates all views.
-  void UpdateViews();
-
-  // EventHandlerFunctions
-  bool HandleFocusEvent(FocusChangedEvent *pEvent);
-
-  // Holds the views for the MVC type model of the engine.
-  std::list<IGameView*> m_views;
-
-  // Holds the logic/model for the MVC style.
-  ILogic *m_pLogic;
-
   GameTimer *m_pGameTimer;
   GraphicsProvider *m_pGraphicsProvider;
-  GameWindow *m_pGameWindow;
   bool m_isRunning;
   bool m_isQuitting;
   bool m_isPaused;
   bool m_hasFocus;
   wchar_t *m_pConfigPath;
-  
 };
 
 

@@ -1,6 +1,4 @@
 #include "base\system\GraphicsProvider.h"
-#include "events\EventManager.h"
-#include "events\eventtypes\GraphicsProviderEvents.h"
 #include "util\SBUtil.h"
 #include <d3d9.h>
 #include <d3dx9.h>
@@ -38,8 +36,8 @@ bool GraphicsProvider::Initialize()
   
   assert(m_pD3DCreate && "Failed to create Direct3D9 object!");
 
-  EventManager::RegisterEventType(DeviceLostEvent::kEventType);
-  EventManager::RegisterEventType(DeviceResetEvent::kEventType);
+  //EventManager::RegisterEventType(DeviceLostEvent::kEventType);
+  //EventManager::RegisterEventType(DeviceResetEvent::kEventType);
   return true;
 }
 

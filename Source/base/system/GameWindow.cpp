@@ -45,9 +45,9 @@ GameWindow::GameWindow(const Size &size)
     this
   );
   
-  EventManager::RegisterEventType(WindowClosedEvent::kEventType);
-  EventManager::RegisterEventType(SessionStateChangedEvent::kEventType);
-  EventManager::RegisterEventType(FocusChangedEvent::kEventType);
+  //EventManager::RegisterEventType(WindowClosedEvent::kEventType);
+  //EventManager::RegisterEventType(SessionStateChangedEvent::kEventType);
+  //EventManager::RegisterEventType(FocusChangedEvent::kEventType);
 
   WTSRegisterSessionNotification(m_hwnd, NOTIFY_FOR_THIS_SESSION);
 }
@@ -85,38 +85,39 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
   switch(msg)
   {
   case WM_ACTIVATEAPP:
-    if(wparam == TRUE)
-    {
-      EventManager::PushImmediateEvent(
-        EventPtr(DBG_NEW FocusChangedEvent(FS_GAINEDFOCUS))
-      );
-    }
-    else
-    {
-      EventManager::PushImmediateEvent(
-        EventPtr(DBG_NEW FocusChangedEvent(FS_LOSTFOCUS))
-      );
-    }
+    //if(wparam == TRUE)
+    //{
+    //  EventManager::PushImmediateEvent(
+    //    EventPtr(DBG_NEW FocusChangedEvent(FS_GAINEDFOCUS))
+    //  );
+    //}
+    //else
+    //{
+    //  EventManager::PushImmediateEvent(
+    //    EventPtr(DBG_NEW FocusChangedEvent(FS_LOSTFOCUS))
+    //  );
+    //}
+    return DefWindowProc(hwnd, msg, wparam, lparam);
   case WM_WTSSESSION_CHANGE:
-    if(wparam == WTS_SESSION_LOCK)
-    {
-      EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_LOCKED)));
-    }
-    else if(wparam == WTS_SESSION_UNLOCK)
-    {
-      EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_UNLOCKED)));
-    }
+    //if(wparam == WTS_SESSION_LOCK)
+    //{
+    //  EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_LOCKED)));
+    //}
+    //else if(wparam == WTS_SESSION_UNLOCK)
+    //{
+    //  EventManager::PushImmediateEvent(EventPtr(DBG_NEW SessionStateChangedEvent(SS_UNLOCKED)));
+    //}
     return 0;
   case WM_INPUT:
     if(wparam == RIM_INPUT)
     {
       HRAWINPUT hInput = reinterpret_cast<HRAWINPUT>(lparam);
-      InputManager::HandleInput(hInput);
+      //InputManager::HandleInput(hInput);
     }
     
     return DefWindowProc(hwnd, msg, wparam, lparam);
   case WM_DESTROY:
-    EventManager::PushEvent(EventPtr(DBG_NEW WindowClosedEvent()));
+    //EventManager::PushEvent(EventPtr(DBG_NEW WindowClosedEvent()));
     return 0;
   }
 
