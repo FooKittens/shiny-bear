@@ -40,6 +40,9 @@
     <Filter Include="Source\view\graphics\material">
       <UniqueIdentifier>{6a1f1914-4be5-4304-b05c-7d64cadc8f06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\view\graphics\scene">
+      <UniqueIdentifier>{9839b90b-ca5b-4ce6-8534-57df5d90c0c0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -99,9 +102,6 @@
     <ClInclude Include="source\events\eventtypes\GraphicsProviderEvents.h">
       <Filter>Source\events\eventtypes</Filter>
     </ClInclude>
-    <ClInclude Include="Source\view\graphics\SceneComposer.h">
-      <Filter>Source\view\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="source\view\RenderView.h">
       <Filter>Source\view</Filter>
     </ClInclude>
@@ -138,6 +138,9 @@
     <ClInclude Include="source\view\graphics\VertexTypes.h">
       <Filter>Source\view\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\view\graphics\scene\SceneComposer.h">
+      <Filter>Source\view\graphics\scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\view\input\InputManager.cpp">
@@ -173,9 +176,6 @@
     <ClCompile Include="source\events\eventtypes\GraphicsProviderEvents.cpp">
       <Filter>Source\events\eventtypes</Filter>
     </ClCompile>
-    <ClCompile Include="Source\view\graphics\SceneComposer.cpp">
-      <Filter>Source\view\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="source\view\RenderView.cpp">
       <Filter>Source\view</Filter>
     </ClCompile>
@@ -187,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="source\events\eventtypes\WorldEvents.cpp">
       <Filter>Source\events\eventtypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\view\graphics\scene\SceneComposer.cpp">
+      <Filter>Source\view\graphics\scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -37,12 +37,12 @@ bool RenderView::HandleEvent(const EventPtr &evt)
   if(evt->GetType() == FocusChangedEvent::kEventType)
   {
     FocusChangedEvent *pEvent = dynamic_cast<FocusChangedEvent*>(evt.get());
-    if(pEvent->GetNewState() == FocusState::FS_LOSTFOCUS && 
+    if(pEvent->GetNewState() == FS_LOSTFOCUS && 
        m_pProvider->IsFullscreen())
     {
       StopRendering(true);
     }
-    else if(pEvent->GetNewState() == FocusState::FS_GAINEDFOCUS) {
+    else if(pEvent->GetNewState() == FS_GAINEDFOCUS) {
       StopRendering(false);
     }
   }

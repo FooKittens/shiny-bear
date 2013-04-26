@@ -1,4 +1,4 @@
-#include "view\graphics\SceneComposer.h"
+#include "view\graphics\scene\SceneComposer.h"
 #include "base\system\GraphicsProvider.h"
 
 namespace shinybear

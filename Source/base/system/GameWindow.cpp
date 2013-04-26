@@ -88,13 +88,13 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
     if(wparam == TRUE)
     {
       EventManager::PushImmediateEvent(
-        EventPtr(DBG_NEW FocusChangedEvent(FocusState::FS_GAINEDFOCUS))
+        EventPtr(DBG_NEW FocusChangedEvent(FS_GAINEDFOCUS))
       );
     }
     else
     {
       EventManager::PushImmediateEvent(
-        EventPtr(DBG_NEW FocusChangedEvent(FocusState::FS_LOSTFOCUS))
+        EventPtr(DBG_NEW FocusChangedEvent(FS_LOSTFOCUS))
       );
     }
   case WM_WTSSESSION_CHANGE:

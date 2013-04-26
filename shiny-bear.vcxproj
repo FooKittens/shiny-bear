@@ -37,7 +37,7 @@
     <ClInclude Include="source\util\SBUtil.h" />
     <ClInclude Include="source\view\graphics\Color4f.h" />
     <ClInclude Include="source\view\graphics\Mesh.h" />
-    <ClInclude Include="Source\view\graphics\SceneComposer.h" />
+    <ClInclude Include="Source\view\graphics\scene\SceneComposer.h" />
     <ClInclude Include="source\view\graphics\VertexTypes.h" />
     <ClInclude Include="source\view\graphics\VoxelMesh.h" />
     <ClInclude Include="source\view\IGameView.h" />
@@ -58,7 +58,7 @@
     <ClCompile Include="source\logic\world\Cluster.cpp" />
     <ClCompile Include="source\logic\world\WorldManager.cpp" />
     <ClCompile Include="source\util\SBUtil.cpp" />
-    <ClCompile Include="Source\view\graphics\SceneComposer.cpp" />
+    <ClCompile Include="Source\view\graphics\scene\SceneComposer.cpp" />
     <ClCompile Include="Source\view\input\InputManager.cpp" />
     <ClCompile Include="source\view\RenderView.cpp" />
   </ItemGroup>
