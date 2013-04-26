@@ -13,6 +13,9 @@
     <Filter Include="Source\base\system">
       <UniqueIdentifier>{1cbca2d9-35e8-4d91-8272-997d331e8099}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\graphics">
+      <UniqueIdentifier>{f83079c3-611a-4f2f-8161-5c3af25dbeb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -44,6 +47,9 @@
     </ClInclude>
     <ClInclude Include="Source\util\input\InputManager.h">
       <Filter>Source\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\Mesh.h">
+      <Filter>Source\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

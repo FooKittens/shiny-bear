@@ -1,4 +1,5 @@
 #include "base\system\GameWindow.h"
+#include "base\BaseGame.h"
 #include "util\SBUtil.h"
 #include "util\input\InputManager.h"
 #include <cassert>
@@ -12,8 +13,9 @@ namespace shinybear
 // name used by windows to identify the class internally.
 const char *GameWindow::s_className = "GAMEWINDOW_CLASS";
 
-GameWindow::GameWindow(const Size &size)
+GameWindow::GameWindow(BaseGame *pGame, const Size &size)
 {
+  m_pGame = pGame;
   m_size = size;
   m_isVisible = false;
 
@@ -77,7 +79,14 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
   switch(msg)
   {
   case WM_ACTIVATEAPP:
-
+    if(wparam == TRUE)
+    {
+      m_pGame->OnFocusChanged(true);
+    }
+    else
+    {
+      m_pGame->OnFocusChanged(false);
+    }
     return DefWindowProc(hwnd, msg, wparam, lparam);
   case WM_INPUT:
     if(wparam == RIM_INPUT)
@@ -88,7 +97,7 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
     
     return DefWindowProc(hwnd, msg, wparam, lparam);
   case WM_DESTROY:
-
+    m_pGame->OnWindowClosed();
     return 0;
   }
 

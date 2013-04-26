@@ -16,6 +16,11 @@ protected:
   bool OnInitialize();
 
   void OnUpdate(double elapsedSeconds);
+  void OnRender();
+
+  //void OnDeviceLost();
+  //void OnDeviceReset();
+
 private:
 };
 

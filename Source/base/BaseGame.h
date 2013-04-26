@@ -2,6 +2,7 @@
 #define SHINYBEAR_BASEGAME_H
 
 #include "base\Config.h"
+#include <d3dx9.h>
 
 // Forward declarations
 namespace shinybear
@@ -17,6 +18,8 @@ namespace shinybear
 class BaseGame
 {
 public:
+  friend class GameWindow;
+
   BaseGame();
   virtual ~BaseGame();
 
@@ -27,9 +30,15 @@ protected:
   // Derivative games should overshadow this method,
   // and perform their initial initialization here.
   virtual bool OnInitialize() = 0;
+  
+  virtual void OnWindowClosed();
+  virtual void OnFocusChanged(bool getFocus);
+  virtual void OnDeviceLost();
+  virtual void OnDeviceReset();
+  
   virtual void OnUpdate(double) = 0;
-  //virtual void OnRender() = 0;
-
+  virtual void OnRender() = 0;
+  virtual void RenderDiagnostics(ID3DXFont *pDiagFont);
 
   // Called to close application.
   virtual void Exit();
@@ -40,9 +49,12 @@ protected:
   virtual GameWindow *GetWindow() const;
   virtual GraphicsProvider *GetGraphicsProvider() const;
 
+  virtual float GetCurrentFps();
+
   virtual void Pause(); 
   virtual void Resume();
   virtual bool IsPaused() const;
+  
 
 private:
   // Loads and saves config structs.
@@ -58,7 +70,12 @@ private:
   bool m_isQuitting;
   bool m_isPaused;
   bool m_hasFocus;
+  bool m_doRenderDiagnostics;
   wchar_t *m_pConfigPath;
+  float m_fpsTimer;
+  float m_currentFrame;
+  float m_lastFps;
+  ID3DXFont *m_pDiagFont;
 };
 
 
@@ -79,8 +96,14 @@ inline bool BaseGame::IsPaused() const
   return m_isPaused;
 }
 
-inline bool BaseGame::HasFocus() const {
+inline bool BaseGame::HasFocus() const
+{
   return m_hasFocus;
+}
+
+inline float BaseGame::GetCurrentFps()
+{
+  return static_cast<float>(m_currentFrame + m_lastFps * m_fpsTimer);
 }
 
 

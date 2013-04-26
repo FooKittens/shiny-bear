@@ -96,7 +96,6 @@ inline bool GraphicsProvider::IsFullscreen()
 
 inline void GraphicsProvider::Clear(const Color4f &color)
 {
-  
   m_pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL | D3DCLEAR_TARGET,
     color, 1.0f, 0);
 }

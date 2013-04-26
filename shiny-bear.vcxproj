@@ -17,6 +17,7 @@
     <ClInclude Include="Source\base\system\GameTimer.h" />
     <ClInclude Include="Source\base\system\GameWindow.h" />
     <ClInclude Include="Source\base\system\GraphicsProvider.h" />
+    <ClInclude Include="Source\graphics\Mesh.h" />
     <ClInclude Include="Source\util\Color4f.h" />
     <ClInclude Include="Source\util\input\InputManager.h" />
     <ClInclude Include="source\util\ISerializable.h" />

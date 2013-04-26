@@ -17,7 +17,7 @@ const wchar_t *g_kConfigFileName = L"Engine.cfg";
 BaseGame::BaseGame()
 {
   GetAbsolutePath(g_kConfigFileName, &m_pConfigPath);
-
+  m_pDiagFont = nullptr;
 }
 
 BaseGame::~BaseGame()
@@ -67,7 +67,7 @@ bool BaseGame::Initialize()
   Size size;
   size.width = cfg.displayMode.width;
   size.height = cfg.displayMode.height;
-  m_pGameWindow = DBG_NEW GameWindow(size);
+  m_pGameWindow = DBG_NEW GameWindow(this, size);
 
   // Initialize input manager.
   InputManager::Initialize(*m_pGameWindow);
@@ -81,6 +81,7 @@ bool BaseGame::Initialize()
     m_pGraphicsProvider->SetDisplayMode(cfg.displayMode);
     m_pGraphicsProvider->SetMultiSampleMode(cfg.multiSampleMode);
     m_pGraphicsProvider->ApplyChanges();
+    OnDeviceReset();
   }
   else
   {
@@ -114,8 +115,16 @@ bool BaseGame::Run()
   m_pGameTimer->Start();
   m_pGameWindow->Show();
   
+  Resume();
+
+  m_fpsTimer = 0.0f;
+  m_currentFrame = 0;
+  m_lastFps = 0;
+
   m_isRunning   = true;
   m_isQuitting  = false;
+  m_doRenderDiagnostics = true;
+
   while(m_isRunning)
   {
     // Handle Windows Messages.
@@ -127,21 +136,37 @@ bool BaseGame::Run()
      m_pGameTimer->Tick();
     }
 
+    // Update gamelogic.
     OnUpdate(m_pGameTimer->GetElapsedTime());
 
     // Check the state of the graphicsprovider.
     // This will reset the device if necessary.
     if(m_pGraphicsProvider->IsDeviceLost())
     {
+      
       // If the device is hard-lost, which means it needs to be created,
       // we'll only do so if we have focus. This is a pseudo fix for 
       // attempting to recreate the device when the screen is locked by 
       // a UAC dialog for instance.
       if(m_hasFocus)
       {
-
+        OnDeviceLost();
+        m_pGraphicsProvider->ApplyChanges();
+        OnDeviceReset();
       }
     }
+
+    HR(m_pGraphicsProvider->GetDevice()->BeginScene());
+    // call virtual method to delegate rendering to derived classes.
+    OnRender();
+    if(m_doRenderDiagnostics)
+    {
+      RenderDiagnostics(m_pDiagFont);
+    }
+
+    HR(m_pGraphicsProvider->GetDevice()->EndScene());
+
+    m_pGraphicsProvider->Present();
 
 
 
@@ -155,6 +180,28 @@ bool BaseGame::Run()
 
   return true;
 }
+
+void BaseGame::OnUpdate(double elapsedSeconds)
+{
+  ++m_currentFrame;
+  m_fpsTimer += m_pGameTimer->GetElapsedTime();
+  if(m_fpsTimer > 1.0f)
+  {
+    m_lastFps = m_currentFrame;
+    m_currentFrame = 0;
+    m_fpsTimer = 0;
+  }
+}
+
+void BaseGame::RenderDiagnostics(ID3DXFont *pFont)
+{
+  char buffer[512];
+  sprintf(buffer, "FPS: %.2f", GetCurrentFps());
+  RECT drawRect = { 20, 20, 200, 150 };
+  pFont->DrawTextA(NULL, buffer, strlen(buffer),
+    &drawRect, DT_LEFT | DT_NOCLIP , RGB(255, 255, 255));
+}
+
 
 void BaseGame::Exit()
 {
@@ -171,6 +218,39 @@ void BaseGame::Resume()
 {
   m_isPaused = false;
   m_pGameTimer->Resume();
+}
+
+void BaseGame::OnWindowClosed()
+{
+  m_isQuitting = true;
+}
+
+void BaseGame::OnFocusChanged(bool getFocus)
+{
+  m_hasFocus = getFocus;
+}
+
+void BaseGame::OnDeviceLost()
+{
+  RELEASECOM(m_pDiagFont);
+}
+
+void BaseGame::OnDeviceReset()
+{
+  D3DXCreateFont(
+    m_pGraphicsProvider->GetDevice(),
+    18,
+    0,
+    FW_NORMAL,
+    1,
+    FALSE,
+    DEFAULT_CHARSET,
+    OUT_TT_ONLY_PRECIS,
+    DEFAULT_QUALITY,
+    DEFAULT_PITCH | FF_DONTCARE,
+    "Times New Roman",
+    &m_pDiagFont
+  );
 }
 
 } // namespace shinybear

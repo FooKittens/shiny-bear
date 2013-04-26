@@ -4,6 +4,8 @@
 #include <Windows.h>
 #include <string>
 
+namespace shinybear { class BaseGame; }
+
 namespace shinybear
 {
 
@@ -18,7 +20,7 @@ struct Size
 class GameWindow
 {
 public:
-  GameWindow(const Size &size);
+  GameWindow(BaseGame *pGame, const Size &size);
   ~GameWindow();
 
   // Handle Win32 messages.
@@ -32,7 +34,7 @@ public:
   
   void SetTitle(const char *title);
   
-  void IsVisible();
+  bool IsVisible();
   void Show();
   void Hide();
 protected:
@@ -55,6 +57,7 @@ private:
   Size m_size;
   HWND m_hwnd;
   bool m_isVisible;
+  BaseGame *m_pGame;
 };
 
 // --------- Inlines ----------
