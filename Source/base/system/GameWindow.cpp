@@ -98,7 +98,6 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 // Simply forwards the window proc to a member version.
 LRESULT CALLBACK GameWindow::StaticWinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
-  
   // Store the pointer to the window in the windows long on wm_create
   if(msg == WM_CREATE)
   {
