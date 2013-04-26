@@ -3,7 +3,7 @@
 
 #include <windows.h>
 
-namespace shinybear { struct KeyboardState; class BaseGame; class GameWindow; }
+namespace shinybear { class BaseGame; class GameWindow; }
 
 namespace shinybear
 {
@@ -89,7 +89,23 @@ enum Keys
   Right = VK_RIGHT,
   Up = VK_UP,
   Down = VK_DOWN,
+};
 
+struct MouseState
+{
+public:
+  bool leftBtnDown;
+  bool middleBtnDown;
+  bool rightBtnDown;
+  bool xBtn1Down;
+  bool xBtn2Down;
+  short mouseWheelChange;
+  // Absolute mouse position, according to windows
+  int absoluteX;
+  int absoluteY;
+  // Mouse XY change since previous event
+  int changeX;
+  int changeY;
 };
 
 class InputManager
@@ -99,75 +115,13 @@ public:
   friend class BaseGame;
   friend class GameWindow;
 
-  static const int kKeyCount = 256;
-
-  inline static bool IsKeyDown(Keys k)
-  {
-    return static_cast<bool>(s_keys[k]);
-  }
-
-  inline static bool IsKeyUp(Keys k)
-  {
-    return static_cast<bool>(!s_keys[k]);
-  }
-
-  // Pass in a pointer to an integer in sizeNeeded
-  // to find out the required size of pKeys.
-  // If the size is not >= kKeyCount the function will do nothing.
-  static void GetKeyboardState(KeyboardState *pState);
-
 private:
   static void Initialize(const GameWindow &pGameWindow);
 
   static void HandleInput(const HRAWINPUT &hInput);
 
-  static int s_keys[kKeyCount];
+  static MouseState mouseState;
 };
-
-struct KeyboardState
-{
-
-public:
-  friend class InputManager;
-
-  KeyboardState()
-    :keys()
-  {
-
-    memset(keys, 0, sizeof(int) * InputManager::kKeyCount);
-  }
-
-  KeyboardState(const KeyboardState &copy)
-  {
-    // Safe, we wont' be changing the copy at all.
-    int *pk = keys, *pc = const_cast<KeyboardState&>(copy).keys;
-  
-    for(int i = 0; i < InputManager::kKeyCount; ++i)
-    {
-      *pk++ = *pc++;
-    }
-  }
-
-  const KeyboardState& operator=(const KeyboardState &rhs)
-  {
-    // Safe, we wont' be changing the copy at all.
-    int *pk = keys, *pc = const_cast<KeyboardState&>(rhs).keys;
-  
-    for(int i = 0; i < InputManager::kKeyCount; ++i)
-    {
-      *pk++ = *pc++;
-    }
-
-    return *this;
-  }
-
-  inline bool IsKeyDown(Keys k) { return static_cast<bool>(keys[k]); }
-  inline bool IsKeyUp(Keys k) { return static_cast<bool>(!keys[k]); }
-
-private:
-  int keys[InputManager::kKeyCount];
-};
-
 
 } // namespace framework
 
