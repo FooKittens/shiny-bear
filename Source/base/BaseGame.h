@@ -63,6 +63,8 @@ private:
 
   bool Initialize();
 
+  void CheckDeviceState();
+
   GameTimer *m_pGameTimer;
   GraphicsProvider *m_pGraphicsProvider;
   GameWindow *m_pGameWindow;
@@ -103,7 +105,7 @@ inline bool BaseGame::HasFocus() const
 
 inline float BaseGame::GetCurrentFps()
 {
-  return static_cast<float>(m_currentFrame + m_lastFps * m_fpsTimer);
+  return static_cast<float>(m_currentFrame + m_lastFps * (1.0 - m_fpsTimer));
 }
 
 

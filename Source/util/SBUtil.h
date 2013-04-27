@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <Windows.h>
 
-#define RELEASECOM(X) if(X) X->Release()
+#define RELEASECOM(X) if(X) { X->Release(); X = nullptr; }
 
 #define HR(X) if(FAILED(X)) \
   MessageBox(NULL, TEXT(#X), TEXT("HR ERROR"), MB_OK | MB_ICONERROR)

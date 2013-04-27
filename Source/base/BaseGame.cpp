@@ -25,6 +25,7 @@ BaseGame::~BaseGame()
   SAFEDELETE(m_pGameTimer);
   SAFEDELETE(m_pGraphicsProvider);
   SAFEDELETE(m_pGameWindow);
+  RELEASECOM(m_pDiagFont);
   delete[] m_pConfigPath;
 }
 
@@ -141,20 +142,7 @@ bool BaseGame::Run()
 
     // Check the state of the graphicsprovider.
     // This will reset the device if necessary.
-    if(m_pGraphicsProvider->IsDeviceLost())
-    {
-      
-      // If the device is hard-lost, which means it needs to be created,
-      // we'll only do so if we have focus. This is a pseudo fix for 
-      // attempting to recreate the device when the screen is locked by 
-      // a UAC dialog for instance.
-      if(m_hasFocus)
-      {
-        OnDeviceLost();
-        m_pGraphicsProvider->ApplyChanges();
-        OnDeviceReset();
-      }
-    }
+    CheckDeviceState();
 
     HR(m_pGraphicsProvider->GetDevice()->BeginScene());
     // call virtual method to delegate rendering to derived classes.
@@ -167,7 +155,7 @@ bool BaseGame::Run()
     HR(m_pGraphicsProvider->GetDevice()->EndScene());
 
     m_pGraphicsProvider->Present();
-
+    
 
 
     if(m_isQuitting)
@@ -199,9 +187,25 @@ void BaseGame::RenderDiagnostics(ID3DXFont *pFont)
   sprintf(buffer, "FPS: %.2f", GetCurrentFps());
   RECT drawRect = { 20, 20, 200, 150 };
   pFont->DrawTextA(NULL, buffer, strlen(buffer),
-    &drawRect, DT_LEFT | DT_NOCLIP , RGB(255, 255, 255));
+    &drawRect, 0 , 0xFFFFFFFF);
 }
 
+void BaseGame::CheckDeviceState()
+{
+  HRESULT hr = m_pGraphicsProvider->GetDeviceState();
+  if(hr == D3DERR_DEVICENOTRESET)
+  {
+    OnDeviceLost();
+    m_pGraphicsProvider->ResetDevice();
+    OnDeviceReset();
+  }
+  else if(hr == D3DERR_DEVICELOST && m_hasFocus)
+  {
+    OnDeviceLost();
+    m_pGraphicsProvider->ApplyChanges();
+    OnDeviceReset();
+  }
+}
 
 void BaseGame::Exit()
 {
@@ -228,6 +232,10 @@ void BaseGame::OnWindowClosed()
 void BaseGame::OnFocusChanged(bool getFocus)
 {
   m_hasFocus = getFocus;
+  if(getFocus == true)
+  {
+    CheckDeviceState();
+  }
 }
 
 void BaseGame::OnDeviceLost()
@@ -237,20 +245,18 @@ void BaseGame::OnDeviceLost()
 
 void BaseGame::OnDeviceReset()
 {
-  D3DXCreateFont(
-    m_pGraphicsProvider->GetDevice(),
-    18,
-    0,
-    FW_NORMAL,
-    1,
-    FALSE,
-    DEFAULT_CHARSET,
-    OUT_TT_ONLY_PRECIS,
-    DEFAULT_QUALITY,
-    DEFAULT_PITCH | FF_DONTCARE,
-    "Times New Roman",
-    &m_pDiagFont
-  );
+  D3DXFONT_DESC fontdesc;
+  fontdesc.CharSet = DEFAULT_CHARSET;
+  fontdesc.Height = 22;
+  fontdesc.Italic = false;
+  fontdesc.MipLevels = 0;
+  fontdesc.OutputPrecision = OUT_TT_ONLY_PRECIS;
+  fontdesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+  fontdesc.Quality = DEFAULT_QUALITY;
+  fontdesc.Weight = FW_NORMAL;
+  fontdesc.Width = 0;
+  strcpy(fontdesc.FaceName, "Arial");
+  HR(D3DXCreateFontIndirect(m_pGraphicsProvider->GetDevice(), &fontdesc, &m_pDiagFont));
 }
 
 } // namespace shinybear

@@ -52,22 +52,13 @@ bool GraphicsProvider::ToggleFullscreen(bool value)
   return true;
 }
 
-bool GraphicsProvider::IsDeviceLost()
+HRESULT GraphicsProvider::GetDeviceState()
 {
   HRESULT hr = m_pDevice->TestCooperativeLevel();
   assert(hr != D3DERR_DRIVERINTERNALERROR && "Graphics Device driver"
     " suffered an unrecoverable error!");
 
-  if(hr == D3DERR_DEVICELOST)
-  {
-    return true;
-  }
-  else if(hr == D3DERR_DEVICENOTRESET)
-  {
-    m_pDevice->Reset(&m_d3dPresent);
-  }
-
-  return false;
+  return hr; 
 }
 
 // Performs a hard-reset of the device by recreating it.

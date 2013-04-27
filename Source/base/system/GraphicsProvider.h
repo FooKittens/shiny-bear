@@ -26,9 +26,9 @@ public:
   const MultiSampleMode& GetMultiSampleMode();
   bool SetMultiSampleMode(const MultiSampleMode &mode);
 
-  bool IsDeviceLost();
+  HRESULT GetDeviceState();
 
-  // Performs a hard-reset of the device by recreating it.
+  // Performs a device-reset;
   bool ResetDevice();
 
   // Re-creates the device with new settings if any.

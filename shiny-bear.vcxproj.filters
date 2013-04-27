@@ -16,6 +16,12 @@
     <Filter Include="Source\graphics">
       <UniqueIdentifier>{f83079c3-611a-4f2f-8161-5c3af25dbeb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\world">
+      <UniqueIdentifier>{b23d0039-208b-44f6-80a7-95dfd2906108}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\scene">
+      <UniqueIdentifier>{0f6709e6-80cb-4eb8-8584-f0d7c6e9bc8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -51,6 +57,27 @@
     <ClInclude Include="Source\graphics\Mesh.h">
       <Filter>Source\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\world\Block.h">
+      <Filter>Source\world</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\VertexFormats.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\world\Cluster.h">
+      <Filter>Source\world</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\world\ClusterManager.h">
+      <Filter>Source\world</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\scene\SceneNode.h">
+      <Filter>Source\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\scene\SceneManager.h">
+      <Filter>Source\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\scene\MeshNode.h">
+      <Filter>Source\scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -73,6 +100,18 @@
     </ClCompile>
     <ClCompile Include="Source\util\input\InputManager.cpp">
       <Filter>Source\util</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\scene\SceneNode.cpp">
+      <Filter>Source\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\scene\SceneManager.cpp">
+      <Filter>Source\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\world\Cluster.cpp">
+      <Filter>Source\world</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\scene\MeshNode.cpp">
+      <Filter>Source\scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

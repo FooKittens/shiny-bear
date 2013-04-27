@@ -4,7 +4,12 @@
 #include <base\BaseGame.h>
 #include <windows.h>
 #include <d3dx9.h>
+#include <d3d9.h>
 
+namespace shinybear
+{
+  class SceneManager;
+}
 
 class TestApp : public shinybear::BaseGame
 {
@@ -22,6 +27,7 @@ protected:
   //void OnDeviceReset();
 
 private:
+  shinybear::SceneManager *m_pScene;
 };
 
 #endif
