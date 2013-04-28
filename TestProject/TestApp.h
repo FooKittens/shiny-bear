@@ -29,8 +29,9 @@ protected:
 
 private:
   shinybear::SceneManager *m_pScene;
-  shinybear::SceneView *m_pView;
   shinybear::MeshNode *m_pMeshNode;
+  shinybear::MeshNode *m_pOtherNode;
+  shinybear::MeshNode *m_pThirdNode;
 };
 
 #endif

@@ -1,5 +1,6 @@
 #include "scene\SceneManager.h"
 #include "scene\SceneNode.h"
+#include "scene\SceneView.h"
 #include "util\SBUtil.h"
 
 namespace shinybear
@@ -9,6 +10,7 @@ SceneManager::SceneManager(GraphicsProvider *pProvider)
 {
   D3DXCreateMatrixStack(0, &m_pMatStack);
   m_pRoot = new SceneNode();
+  m_pView = new SceneView(pProvider, this);
 }
 
 SceneManager::~SceneManager()
@@ -20,6 +22,16 @@ SceneManager::~SceneManager()
 void SceneManager::Update(double elapsedSeconds)
 {
   m_pRoot->Update(elapsedSeconds);
+}
+
+void SceneManager::Render()
+{
+  m_pRoot->PreRender(this);
+  m_pRoot->Render(this);
+  m_pRoot->PostRender(this);
+
+  m_pView->Render(m_renderList);
+  m_renderList.clear();
 }
 
 void SceneManager::OnDeviceLost()

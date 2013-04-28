@@ -55,16 +55,13 @@ SceneView::~SceneView()
   RELEASECOM(m_pShader);
 }
 
-void SceneView::Render()
+void SceneView::Render(const RenderList &list)
 {
   assert(!m_isRendering && "Sceneview already rendering!");
   m_isRendering = true;
 
   m_lights.clear();
   m_meshes.clear();
-
-  // Let nodes of the scenegraph fill our information.
-  m_pScene->GetRoot()->Render(this);
 
   D3DXMATRIX view;
   D3DXVECTOR3 eye(0, 0, -10.0f);
@@ -81,26 +78,37 @@ void SceneView::Render()
   D3DXHANDLE hProj = m_pShader->GetParameterByName(0, "g_projection");
 
   HR(m_pProvider->GetDevice()->SetVertexDeclaration(m_pDecl));
-
-  HR(m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE));
-  //HR(m_pProvider->GetDevice()->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));
   D3DXHANDLE hTech = m_pShader->GetTechniqueByName("BaseTech");
   
-  D3DVIEWPORT9 vp;
-  vp.Height = 768;
-  vp.Width = 1280;
-  vp.MaxZ = 1.0f;
-  vp.MinZ = 0.0f;
-  vp.X = 0;
-  vp.Y = 0;
-  
-  HR(m_pProvider->GetDevice()->SetViewport(&vp));
+  //D3DVIEWPORT9 vp;
+  //vp.Height = 768;
+  //vp.Width = 1280;
+  //vp.MaxZ = 1.0f;
+  //vp.MinZ = 0.0f;
+  //vp.X = 0;
+  //vp.Y = 0;
+  //
+  //HR(m_pProvider->GetDevice()->SetViewport(&vp));
+
+  for(int i = 0; i < list.size(); ++i)
+  {
+    if(list[i].type == RenderType::MESH)
+    {
+      m_meshes.push_back(&list[i]);
+    } 
+    else if(list[i].type == RenderType::LIGHT)
+    {
+      m_lights.push_back(&list[i]);
+    }
+    else if(list[i].type == RenderType::ALPHA)
+    {
+      m_alphaList.push_back(&list[i]);
+    }
+  }
+
 
   m_pShader->SetMatrix(hView, &view);
   m_pShader->SetMatrix(hProj, &proj);
-  D3DXMATRIX mat;
-  D3DXMatrixIdentity(&mat);
-  HR(m_pShader->SetMatrix(hWorld, &mat));
 
   HR(m_pProvider->GetDevice()->SetVertexDeclaration(m_pDecl));
   HR(m_pShader->SetTechnique(hTech));
@@ -109,8 +117,11 @@ void SceneView::Render()
   HR(m_pShader->Begin(&numPasses, 0));
   for(int i = 0; i < m_meshes.size(); ++i)
   {
+    HR(m_pShader->SetMatrix(hWorld, &m_meshes[i]->world));
     HR(m_pShader->BeginPass(0));
-    m_meshes[i]->GetMesh()->RenderMesh();
+    
+    m_meshes[i]->data.pMesh->RenderMesh();
+
     HR(m_pShader->EndPass());
   }
   HR(m_pShader->End());
@@ -118,15 +129,6 @@ void SceneView::Render()
   m_isRendering = false;
 }
 
-void SceneView::AddMeshNode(MeshNode *pMesh)
-{
-  m_meshes.push_back(pMesh);
-}
-
-void SceneView::AddLight(LightNode *pLight)
-{
-  m_lights.push_back(pLight);
-}
 
 void SceneView::OnDeviceLost()
 {

@@ -15,7 +15,7 @@ public:
   ~LightNode();
 
   void Update(double);
-  void Render(SceneView *pRenderer);
+  void Render(SceneManager *pScene);
 
 protected:
 

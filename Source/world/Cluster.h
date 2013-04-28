@@ -25,7 +25,7 @@ public:
   void SetBlock(const Block &newBlock, int x, int y, int z);
   const Block &GetBlock(int x, int y, int z);
 
-  void Render(SceneView *pRenderer);
+  void Render(SceneManager *pScene);
 
 private:
   enum HideFlags

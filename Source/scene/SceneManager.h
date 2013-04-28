@@ -8,10 +8,35 @@
 namespace shinybear
 {
   class GraphicsProvider; class SceneNode;
+  class SceneView; class Mesh;
 }
 
 namespace shinybear
 {
+
+namespace RenderType
+{
+enum Enum
+{
+  MESH = 1,
+  LIGHT = 2,
+  ALPHA = 3,
+};
+}
+
+struct RenderData
+{
+  RenderType::Enum type;
+  SceneNode *pNode;
+  D3DXMATRIX world;
+  union RD
+  {
+    Mesh *pMesh;
+    Light *pLight;
+  } data;
+};
+
+typedef std::vector<RenderData> RenderList;
 
 class SceneManager
 {
@@ -20,30 +45,31 @@ public:
   ~SceneManager();
 
   void Update(double elapsedSeconds);
-
-  void AddLight(Light *pLight);
-  void RemoveLight(Light *pLight);
+  void Render();
 
   void PushMatrix(const D3DXMATRIX &mat);
   void PopMatrix();
 
   const D3DXMATRIX * const GetTransform() const { return m_pMatStack->GetTop(); }
   SceneNode *GetRoot() const { return m_pRoot; }
-  UINT GetLightCount() const { return m_lights.size(); }
-
-  // used for iteration.
-  Light *GetLight(UINT index) const { return m_lights[index]; }
 
   void OnDeviceLost();
   void OnDeviceReset();
+
+  void PushRenderData(const RenderData &data);
 
 private:
   GraphicsProvider *m_pGraphicsProvider;
   SceneNode *m_pRoot;
   ID3DXMatrixStack *m_pMatStack;
-  std::vector<Light *> m_lights;
+  SceneView *m_pView;
+  RenderList m_renderList;
 };
 
+inline void SceneManager::PushRenderData(const RenderData &data)
+{
+  m_renderList.push_back(data);
+}
 
 inline void SceneManager::PushMatrix(const D3DXMATRIX &mat)
 {

@@ -50,21 +50,33 @@ void SceneNode::Detach(SceneNode *pNode)
 
 void SceneNode::Update(double elapsedSeconds)
 {
-  if(m_pParent)
-  {
-    m_world = m_pParent->GetTransform() * m_local;
-  }
-  else
-  {
-    m_world = m_local;
-  }
+  //if(m_pParent)
+  //{
+  //  m_world = m_pParent->GetTransform() * m_local;
+  //}
+  //else
+  //{
+  //  
+  //}
+
   UpdateChildren(elapsedSeconds);
 }
 
 
-void SceneNode::Render(SceneView *pRenderer)
+void SceneNode::PreRender(SceneManager *pScene)
 {
-  RenderChildren(pRenderer);
+  pScene->PushMatrix(scaleMat * rotation * translation);
+  //pScene->GetTransform();
+}
+
+void SceneNode::Render(SceneManager *pScene)
+{
+  RenderChildren(pScene);
+}
+
+void SceneNode::PostRender(SceneManager *pScene)
+{
+  pScene->PopMatrix();
 }
 
 
@@ -76,14 +88,16 @@ void SceneNode::UpdateChildren(double elapsedSeconds)
   }
 }
 
-void SceneNode::RenderChildren(SceneView *pRenderer)
+void SceneNode::RenderChildren(SceneManager *pScene)
 {
   for(int i = 0; i < m_children.size(); ++i)
   {
+    m_children[i]->PreRender(pScene);
     if(m_children[i]->IsVisible())
     {
-      m_children[i]->Render(pRenderer);
+      m_children[i]->Render(pScene);
     }
+    m_children[i]->PostRender(pScene);
   }
 }
 

@@ -17,10 +17,18 @@ MeshNode::~MeshNode()
   delete m_pMesh;
 }
 
-void MeshNode::Render(SceneView *pRenderer)
+
+void MeshNode::Render(SceneManager *pScene)
 {
-  pRenderer->AddMeshNode(this);
-  RenderChildren(pRenderer);
+  RenderChildren(pScene);
+
+  RenderData rd;
+  rd.data.pMesh = m_pMesh;
+  rd.type = RenderType::MESH;
+  rd.world = *(pScene->GetTransform());
+  pScene->PushRenderData(rd);
+
+  
 }
 
 void MeshNode::OnDeviceLost()

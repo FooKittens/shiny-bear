@@ -36,7 +36,7 @@ Cluster::~Cluster()
   delete[] m_blocks;
 }
 
-void Cluster::Render(SceneView *pRenderer)
+void Cluster::Render(SceneManager *pScene)
 {
   if(m_recreateMesh)
   {
@@ -44,7 +44,7 @@ void Cluster::Render(SceneView *pRenderer)
     m_recreateMesh = false;
   }
 
-  RenderChildren(pRenderer);
+  RenderChildren(pScene);
 }
 
 void Cluster::RecreateMesh()

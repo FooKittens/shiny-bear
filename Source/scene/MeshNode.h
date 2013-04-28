@@ -14,7 +14,7 @@ public:
   MeshNode(Mesh *pMesh);
   ~MeshNode();
 
-  void Render(SceneView *pRenderer);
+  void Render(SceneManager *pScene);
 
   void OnDeviceLost();
   void OnDeviceReset();

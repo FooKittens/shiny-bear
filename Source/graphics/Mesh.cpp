@@ -12,6 +12,7 @@ Mesh::Mesh(GraphicsProvider *pProvider)
   m_pIBuffer = nullptr;
   m_vertexCount = 0;
   m_indexCount = 0;
+  m_currentIndex = 0;
 }
 
 Mesh::~Mesh()
@@ -49,6 +50,8 @@ void Mesh::UpdateBuffers()
 
   HR(m_pVBuffer->Unlock());
 
+  m_vertexCount = m_vertices.size();
+
   m_vertices.clear();
   m_vertices.shrink_to_fit();
 
@@ -74,6 +77,7 @@ void Mesh::UpdateBuffers()
   }
   
   HR(m_pIBuffer->Unlock());
+  m_indexCount = m_indices.size();
 
   m_indices.clear();
   m_indices.shrink_to_fit();
@@ -87,7 +91,6 @@ UINT Mesh::AddVertex(const D3DXVECTOR3 &pos, const BlockMaterial &mat,
   vert.position = pos;
   mat.GetColors(&vert.diffuse, &vert.specular);
   m_vertices.push_back(vert);
-  ++m_vertexCount;
   return m_currentIndex++;
 }
 
@@ -96,7 +99,6 @@ void Mesh::AddTriangle(UINT v1, UINT v2, UINT v3)
   m_indices.push_back(v1);
   m_indices.push_back(v2);
   m_indices.push_back(v3);
-  m_indexCount += 3;
 }
 
 void Mesh::RenderMesh()

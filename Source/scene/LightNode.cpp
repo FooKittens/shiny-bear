@@ -32,10 +32,10 @@ void LightNode::Update(double elapsedSeconds)
   UpdateChildren(elapsedSeconds);
 }
 
-void LightNode::Render(SceneView *pRenderer)
+void LightNode::Render(SceneManager *pScene)
 {
-  pRenderer->AddLight(this);
-  RenderChildren(pRenderer);
+  //pRenderer->AddLight(this);
+  RenderChildren(pScene);
 }
 
 } // namespace shinybear

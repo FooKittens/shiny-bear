@@ -20,8 +20,10 @@ public:
 
   virtual void Update(double elapsedSeconds);
 
-  virtual void Render(SceneView *pRenderer);
-  
+  virtual void PreRender(SceneManager *pScene);
+  virtual void Render(SceneManager *pScene);
+  virtual void PostRender(SceneManager *pScene);
+
   virtual void OnDeviceLost() { }
   virtual void OnDeviceReset() { };
 
@@ -39,12 +41,15 @@ public:
 
 protected:
   virtual void UpdateChildren(double elapsedSeconds);
-  virtual void RenderChildren(SceneView *pRenderer);
+  virtual void RenderChildren(SceneManager *pScene);
 
   SceneNode *m_pParent;
   std::vector<SceneNode *> m_children;
 
 private:
+  D3DXMATRIX scaleMat;
+  D3DXMATRIX rotation;
+  D3DXMATRIX translation;
   D3DXMATRIX m_local;
   D3DXMATRIX m_world;
   bool m_isVisible;
@@ -62,28 +67,27 @@ inline void SceneNode::SetVisible(bool val)
 
 inline void SceneNode::Translate(float x, float y, float z)
 {
-  D3DXMATRIX translation;
   D3DXMatrixTranslation(&translation, x, y, z);
   m_local *= translation;
 }
 
 inline void SceneNode::Rotate(float x, float y, float z)
 {
-  D3DXMATRIX rotation;
   D3DXMatrixRotationYawPitchRoll(&rotation, x, y, z);
   m_local *= rotation;
 }
 
 inline void SceneNode::Scale(float scale)
 {
-  D3DXMATRIX scaleMat;
   D3DXMatrixScaling(&scaleMat, scale, scale, scale);
   m_local *= scaleMat;
 }
 
 inline void SceneNode::LoadIdentity()
 {
-  D3DXMatrixIdentity(&m_local);
+  D3DXMatrixIdentity(&translation);
+  D3DXMatrixIdentity(&rotation);
+  D3DXMatrixIdentity(&scaleMat);
 }
 
 inline void SceneNode::SetParent(SceneNode *pNewParent)
