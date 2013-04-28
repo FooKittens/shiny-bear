@@ -8,7 +8,8 @@
 
 namespace shinybear
 {
-  class SceneManager;
+  class SceneManager; class SceneView;
+  class Mesh; class MeshNode;
 }
 
 class TestApp : public shinybear::BaseGame
@@ -28,6 +29,8 @@ protected:
 
 private:
   shinybear::SceneManager *m_pScene;
+  shinybear::SceneView *m_pView;
+  shinybear::MeshNode *m_pMeshNode;
 };
 
 #endif

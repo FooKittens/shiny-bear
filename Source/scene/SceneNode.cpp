@@ -1,12 +1,13 @@
 #include "scene\SceneNode.h"
+#include "scene\SceneManager.h"
 #include <cassert>
 
 namespace shinybear
 {
 
-SceneNode::SceneNode(SceneNode *pParent)
+SceneNode::SceneNode()
 {
-  m_pParent = pParent;
+  m_pParent = nullptr;
   SetVisible(true);
   LoadIdentity();
 }
@@ -22,12 +23,13 @@ SceneNode::~SceneNode()
   m_children.shrink_to_fit();
 }
 
-void SceneNode::Attatch(SceneNode *pNode)
+void SceneNode::Attach(SceneNode *pNode)
 {
   m_children.push_back(pNode);
+  pNode->SetParent(this);
 }
 
-void SceneNode::Detatch(SceneNode *pNode)
+void SceneNode::Detach(SceneNode *pNode)
 {
   auto it = m_children.begin();
   auto end = m_children.end();
@@ -36,7 +38,8 @@ void SceneNode::Detatch(SceneNode *pNode)
   {
     if(*it == pNode)
     {
-      m_children.erase(it);
+      (*it)->SetParent(nullptr);
+      m_children.erase(it);      
       break;
     }
     ++it;
@@ -47,13 +50,23 @@ void SceneNode::Detatch(SceneNode *pNode)
 
 void SceneNode::Update(double elapsedSeconds)
 {
+  if(m_pParent)
+  {
+    m_world = m_pParent->GetTransform() * m_local;
+  }
+  else
+  {
+    m_world = m_local;
+  }
   UpdateChildren(elapsedSeconds);
 }
 
-void SceneNode::Render()
+
+void SceneNode::Render(SceneView *pRenderer)
 {
-  RenderChildren();
+  RenderChildren(pRenderer);
 }
+
 
 void SceneNode::UpdateChildren(double elapsedSeconds)
 {
@@ -63,13 +76,13 @@ void SceneNode::UpdateChildren(double elapsedSeconds)
   }
 }
 
-void SceneNode::RenderChildren()
+void SceneNode::RenderChildren(SceneView *pRenderer)
 {
   for(int i = 0; i < m_children.size(); ++i)
   {
     if(m_children[i]->IsVisible())
     {
-      m_children[i]->Render();
+      m_children[i]->Render(pRenderer);
     }
   }
 }

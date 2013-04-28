@@ -8,7 +8,7 @@ namespace shinybear
 SceneManager::SceneManager(GraphicsProvider *pProvider)
 {
   D3DXCreateMatrixStack(0, &m_pMatStack);
-  m_pRoot = new SceneNode(nullptr);
+  m_pRoot = new SceneNode();
 }
 
 SceneManager::~SceneManager()
@@ -22,9 +22,14 @@ void SceneManager::Update(double elapsedSeconds)
   m_pRoot->Update(elapsedSeconds);
 }
 
-void SceneManager::Render()
+void SceneManager::OnDeviceLost()
 {
-  m_pRoot->Render();
+  m_pRoot->OnDeviceLost();
+}
+
+void SceneManager::OnDeviceReset()
+{
+  m_pRoot->OnDeviceReset();
 }
 
 

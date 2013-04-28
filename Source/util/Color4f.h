@@ -1,11 +1,10 @@
 #ifndef SHINYBEAR_COLOR4F_H
 #define SHINYBEAR_COLOR4F_H
 
+#include "util\Typedefs.h"
 
 namespace shinybear
 {
-
-typedef unsigned long DWORD;
 
 struct Color4f
 {

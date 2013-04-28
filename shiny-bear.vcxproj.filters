@@ -22,6 +22,9 @@
     <Filter Include="Source\scene">
       <UniqueIdentifier>{0f6709e6-80cb-4eb8-8584-f0d7c6e9bc8f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\graphics\shader">
+      <UniqueIdentifier>{17381633-909c-419c-9997-1cd995fc9b1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -78,6 +81,30 @@
     <ClInclude Include="Source\scene\MeshNode.h">
       <Filter>Source\scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\scene\CameraNode.h">
+      <Filter>Source\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\shader\Shader.h">
+      <Filter>Source\graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\shader\IShader.h">
+      <Filter>Source\graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\shader\LightShader.h">
+      <Filter>Source\graphics\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\scene\SceneView.h">
+      <Filter>Source\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\Light.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\util\Typedefs.h">
+      <Filter>Source\util</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\scene\LightNode.h">
+      <Filter>Source\scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -113,5 +140,23 @@
     <ClCompile Include="Source\scene\MeshNode.cpp">
       <Filter>Source\scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\graphics\Mesh.cpp">
+      <Filter>Source\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\graphics\shader\Shader.cpp">
+      <Filter>Source\graphics\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\graphics\shader\LightShader.cpp">
+      <Filter>Source\graphics\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\scene\SceneView.cpp">
+      <Filter>Source\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\scene\LightNode.cpp">
+      <Filter>Source\scene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\res\shaders\LightShader.fx" />
   </ItemGroup>
 </Project>

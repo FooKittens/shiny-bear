@@ -1,6 +1,7 @@
 #ifndef GAMEWINDOW_H
 #define GAMEWINDOW_H
 
+#include "util\Typedefs.h"
 #include <Windows.h>
 #include <string>
 
@@ -8,8 +9,6 @@ namespace shinybear { class BaseGame; }
 
 namespace shinybear
 {
-
-typedef unsigned int UINT;
 
 struct Size
 {

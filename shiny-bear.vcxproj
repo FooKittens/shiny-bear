@@ -17,15 +17,23 @@
     <ClInclude Include="Source\base\system\GameTimer.h" />
     <ClInclude Include="Source\base\system\GameWindow.h" />
     <ClInclude Include="Source\base\system\GraphicsProvider.h" />
+    <ClInclude Include="Source\graphics\Light.h" />
     <ClInclude Include="Source\graphics\Mesh.h" />
+    <ClInclude Include="Source\graphics\shader\IShader.h" />
+    <ClInclude Include="Source\graphics\shader\Shader.h" />
+    <ClInclude Include="Source\graphics\shader\LightShader.h" />
     <ClInclude Include="Source\graphics\VertexFormats.h" />
+    <ClInclude Include="Source\scene\CameraNode.h" />
+    <ClInclude Include="Source\scene\LightNode.h" />
     <ClInclude Include="Source\scene\MeshNode.h" />
     <ClInclude Include="Source\scene\SceneManager.h" />
     <ClInclude Include="Source\scene\SceneNode.h" />
+    <ClInclude Include="Source\scene\SceneView.h" />
     <ClInclude Include="Source\util\Color4f.h" />
     <ClInclude Include="Source\util\input\InputManager.h" />
     <ClInclude Include="source\util\ISerializable.h" />
     <ClInclude Include="source\util\SBUtil.h" />
+    <ClInclude Include="Source\util\Typedefs.h" />
     <ClInclude Include="Source\world\Block.h" />
     <ClInclude Include="Source\world\ClusterManager.h" />
     <ClInclude Include="Source\world\Cluster.h" />
@@ -36,12 +44,20 @@
     <ClCompile Include="Source\base\system\GameTimer.cpp" />
     <ClCompile Include="Source\base\system\GameWindow.cpp" />
     <ClCompile Include="Source\base\system\GraphicsProvider.cpp" />
+    <ClCompile Include="Source\graphics\Mesh.cpp" />
+    <ClCompile Include="Source\graphics\shader\Shader.cpp" />
+    <ClCompile Include="Source\graphics\shader\LightShader.cpp" />
+    <ClCompile Include="Source\scene\LightNode.cpp" />
     <ClCompile Include="Source\scene\MeshNode.cpp" />
     <ClCompile Include="Source\scene\SceneManager.cpp" />
     <ClCompile Include="Source\scene\SceneNode.cpp" />
+    <ClCompile Include="Source\scene\SceneView.cpp" />
     <ClCompile Include="Source\util\input\InputManager.cpp" />
     <ClCompile Include="source\util\SBUtil.cpp" />
     <ClCompile Include="Source\world\Cluster.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\res\shaders\LightShader.fx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A800B216-D6C5-4B48-A2FE-5960FDEEE66D}</ProjectGuid>

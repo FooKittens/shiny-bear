@@ -6,14 +6,6 @@
 namespace shinybear
 {
 
-enum SerializationFlags
-{
-  SF_BINARY = 0,
-  SF_ASCII = 1,
-};
-
-typedef unsigned char ubyte;
-
 // Interface for Serializable classes.
 class ISerializable
 {

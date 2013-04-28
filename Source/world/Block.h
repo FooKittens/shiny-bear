@@ -1,32 +1,12 @@
 #ifndef SHINYBEAR_BLOCK_H
 #define SHINYBEAR_BLOCK_H
 
+#include "graphics\VertexFormats.h"
+#include "util\Typedefs.h"
 #include <d3dx9.h>
 
 namespace shinybear
 {
-
-typedef unsigned int BlockType;
-typedef unsigned int BlockColor;
-
-struct BlockMaterial
-{
-  BlockColor diffuse;
-  BlockColor specular;
-
-  void GetColors(D3DXCOLOR * const pDiffuse, D3DXCOLOR * const pSpecular)
-  {
-    pDiffuse->a = static_cast<float>((diffuse >> 24) & 0xFF) / 255.0f;
-    pDiffuse->r = static_cast<float>((diffuse >> 16) & 0xFF) / 255.0f;
-    pDiffuse->g = static_cast<float>((diffuse >> 8) & 0xFF) / 255.0f;
-    pDiffuse->b = static_cast<float>((diffuse >> 0) & 0xFF) / 255.0f;
-
-    pSpecular->a = static_cast<float>((specular >> 24) & 0xFF) / 255.0f;
-    pSpecular->r = static_cast<float>((specular >> 16) & 0xFF) / 255.0f;
-    pSpecular->g = static_cast<float>((specular >> 8) & 0xFF) / 255.0f;
-    pSpecular->b = static_cast<float>((specular >> 0) & 0xFF) / 255.0f;
-  }
-};
 
 struct Block
 {
@@ -34,9 +14,21 @@ struct Block
   {
     blockType = bType;
   }
+  Block() { blockType = 0; }
 
+  bool IsVisible() const { return m_isVisible; }
+  void SetVisible(bool val) { m_isVisible = val; }
+
+  BlockType GetType() const { return blockType; }
+  void SetType(BlockType type) { blockType = type; }
+
+  BlockMaterial GetMaterial() const { return blockMaterial; }
+  void SetMaterial(const BlockMaterial &mat) { blockMaterial = mat; }
+
+private:
   BlockType blockType;
   BlockMaterial blockMaterial;
+  bool m_isVisible;
 };
 
 } // namespace shinybear

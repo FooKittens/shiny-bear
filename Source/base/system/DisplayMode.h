@@ -1,8 +1,7 @@
 #ifndef GRAPHICSSETTINGS_H
 #define GRAPHICSSETTINGS_H
 
-typedef unsigned int UINT;
-typedef unsigned long DWORD;
+#include "util\Typedefs.h"
 
 namespace shinybear
 {
