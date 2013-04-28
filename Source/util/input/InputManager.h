@@ -491,10 +491,12 @@ private:
 
 class InputManager
 {
-
 public:
   friend class BaseGame;
   friend class GameWindow;
+
+  static const KeyboardState GetKeyboardState();
+  static const MouseState GetMouseState();
 
 private:
   static void Initialize(const GameWindow &pGameWindow);
@@ -505,6 +507,17 @@ private:
   static KeyboardState keyboardState;
   static std::bitset<255> tempKey;
 };
+
+// Inlines
+inline const KeyboardState InputManager::GetKeyboardState()
+{
+  return keyboardState;
+}
+
+inline const MouseState InputManager::GetMouseState()
+{
+  return mouseState;
+}
 
 } // namespace framework
 
