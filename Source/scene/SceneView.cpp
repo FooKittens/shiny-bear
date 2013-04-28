@@ -51,6 +51,8 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
 SceneView::~SceneView()
 {
   delete[] m_pShaderPath;
+  RELEASECOM(m_pDecl);
+  RELEASECOM(m_pShader);
 }
 
 void SceneView::Render()
@@ -72,7 +74,7 @@ void SceneView::Render()
 
   D3DXMATRIX proj;
   D3DXMatrixPerspectiveFovLH(&proj,
-    60.0f * (3.141592 / 180.f), 1280.0f / 768.0f, 0.1f, 1000.0f);
+    60.0f * (3.141592 / 180.f), 1280.0f / 768.0f, 1.0f, 1000.0f);
 
   D3DXHANDLE hWorld = m_pShader->GetParameterByName(0, "g_world");
   D3DXHANDLE hView = m_pShader->GetParameterByName(0, "g_view");
@@ -81,19 +83,32 @@ void SceneView::Render()
   HR(m_pProvider->GetDevice()->SetVertexDeclaration(m_pDecl));
 
   HR(m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE));
-
+  //HR(m_pProvider->GetDevice()->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));
   D3DXHANDLE hTech = m_pShader->GetTechniqueByName("BaseTech");
-  HR(m_pShader->SetTechnique(hTech));
-
   
+  D3DVIEWPORT9 vp;
+  vp.Height = 768;
+  vp.Width = 1280;
+  vp.MaxZ = 1.0f;
+  vp.MinZ = 0.0f;
+  vp.X = 0;
+  vp.Y = 0;
+  
+  HR(m_pProvider->GetDevice()->SetViewport(&vp));
+
   m_pShader->SetMatrix(hView, &view);
   m_pShader->SetMatrix(hProj, &proj);
+  D3DXMATRIX mat;
+  D3DXMatrixIdentity(&mat);
+  HR(m_pShader->SetMatrix(hWorld, &mat));
 
+  HR(m_pProvider->GetDevice()->SetVertexDeclaration(m_pDecl));
+  HR(m_pShader->SetTechnique(hTech));
+  
   UINT numPasses;
   HR(m_pShader->Begin(&numPasses, 0));
   for(int i = 0; i < m_meshes.size(); ++i)
   {
-    HR(m_pShader->SetMatrix(hWorld, &m_meshes[i]->GetTransform()));
     HR(m_pShader->BeginPass(0));
     m_meshes[i]->GetMesh()->RenderMesh();
     HR(m_pShader->EndPass());

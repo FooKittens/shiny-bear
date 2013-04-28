@@ -101,11 +101,11 @@ void Mesh::AddTriangle(UINT v1, UINT v2, UINT v3)
 
 void Mesh::RenderMesh()
 {
-  m_pProvider->GetDevice()->SetIndices(m_pIBuffer);
-  m_pProvider->GetDevice()->SetStreamSource(0, m_pVBuffer, 0, sizeof(BlockVertex));
+  HR(m_pProvider->GetDevice()->SetIndices(m_pIBuffer));
+  HR(m_pProvider->GetDevice()->SetStreamSource(0, m_pVBuffer, 0, sizeof(BlockVertex)));
 
-  m_pProvider->GetDevice()->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 
-    0, 0, m_vertexCount, 0, m_indexCount / 3);
+  HR(m_pProvider->GetDevice()->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 
+    0, 0, m_vertexCount, 0, m_indexCount / 3));
 }
 
 

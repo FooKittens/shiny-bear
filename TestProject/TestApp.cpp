@@ -27,14 +27,14 @@ bool TestApp::OnInitialize()
   Mesh *pMesh = new Mesh(GetGraphicsProvider());
 
   BlockMaterial redMat;
-  redMat.diffuse = 0xFFFF;
-  redMat.specular = 0xFFFFFF;
+  redMat.diffuse = 0xFFFF0000;
+  redMat.specular = 0xFFFFFFFF;
 
   D3DXVECTOR3 normal(0, 0, -1.0f);
-  D3DXVECTOR3 tl(-0.5f, +0.5f, 5.0f);
-  D3DXVECTOR3 tr(+0.5f, +0.5f, 5.0f);
-  D3DXVECTOR3 br(+0.5f, -0.5f, 5.0f);
-  D3DXVECTOR3 bl(-0.5f, -0.5f, 5.0f);
+  D3DXVECTOR3 tl(-50.5f, +0.5f, 0.0f);
+  D3DXVECTOR3 tr(+50.5f, +0.5f, 0.0f);
+  D3DXVECTOR3 br(+0.5f, -0.5f, 0.0f);
+  D3DXVECTOR3 bl(-0.5f, -0.5f, 0.0f);
 
   shinybear::UINT v0, v1, v2, v3;
 
@@ -45,8 +45,6 @@ bool TestApp::OnInitialize()
 
   pMesh->AddTriangle(v0, v1, v2);
   pMesh->AddTriangle(v2, v3, v0);
-  pMesh->AddTriangle(v2, v1, v0);
-  pMesh->AddTriangle(v2, v1, v3);
 
   pMesh->UpdateBuffers();
 
@@ -70,7 +68,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
   BaseGame::OnUpdate(elapsedSeconds);
   m_pScene->Update(elapsedSeconds);
 
-  m_pMeshNode->Rotate(0, 0, 1.0f);
+  m_pMeshNode->Rotate(2.0f, -1.0f, 1.0f);
 }
 
 void TestApp::OnRender()

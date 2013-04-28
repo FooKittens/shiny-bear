@@ -155,8 +155,6 @@ bool BaseGame::Run()
     HR(m_pGraphicsProvider->GetDevice()->EndScene());
 
     m_pGraphicsProvider->Present();
-    
-
 
     if(m_isQuitting)
     {
