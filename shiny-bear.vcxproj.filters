@@ -155,6 +155,9 @@
     <ClCompile Include="Source\scene\LightNode.cpp">
       <Filter>Source\scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\scene\CameraNode.cpp">
+      <Filter>Source\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\res\shaders\LightShader.fx" />

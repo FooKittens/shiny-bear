@@ -30,7 +30,7 @@ Cluster::Cluster(GraphicsProvider *pProvider)
         float fx = (x - kSizeX / 2.0f) / 32.0f;
         float fz = (z - kSizeY * 6.0f) / 64.0f;
 
-        int h = max(2, (sin(fx * 2.0f) * cos(fz * 2.0f) + sin(fz * 4.0f) * cos(fx * fz)) * kSizeY / 2.0f); 
+        int h = max(2, (sin(fx * 2.0f) * cos(fz * 2.0f) + sin(fz * 4.0f) * cos(fx * fz)) * kSizeY / 3.0f); 
         for(int i = kSizeY - 1; i >= h; --i)
         {
           m_blocks[x][i][z].SetVisible(false);

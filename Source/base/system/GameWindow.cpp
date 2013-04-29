@@ -26,6 +26,8 @@ GameWindow::GameWindow(BaseGame *pGame, const Size &size)
   wclass.lpfnWndProc = &GameWindow::StaticWinProc;
   wclass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
   wclass.lpszClassName = s_className;
+  wclass.hCursor = LoadCursor(NULL, IDC_ARROW);
+  
 
   // Register the class for usage.
   RegisterClass(&wclass);
@@ -65,7 +67,7 @@ void GameWindow::HandleMessages()
 {
   MSG msg = { 0 };
 
-  while(PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+  if(PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
   {
     TranslateMessage(&msg);
     DispatchMessage(&msg);

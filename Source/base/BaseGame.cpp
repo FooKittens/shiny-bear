@@ -82,6 +82,7 @@ bool BaseGame::Initialize()
     m_pGraphicsProvider->SetDisplayMode(cfg.displayMode);
     m_pGraphicsProvider->SetMultiSampleMode(cfg.multiSampleMode);
     m_pGraphicsProvider->ApplyChanges();
+
     OnDeviceReset();
   }
   else
@@ -140,24 +141,24 @@ bool BaseGame::Run()
     // Update gamelogic.
     OnUpdate(m_pGameTimer->GetElapsedTime());
 
-    if(m_hasFocus || !m_pGraphicsProvider->IsFullscreen())
+    // Check the state of the graphicsprovider.
+    // This will reset the device if necessary.
+    if(CheckDeviceState() == S_OK)
     {
-      // Check the state of the graphicsprovider.
-      // This will reset the device if necessary.
-      CheckDeviceState();
-
       HR(m_pGraphicsProvider->GetDevice()->BeginScene());
       // call virtual method to delegate rendering to derived classes.
       OnRender();
       if(m_doRenderDiagnostics)
       {
-        //RenderDiagnostics(m_pDiagFont);
+        RenderDiagnostics(m_pDiagFont);
       }
 
       HR(m_pGraphicsProvider->GetDevice()->EndScene());
 
       m_pGraphicsProvider->Present();
     }
+
+    //Sleep(5);
 
     if(m_isQuitting)
     {
@@ -191,8 +192,12 @@ void BaseGame::RenderDiagnostics(ID3DXFont *pFont)
     &drawRect, 0 , 0xFFFFFFFF);
 }
 
-void BaseGame::CheckDeviceState()
+HRESULT BaseGame::CheckDeviceState()
 {
+  if(!m_hasFocus && m_pGraphicsProvider->IsFullscreen())
+  {
+    return D3DERR_DEVICENOTRESET;
+  }
   HRESULT hr = m_pGraphicsProvider->GetDeviceState();
   if(hr == D3DERR_DEVICENOTRESET)
   {
@@ -203,12 +208,14 @@ void BaseGame::CheckDeviceState()
       OnDeviceReset();
     }
   }
-  else if(hr == D3DERR_DEVICELOST && m_hasFocus)
-  {
-    OnDeviceLost();
-    m_pGraphicsProvider->ApplyChanges();
-    OnDeviceReset();
-  }
+  //else if(hr == D3DERR_DEVICELOST && m_hasFocus)
+  //{
+  //  OnDeviceLost();
+  //  m_pGraphicsProvider->ApplyChanges();
+  //  OnDeviceReset();
+  //}
+
+  return hr;
 }
 
 void BaseGame::Exit()
@@ -240,7 +247,7 @@ void BaseGame::OnFocusChanged(bool getFocus)
   {
     if(m_pGraphicsProvider->IsFullscreen())
     {
-      Sleep(2000);
+      Sleep(50);
     }
     CheckDeviceState();
   }

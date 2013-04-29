@@ -63,7 +63,7 @@ private:
 
   bool Initialize();
 
-  void CheckDeviceState();
+  HRESULT CheckDeviceState();
 
   GameTimer *m_pGameTimer;
   GraphicsProvider *m_pGraphicsProvider;
