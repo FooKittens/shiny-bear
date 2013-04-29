@@ -1,5 +1,6 @@
 #include "TestApp.h"
 #include <base\system\GraphicsProvider.h>
+#include <util\input\InputManager.h>
 #include <scene\SceneManager.h>
 #include <scene\SceneView.h>
 #include <scene\MeshNode.h>
@@ -185,7 +186,14 @@ void TestApp::OnUpdate(double elapsedSeconds)
   //m_pOtherNode->Rotate(0, 0, rotB);
   //m_pThirdNode->Rotate(0, rotB, 0);
   //m_pMeshNode->Translate(1.0f * elapsedSeconds, 0, 0);
-}
+
+  KeyboardState keys = KeyboardState();
+  keys = InputManager::GetKeyboardState();
+  if(keys.IsAnyKeyDown())
+  {
+    exit(0);
+  }
+
 
 void TestApp::OnRender()
 {
