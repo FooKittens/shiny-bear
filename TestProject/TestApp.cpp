@@ -155,12 +155,12 @@ bool TestApp::OnInitialize()
 
   //m_meshes.push_back(m_pOtherNode);
   //m_meshes.push_back(m_pThirdNode);
-  for(int i = 0; i < 8; ++i)
-    for(int k = 0; k < 8; ++k)
+  for(int i = 0; i < 16; ++i)
+    for(int k = 0; k < 16; ++k)
     {
       Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
       m_pMeshNode->Attach(cluster);
-      cluster->Translate((i - 4) * 32, (k - 4) * 32, 0);
+      cluster->Translate((i - 8) * 16, (k - 8) * 16, 0);
       cluster->Rotate(0, 3.141592f / 2.0f, 0);
     }
 

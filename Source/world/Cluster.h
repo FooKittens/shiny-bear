@@ -16,9 +16,9 @@ namespace shinybear
 class Cluster : public SceneNode
 {
 public:
-  static const int kSizeX = 32;
-  static const int kSizeY = 32;
-  static const int kSizeZ = 32;
+  static const int kSizeX = 16;
+  static const int kSizeY = 16;
+  static const int kSizeZ = 16;
 
   Cluster(GraphicsProvider *pProvider);
   ~Cluster();
