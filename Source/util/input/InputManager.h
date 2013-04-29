@@ -231,7 +231,19 @@ public:
   friend class InputManager;
   bool const IsKeyDown(Keyboard::Key key) const
   {
-    return !!(keyStates[key] & 1);
+    return !!(keyStates[key - 1] & 1);
+  }
+
+  bool const IsAnyKeyDown() const
+  {
+    for(int i = 0; i != 255; ++i)
+    {
+      if(!!(keyStates[i] & 1))
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   static std::string const GetKeyName(Keyboard::Key key)
@@ -430,7 +442,7 @@ public:
     default: return "OEM Special";
     }
   }
-  
+
   // TODO implicit assignment
 
 private:

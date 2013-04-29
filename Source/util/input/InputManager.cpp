@@ -197,7 +197,7 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
         {
           // tempKey is a bitset<255>, just like keyStates
           tempKey = 1;
-          tempKey <<= vKey;
+          tempKey <<= (vKey - 1);
           keyboardState.keyStates &= ~tempKey; // Sets the vKey'th bit to 0
         }
         else
@@ -211,7 +211,7 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
         {
           // tempKey is a bitset<255>, just like keyStates
           tempKey = 1;
-          tempKey <<= vKey;
+          tempKey <<= (vKey - 1);
           keyboardState.keyStates |= tempKey; // Sets the vKey'th bit to 1
         }
         else

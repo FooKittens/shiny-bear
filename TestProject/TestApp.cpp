@@ -28,10 +28,8 @@ void TestApp::OnUpdate(double elapsedSeconds)
 {
   KeyboardState keys = KeyboardState();
   keys = InputManager::GetKeyboardState();
-  if(keys.IsKeyDown(Keyboard::K_ESCAPE))
+  if(keys.IsAnyKeyDown())
   {
     exit(0);
   }
 }
-
-
