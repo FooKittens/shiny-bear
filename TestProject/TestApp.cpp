@@ -6,6 +6,8 @@
 #include <scene\LightNode.h>
 #include <graphics\Mesh.h>
 #include <world\Block.h>
+#include <world\Cluster.h>
+#include <util\SBUtil.h>
 
 using namespace shinybear;
 
@@ -16,6 +18,13 @@ TestApp::TestApp()
 
 TestApp::~TestApp()
 {
+  //for(int i = 0; i < m_meshes.size(); ++i)
+  //{
+  //  delete m_meshes[i];
+  //}
+
+  //m_meshes.clear();
+
   delete m_pScene;
 }
 
@@ -105,65 +114,59 @@ void CreateCube(float x, float y, float z, const Block &block,
   
 }
 
+MeshNode *TestApp::CreateMeshNode(BlockMaterial *mat)
+{
+  static Block block;
+  block.SetMaterial(*mat);
+
+  Mesh *pMesh = DBG_NEW Mesh(GetGraphicsProvider());
+  MeshNode *pNode = DBG_NEW MeshNode(pMesh);
+
+  CreateCube(0, 0, 0, block, pMesh, 0);
+  pMesh->UpdateBuffers();
+  return pNode;
+}
+
 bool TestApp::OnInitialize() 
 {
-  m_pScene = new SceneManager(GetGraphicsProvider());
+  m_pScene = DBG_NEW SceneManager(GetGraphicsProvider());
 
- 
 
   BlockMaterial redMat;
   redMat.diffuse = 0xFFFF0000;
   redMat.specular = 0xFFFFFFFF;
-  Block block;
-  block.SetMaterial(redMat);
-  block.SetVisible(true);
-  block.SetType(0);
-
-  //Light *pLight = new AmbientLight();
-  //LightNode *pLightNode = new LightNode(pLight);
-  //m_pScene->GetRoot()->Attach(pLightNode);
-
-  Mesh *pMesh = new Mesh(GetGraphicsProvider());
-
   
-  CreateCube(0, 0, 0, block, pMesh, 0);
-  pMesh->UpdateBuffers();
-  m_pMeshNode = new MeshNode(pMesh);
-
-  Mesh *pOther = new Mesh(GetGraphicsProvider());
-
-  redMat.diffuse = 0xFF00FF00;
-  block.SetMaterial(redMat);
-
-  CreateCube(0, 0, 0, block, pOther, 0);
-  pOther->UpdateBuffers();
-  m_pOtherNode = new MeshNode(pOther);
-
-  Mesh *pThird = new Mesh(GetGraphicsProvider());
-  CreateCube(0, 0, 0, block, pThird, 0);
-  pThird->UpdateBuffers();
-  m_pThirdNode = new MeshNode(pThird);
-
-  //m_pScene->GetRoot()->Translate(5.0f, 0, 0);
+  m_pMeshNode = CreateMeshNode(&redMat);
+  //m_pOtherNode = CreateMeshNode(&redMat);
+  //m_pThirdNode = CreateMeshNode(&redMat);
 
   m_pScene->GetRoot()->Attach(m_pMeshNode);
+  //m_pMeshNode->Attach(m_pOtherNode);
+  //m_pMeshNode->Attach(m_pThirdNode);
 
-  m_pOtherNode->Translate(0, 4.0f, 0);
-
-  m_pMeshNode->Attach(m_pOtherNode);
-
-  //m_pMeshNode->Translate(0, 2.0, 0.0f);
-
+  m_pMeshNode->Translate(0, 0, 0);
   //m_pMeshNode->Scale(0.5f);
+  m_pScene->GetRoot()->Rotate(0, -3.141592 / 1.70f, 0);
 
-  m_pOtherNode->Attach(m_pThirdNode);
-  m_pOtherNode->Scale(0.25f);
+  //m_pOtherNode->Translate(2.0f, 0, 0);
+  //m_pThirdNode->Translate(2.0f, 0, 2.0f);
 
+  //m_meshes.push_back(m_pMeshNode);
 
-  m_pThirdNode->Translate(4.0f, 0, 0);
-  //pThirdNode->Rotate(0, 0, 25.0f);
+  //m_meshes.push_back(m_pOtherNode);
+  //m_meshes.push_back(m_pThirdNode);
+  for(int i = 0; i < 8; ++i)
+    for(int k = 0; k < 8; ++k)
+    {
+      Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
+      m_pMeshNode->Attach(cluster);
+      cluster->Translate((i - 4) * 32, (k - 4) * 32, 0);
+      cluster->Rotate(0, 3.141592f / 2.0f, 0);
+    }
 
-  m_pThirdNode->Scale(2.75f);
+  //Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
+
+  //m_pMeshNode->Attach(cluster);
   return true;
 }
 
@@ -175,12 +178,12 @@ void TestApp::OnUpdate(double elapsedSeconds)
   BaseGame::OnUpdate(elapsedSeconds);
   m_pScene->Update(elapsedSeconds);
 
-  rotA += -1.0f * elapsedSeconds;
-  rotB += 2.5f * elapsedSeconds;
+  rotA += -0.5f * elapsedSeconds;
+  rotB += 1.0f * elapsedSeconds;
 
-  m_pMeshNode->Rotate(rotB, 0, rotA);
-  m_pOtherNode->Rotate(0, 0, rotB);
-  m_pThirdNode->Rotate(0, rotB, 0);
+  m_pMeshNode->Rotate(0, 0, rotA);
+  //m_pOtherNode->Rotate(0, 0, rotB);
+  //m_pThirdNode->Rotate(0, rotB, 0);
   //m_pMeshNode->Translate(1.0f * elapsedSeconds, 0, 0);
 }
 

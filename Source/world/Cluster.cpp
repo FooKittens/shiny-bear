@@ -8,10 +8,12 @@
 namespace shinybear
 {
 
-Cluster::Cluster()
+Cluster::Cluster(GraphicsProvider *pProvider)
 {
   m_recreateMesh = true;
-  m_pMeshNode = nullptr;
+  Mesh *pMesh = DBG_NEW Mesh(pProvider);
+  m_pMeshNode = DBG_NEW MeshNode(pMesh);
+  Attach(m_pMeshNode);
   m_blocks = DBG_NEW Block**[kSizeX];
   for(int x = 0; x < kSizeX; ++x)
   {
@@ -21,6 +23,19 @@ Cluster::Cluster()
       m_blocks[x][y] = DBG_NEW Block[kSizeZ];
     }
   }
+
+  for(int x = 0; x < kSizeX; ++x)
+      for(int z = 0; z < kSizeZ; ++z)
+      {
+        float fx = (x - kSizeX / 2.0f) / 32.0f;
+        float fz = (z - kSizeY * 6.0f) / 64.0f;
+
+        int h = max(2, (sin(fx * 2.0f) * cos(fz * 2.0f) + sin(fz * 4.0f) * cos(fx * fz)) * kSizeY / 2.0f); 
+        for(int i = kSizeY - 1; i >= h; --i)
+        {
+          m_blocks[x][i][z].SetVisible(false);
+        }
+      }
 }
 
 Cluster::~Cluster()
@@ -34,6 +49,7 @@ Cluster::~Cluster()
     delete[] m_blocks[x];
   }
   delete[] m_blocks;
+
 }
 
 void Cluster::Render(SceneManager *pScene)
@@ -50,6 +66,7 @@ void Cluster::Render(SceneManager *pScene)
 void Cluster::RecreateMesh()
 {
   Mesh *pMesh = m_pMeshNode->GetMesh();
+  //pMesh->Reserve(kSizeX * kSizeY * kSizeZ * 24);
   for(int x = 0; x < kSizeX; ++x)
   {
     for(int y = 0; y < kSizeY; ++y)
@@ -69,20 +86,24 @@ void Cluster::RecreateMesh()
         if(x > 0 && m_blocks[x - 1][y][z].IsVisible())
           hideFlags |= HF_LEFT;
 
-        if(x < kSizeX && m_blocks[x + 1][y][z].IsVisible())
+        if(x < kSizeX - 1 && m_blocks[x + 1][y][z].IsVisible())
           hideFlags |= HF_RIGHT;
 
         if(y > 0 && m_blocks[x][y - 1][z].IsVisible())
           hideFlags |= HF_BOTTOM;
 
-        if(y < kSizeY && m_blocks[x][y + 1][z].IsVisible())
+        if(y < kSizeY - 1 && m_blocks[x][y + 1][z].IsVisible())
           hideFlags |= HF_TOP;
 
         if(z > 0 && m_blocks[x][y][z - 1].IsVisible())
           hideFlags |= HF_FRONT;
 
-        if(z < kSizeZ && m_blocks[x][y][z + 1].IsVisible())
+        if(z < kSizeZ - 1 && m_blocks[x][y][z + 1].IsVisible())
           hideFlags |= HF_BACK;
+
+        BlockMaterial mat;
+        mat.diffuse = 0xFFFFFFFF;
+        m_blocks[x][y][z].SetMaterial(mat);
 
         CreateCube(blockX, blockY, blockZ, m_blocks[x][y][z], pMesh, hideFlags);
       }

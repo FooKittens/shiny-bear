@@ -9,14 +9,15 @@ namespace shinybear
 SceneManager::SceneManager(GraphicsProvider *pProvider)
 {
   D3DXCreateMatrixStack(0, &m_pMatStack);
-  m_pRoot = new SceneNode();
-  m_pView = new SceneView(pProvider, this);
+  m_pRoot = DBG_NEW SceneNode();
+  m_pView = DBG_NEW SceneView(pProvider, this);
 }
 
 SceneManager::~SceneManager()
 {
  delete m_pRoot;
  RELEASECOM(m_pMatStack);
+ delete m_pView;
 }
 
 void SceneManager::Update(double elapsedSeconds)

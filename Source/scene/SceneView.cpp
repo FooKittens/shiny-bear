@@ -114,6 +114,7 @@ void SceneView::Render(const RenderList &list)
   HR(m_pShader->SetTechnique(hTech));
   
   UINT numPasses;
+  //m_pProvider->GetDevice()->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
   HR(m_pShader->Begin(&numPasses, 0));
   for(int i = 0; i < m_meshes.size(); ++i)
   {

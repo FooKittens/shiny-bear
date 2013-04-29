@@ -16,6 +16,7 @@ SceneNode::~SceneNode()
 {
   for(int i = 0; i < m_children.size(); ++i)
   {
+    m_children[i]->SetParent(nullptr);
     delete m_children[i];
   }
 

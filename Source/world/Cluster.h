@@ -7,6 +7,7 @@
 namespace shinybear 
 {
   class MeshNode; class Mesh;
+  class GraphicsProvider;
 }
 
 namespace shinybear
@@ -19,7 +20,7 @@ public:
   static const int kSizeY = 32;
   static const int kSizeZ = 32;
 
-  Cluster();
+  Cluster(GraphicsProvider *pProvider);
   ~Cluster();
 
   void SetBlock(const Block &newBlock, int x, int y, int z);
@@ -47,13 +48,13 @@ private:
   Block ***m_blocks;
 };
 
-void Cluster::SetBlock(const Block &newBlock, int x, int y, int z)
+inline void Cluster::SetBlock(const Block &newBlock, int x, int y, int z)
 {
   m_blocks[x][y][z] = newBlock;
   m_recreateMesh = true;
 }
 
-const Block &Cluster::GetBlock(int x, int y, int z)
+inline const Block &Cluster::GetBlock(int x, int y, int z)
 {
   return m_blocks[x][y][z];
 }

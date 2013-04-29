@@ -18,6 +18,8 @@ public:
   Mesh(GraphicsProvider *pProvider);
   ~Mesh();
 
+  void Reserve(UINT vcount);
+
   UINT AddVertex(const D3DXVECTOR3 &position, const BlockMaterial &mat,
     const D3DXVECTOR3 &normal);
   void AddTriangle(UINT v1, UINT v2, UINT v3);
@@ -37,6 +39,12 @@ private:
   IDirect3DVertexBuffer9 *m_pVBuffer;
   IDirect3DIndexBuffer9 *m_pIBuffer;
 };
+
+inline void Mesh::Reserve(UINT vcount)
+{
+  m_vertices.reserve(vcount);
+  m_indices.reserve(vcount * 3);
+}
 
 } // namespace shinybear
 
