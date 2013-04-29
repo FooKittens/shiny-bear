@@ -33,11 +33,12 @@ void MeshNode::Render(SceneManager *pScene)
 
 void MeshNode::OnDeviceLost()
 {
-
+  SceneNode::OnDeviceLost();
 }
 
 void MeshNode::OnDeviceReset()
 {
+  SceneNode::OnDeviceReset();
   m_pMesh->UpdateBuffers();
 }
 

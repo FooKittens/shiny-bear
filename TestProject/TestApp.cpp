@@ -14,7 +14,9 @@ using namespace shinybear;
 
 TestApp::TestApp() 
 {
-
+  m_pScene = nullptr;
+  m_pMeshNode = nullptr;
+  m_pOtherNode = nullptr;
 }
 
 TestApp::~TestApp()
@@ -123,8 +125,9 @@ MeshNode *TestApp::CreateMeshNode(BlockMaterial *mat)
   Mesh *pMesh = DBG_NEW Mesh(GetGraphicsProvider());
   MeshNode *pNode = DBG_NEW MeshNode(pMesh);
 
+  pMesh->BeginMesh();
   CreateCube(0, 0, 0, block, pMesh, 0);
-  pMesh->UpdateBuffers();
+  pMesh->EndMesh();
   return pNode;
 }
 
@@ -189,11 +192,12 @@ void TestApp::OnUpdate(double elapsedSeconds)
 
   KeyboardState keys = KeyboardState();
   keys = InputManager::GetKeyboardState();
-  if(keys.IsAnyKeyDown())
+  if(keys.IsKeyDown(Keyboard::K_ESCAPE))
   {
-    exit(0);
+    // exit(0); // wts memory leaks of doom.
+    Exit();
   }
-
+}
 
 void TestApp::OnRender()
 {
@@ -201,4 +205,22 @@ void TestApp::OnRender()
   m_pScene->Render();
 }
 
+void TestApp::OnDeviceReset()
+{
+  BaseGame::OnDeviceReset();
 
+  if(m_pScene)
+  {
+    m_pScene->OnDeviceReset();
+  }
+}
+
+void TestApp::OnDeviceLost()
+{
+  BaseGame::OnDeviceLost();
+
+  if(m_pScene)
+  {
+    m_pScene->OnDeviceLost();
+  }
+}

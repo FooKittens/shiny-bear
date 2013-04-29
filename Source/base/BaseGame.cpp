@@ -140,21 +140,24 @@ bool BaseGame::Run()
     // Update gamelogic.
     OnUpdate(m_pGameTimer->GetElapsedTime());
 
-    // Check the state of the graphicsprovider.
-    // This will reset the device if necessary.
-    CheckDeviceState();
-
-    HR(m_pGraphicsProvider->GetDevice()->BeginScene());
-    // call virtual method to delegate rendering to derived classes.
-    OnRender();
-    if(m_doRenderDiagnostics)
+    if(m_hasFocus || !m_pGraphicsProvider->IsFullscreen())
     {
-      RenderDiagnostics(m_pDiagFont);
+      // Check the state of the graphicsprovider.
+      // This will reset the device if necessary.
+      CheckDeviceState();
+
+      HR(m_pGraphicsProvider->GetDevice()->BeginScene());
+      // call virtual method to delegate rendering to derived classes.
+      OnRender();
+      if(m_doRenderDiagnostics)
+      {
+        //RenderDiagnostics(m_pDiagFont);
+      }
+
+      HR(m_pGraphicsProvider->GetDevice()->EndScene());
+
+      m_pGraphicsProvider->Present();
     }
-
-    HR(m_pGraphicsProvider->GetDevice()->EndScene());
-
-    m_pGraphicsProvider->Present();
 
     if(m_isQuitting)
     {
@@ -194,8 +197,11 @@ void BaseGame::CheckDeviceState()
   if(hr == D3DERR_DEVICENOTRESET)
   {
     OnDeviceLost();
-    m_pGraphicsProvider->ResetDevice();
-    OnDeviceReset();
+    hr = m_pGraphicsProvider->ResetDevice();
+    if(hr == S_OK)
+    {
+      OnDeviceReset();
+    }
   }
   else if(hr == D3DERR_DEVICELOST && m_hasFocus)
   {
@@ -232,6 +238,10 @@ void BaseGame::OnFocusChanged(bool getFocus)
   m_hasFocus = getFocus;
   if(getFocus == true)
   {
+    if(m_pGraphicsProvider->IsFullscreen())
+    {
+      Sleep(2000);
+    }
     CheckDeviceState();
   }
 }

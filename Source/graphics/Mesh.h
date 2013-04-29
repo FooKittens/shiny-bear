@@ -20,6 +20,9 @@ public:
 
   void Reserve(UINT vcount);
 
+  void BeginMesh();
+  void EndMesh();
+
   UINT AddVertex(const D3DXVECTOR3 &position, const BlockMaterial &mat,
     const D3DXVECTOR3 &normal);
   void AddTriangle(UINT v1, UINT v2, UINT v3);
@@ -29,10 +32,13 @@ public:
   void RenderMesh();
 
 private:
+  void Clear();
+
   GraphicsProvider *m_pProvider;
   size_t m_vertexCount;
   size_t m_indexCount;
   size_t m_currentIndex;
+  bool m_isEditing;
 
   std::vector<BlockVertex> m_vertices;
   std::vector<UINT> m_indices;

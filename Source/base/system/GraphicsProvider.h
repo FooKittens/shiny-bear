@@ -29,7 +29,7 @@ public:
   HRESULT GetDeviceState();
 
   // Performs a device-reset;
-  bool ResetDevice();
+  HRESULT ResetDevice();
 
   // Re-creates the device with new settings if any.
   void ApplyChanges();

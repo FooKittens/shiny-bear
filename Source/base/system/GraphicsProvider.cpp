@@ -62,9 +62,9 @@ HRESULT GraphicsProvider::GetDeviceState()
 }
 
 // Performs a hard-reset of the device by recreating it.
-bool GraphicsProvider::ResetDevice()
+HRESULT GraphicsProvider::ResetDevice()
 {
-  ApplyChanges();
+  return m_pDevice->Reset(&m_d3dPresent);
   return true;
 }
 
@@ -403,7 +403,8 @@ void GraphicsProvider::ApplyChanges()
     HRESULT hr = m_pD3DCreate->CreateDevice(m_adapterIndex, D3DDEVTYPE_HAL,
       m_hTargetWindow, flags, &m_d3dPresent, &m_pDevice);
 
-    if(FAILED(hr)) abort();
+    if(FAILED(hr))
+      exit(1);
   }
   else 
   {

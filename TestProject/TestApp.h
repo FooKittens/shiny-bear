@@ -28,8 +28,8 @@ protected:
 
   shinybear::MeshNode *CreateMeshNode(shinybear::BlockMaterial *mat);
 
-  //void OnDeviceLost();
-  //void OnDeviceReset();
+  void OnDeviceLost();
+  void OnDeviceReset();
 
 private:
   shinybear::SceneManager *m_pScene;

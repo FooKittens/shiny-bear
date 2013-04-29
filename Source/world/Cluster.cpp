@@ -66,6 +66,7 @@ void Cluster::Render(SceneManager *pScene)
 void Cluster::RecreateMesh()
 {
   Mesh *pMesh = m_pMeshNode->GetMesh();
+  pMesh->BeginMesh();
   //pMesh->Reserve(kSizeX * kSizeY * kSizeZ * 24);
   for(int x = 0; x < kSizeX; ++x)
   {
@@ -110,7 +111,7 @@ void Cluster::RecreateMesh()
     }
   }
 
-  pMesh->UpdateBuffers();
+  pMesh->EndMesh();
 }
 
 void Cluster::CreateCube(float x, float y, float z, const Block &block,

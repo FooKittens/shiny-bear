@@ -16,36 +16,11 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
   m_pProvider = pProvider;
   m_isRendering = false;
   m_pShader = nullptr;
-
-  ID3DXBuffer *pBuffer;
+  m_pDecl = nullptr;
 
   GetAbsolutePath(L"res\\shaders\\LightShader.fx", &m_pShaderPath);
-  D3DXCreateEffectFromFileW(
-    pProvider->GetDevice(),
-    m_pShaderPath,
-    0,
-    0,
-    D3DXSHADER_DEBUG,
-    0,
-    &m_pShader,
-    &pBuffer
-  );
 
-  if(pBuffer)
-  {
-    OutputDbgFormat("SHADER ERRORS: %s\n", (char*)pBuffer->GetBufferPointer());
-  }
-
-  D3DVERTEXELEMENT9 elements[] = 
-  {
-    { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-    { 0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0 },
-    { 0, 24, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
-    { 0, 40, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 1 },
-    D3DDECL_END()
-  };
-
-  HR(m_pProvider->GetDevice()->CreateVertexDeclaration(elements, &m_pDecl));
+  OnDeviceReset();
 }
 
 SceneView::~SceneView()
@@ -79,16 +54,6 @@ void SceneView::Render(const RenderList &list)
 
   HR(m_pProvider->GetDevice()->SetVertexDeclaration(m_pDecl));
   D3DXHANDLE hTech = m_pShader->GetTechniqueByName("BaseTech");
-  
-  //D3DVIEWPORT9 vp;
-  //vp.Height = 768;
-  //vp.Width = 1280;
-  //vp.MaxZ = 1.0f;
-  //vp.MinZ = 0.0f;
-  //vp.X = 0;
-  //vp.Y = 0;
-  //
-  //HR(m_pProvider->GetDevice()->SetViewport(&vp));
 
   for(int i = 0; i < list.size(); ++i)
   {
@@ -133,12 +98,40 @@ void SceneView::Render(const RenderList &list)
 
 void SceneView::OnDeviceLost()
 {
-
+  RELEASECOM(m_pDecl);
+  RELEASECOM(m_pShader);
 }
 
 void SceneView::OnDeviceReset()
 {
+  D3DVERTEXELEMENT9 elements[] = 
+  {
+    { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+    { 0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0 },
+    { 0, 24, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
+    { 0, 40, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 1 },
+    D3DDECL_END()
+  };
 
+  HR(m_pProvider->GetDevice()->CreateVertexDeclaration(elements, &m_pDecl));
+
+  ID3DXBuffer *pBuffer;
+
+  D3DXCreateEffectFromFileW(
+    m_pProvider->GetDevice(),
+    m_pShaderPath,
+    0,
+    0,
+    D3DXSHADER_DEBUG,
+    0,
+    &m_pShader,
+    &pBuffer
+  );
+
+  if(pBuffer)
+  {
+    OutputDbgFormat("SHADER ERRORS: %s\n", (char*)pBuffer->GetBufferPointer());
+  }
 }
 
 } // namespace shinybear

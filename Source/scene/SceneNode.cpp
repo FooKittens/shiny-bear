@@ -102,6 +102,20 @@ void SceneNode::RenderChildren(SceneManager *pScene)
   }
 }
 
+void SceneNode::OnDeviceLost()
+{
+  for(int i = 0; i < m_children.size(); ++i)
+  {
+    m_children[i]->OnDeviceLost();
+  }
+}
 
+void SceneNode::OnDeviceReset()
+{
+  for(int i = 0; i < m_children.size(); ++i)
+  {
+    m_children[i]->OnDeviceReset();
+  }
+}
 
 } // namespace shinybear

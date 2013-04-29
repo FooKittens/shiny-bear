@@ -24,8 +24,8 @@ public:
   virtual void Render(SceneManager *pScene);
   virtual void PostRender(SceneManager *pScene);
 
-  virtual void OnDeviceLost() { }
-  virtual void OnDeviceReset() { };
+  virtual void OnDeviceLost();
+  virtual void OnDeviceReset();
 
   bool IsVisible() const;
   void SetVisible(bool val);

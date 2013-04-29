@@ -37,11 +37,13 @@ void SceneManager::Render()
 
 void SceneManager::OnDeviceLost()
 {
+  m_pView->OnDeviceLost();
   m_pRoot->OnDeviceLost();
 }
 
 void SceneManager::OnDeviceReset()
 {
+  m_pView->OnDeviceReset();
   m_pRoot->OnDeviceReset();
 }
 
