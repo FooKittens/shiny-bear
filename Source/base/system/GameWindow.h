@@ -25,7 +25,7 @@ public:
   // Handle Win32 messages.
   void HandleMessages();
 
-  const Size& GetSize();
+  const Size &GetSize() const;
   void SetSize(const Size &size);
 
   // Retrieves a handle to the window for lowlevel access.
@@ -64,6 +64,11 @@ inline void GameWindow::SetSize(const Size &size)
 {
   m_size = size;
   SetWindowPos(m_hwnd, 0, 0, 0, size.width, size.height, SWP_NOMOVE);
+}
+
+inline const Size &GameWindow::GetSize() const
+{
+  return m_size;
 }
 
 inline void GameWindow::SetTitle(const char *title)

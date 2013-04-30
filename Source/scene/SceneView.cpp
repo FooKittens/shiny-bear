@@ -1,6 +1,7 @@
 #include "scene\SceneView.h"
 #include "scene\SceneManager.h"
 #include "scene\SceneNode.h"
+#include "scene\CameraNode.h"
 #include "base\system\GraphicsProvider.h"
 #include "graphics\Mesh.h"
 #include "util\SBUtil.h"
@@ -48,6 +49,8 @@ void SceneView::Render(const RenderList &list)
   D3DXMatrixPerspectiveFovLH(&proj,
     60.0f * (3.141592 / 180.f), 1280.0f / 768.0f, 1.0f, 1000.0f);
 
+  
+
   D3DXHANDLE hWorld = m_pShader->GetParameterByName(0, "g_world");
   D3DXHANDLE hView = m_pShader->GetParameterByName(0, "g_view");
   D3DXHANDLE hProj = m_pShader->GetParameterByName(0, "g_projection");
@@ -71,9 +74,9 @@ void SceneView::Render(const RenderList &list)
     }
   }
 
-
-  m_pShader->SetMatrix(hView, &view);
-  m_pShader->SetMatrix(hProj, &proj);
+  CameraNode *pCam = m_pScene->GetCamera();
+  m_pShader->SetMatrix(hView, &pCam->GetViewMatrix());
+  m_pShader->SetMatrix(hProj, &pCam->GetProjectionMatrix());
 
   HR(m_pProvider->GetDevice()->SetVertexDeclaration(m_pDecl));
   HR(m_pShader->SetTechnique(hTech));

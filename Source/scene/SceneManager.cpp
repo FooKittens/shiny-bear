@@ -11,6 +11,7 @@ SceneManager::SceneManager(GraphicsProvider *pProvider)
   D3DXCreateMatrixStack(0, &m_pMatStack);
   m_pRoot = DBG_NEW SceneNode();
   m_pView = DBG_NEW SceneView(pProvider, this);
+  m_isCameraSet = false;
 }
 
 SceneManager::~SceneManager()

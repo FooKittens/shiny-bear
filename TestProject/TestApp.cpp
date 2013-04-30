@@ -5,6 +5,7 @@
 #include <scene\SceneView.h>
 #include <scene\MeshNode.h>
 #include <scene\LightNode.h>
+#include <scene\CameraNode.h>
 #include <graphics\Mesh.h>
 #include <world\Block.h>
 #include <world\Cluster.h>
@@ -131,6 +132,7 @@ MeshNode *TestApp::CreateMeshNode(BlockMaterial *mat)
   return pNode;
 }
 
+
 bool TestApp::OnInitialize() 
 {
   m_pScene = DBG_NEW SceneManager(GetGraphicsProvider());
@@ -140,13 +142,22 @@ bool TestApp::OnInitialize()
   redMat.diffuse = 0xFFFF0000;
   redMat.specular = 0xFFFFFFFF;
   
+#pragma region OLDSTUFF
   m_pMeshNode = CreateMeshNode(&redMat);
-  //m_pOtherNode = CreateMeshNode(&redMat);
-  //m_pThirdNode = CreateMeshNode(&redMat);
+  m_pOtherNode = CreateMeshNode(&redMat);
+  m_pThirdNode = CreateMeshNode(&redMat);
 
   m_pScene->GetRoot()->Attach(m_pMeshNode);
-  //m_pMeshNode->Attach(m_pOtherNode);
-  //m_pMeshNode->Attach(m_pThirdNode);
+  m_pMeshNode->Attach(m_pOtherNode);
+  
+  m_pMeshNode->Translate(0, 0.0f, 20.0f);
+  m_pOtherNode->Translate(5.0f, 0.0f, -8.0f);
+  
+  m_pOtherNode->Attach(m_pThirdNode);
+
+  m_pThirdNode->Translate(0, 2.0f, 3.5f);
+
+  m_pOtherNode->Scale(0.5f);
 
   //m_pMeshNode->Translate(0, 0, 0);
 
@@ -164,14 +175,20 @@ bool TestApp::OnInitialize()
     for(int k = 0; k < 8; ++k)
     {
       Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
-      m_pMeshNode->Attach(cluster);
+      m_pScene->GetRoot()->Attach(cluster);
       cluster->Translate((i - 4) * 16, (k - 4) * 16, 0);
       cluster->Rotate(0, 3.141592f / 2.0f, 0);
     }
 
-  //Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
+ 
+#pragma endregion
 
-  //m_pMeshNode->Attach(cluster);
+
+  CameraNode *pCam = new CameraNode(GetWindow(), m_pOtherNode);
+  //CameraNode *pCam = new CameraNode(GetWindow(), m_pOtherNode);
+
+  m_pScene->SetCamera(pCam);
+
   return true;
 }
 
@@ -186,11 +203,10 @@ void TestApp::OnUpdate(double elapsedSeconds)
   rotA += -0.5f * elapsedSeconds;
   rotB += 1.0f * elapsedSeconds;
 
-  m_pMeshNode->Rotate(0, 0, rotA);
+  m_pMeshNode->Rotate(rotA, 0, 0);
+  m_pOtherNode->Rotate(0, rotB, 0);
   
-  
-  //m_pOtherNode->Rotate(0, 0, rotB);
-  //m_pThirdNode->Rotate(0, rotB, 0);
+  //m_pThirdNode->Rotate(rotB, 0, 0);
   //m_pMeshNode->Translate(1.0f * elapsedSeconds, 0, 0);
 
   KeyboardState keys = KeyboardState();

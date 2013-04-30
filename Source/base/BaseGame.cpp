@@ -135,7 +135,7 @@ bool BaseGame::Run()
     // Don't tick the timer if we're paused.
     if(!m_isPaused)
     {
-     m_pGameTimer->Tick();
+      m_pGameTimer->Tick();
     }
 
     // Update gamelogic.

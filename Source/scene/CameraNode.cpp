@@ -4,11 +4,23 @@ namespace shinybear
 {
 
 CameraNode::CameraNode(GameWindow *pWindow, SceneNode *pTarget)
-  :m_upVector(0, 1.0f, 0), m_position(0, 0, 0)
 {
+  m_upVector = Vector3::kUnitY;
+  m_position = Vector3::kZero;
+  m_targetPosition = Vector3::kZero;
+
   m_pTarget = pTarget;
-  m_fieldOfView = 0.0f;
-  m_aspectRatio = 0.0f;
+  SetFieldOfView(60.0f);
+  SetAspectRatio(pWindow->GetSize());
+  SetViewDistance(1000.0f);
+  SetupProjection();
+
+  if(m_pTarget == nullptr)
+  {
+    m_targetPosition.x = 0;
+    m_targetPosition.y = 0;
+    m_targetPosition.z = 0;
+  }
 }
 
 CameraNode::~CameraNode()
@@ -20,21 +32,26 @@ void CameraNode::Update(double elapsedSeconds)
 {
   if(m_pTarget)
   {
-    
+    m_targetPosition = m_pTarget->GetTransform().GetPosition();
   }
 
-  D3DXMATRIX inv;
-  float det = D3DXMatrixDeterminant(&m_view);
-  D3DXMatrixInverse(&inv, &det, &m_view);
+  Mat4x4 mat = m_pTarget->GetTransform();
+  Vector4 target = Vector4::kUnitZ * -10.0f;
+  Vector4 targetWorld = mat.Transform(target);
+  mat.Transform(&m_upVector);
+  m_position = mat.GetPosition() + Vector3(targetWorld);
+  
 
-  D3DXVECTOR4 outp;
+  //m_position = m_view.GetPosition();
 
-  D3DXVec3Transform(&outp, &m_zero, &inv);
+  m_view = Mat4x4::CreateLookAt(m_position, m_targetPosition, m_upVector);
+
+  SceneNode::Update(elapsedSeconds);
 }
 
 void CameraNode::Render(SceneManager *pScene)
 {
-
+  SceneNode::Render(pScene);
 }
 
 void CameraNode::OnResolutionChange(const Size &newSize)
@@ -46,8 +63,8 @@ void CameraNode::OnResolutionChange(const Size &newSize)
 
 void CameraNode::SetupProjection()
 {
-  D3DXMatrixPerspectiveFovLH(&m_projection,
-    m_fieldOfView, m_aspectRatio, 0.1f, m_viewDistance);
+  m_projection = Mat4x4::CreatePerspectiveFovLH(m_aspectRatio,
+    m_fieldOfView * (D3DX_PI / 180.0f), 0.1f, m_viewDistance);
 }
 
 

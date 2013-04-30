@@ -1,6 +1,7 @@
 #ifndef SHINYBEAR_SCENENODE_H
 #define SHINYBEAR_SCENENODE_H
 
+#include "util\math\Math.h"
 #include <vector>
 #include <d3dx9.h>
 
@@ -37,7 +38,7 @@ public:
 
   void SetParent(SceneNode *pNewParent);
   const SceneNode *GetParent() const;
-  virtual const D3DXMATRIX &GetTransform() const;
+  virtual const Mat4x4 &GetTransform() const;
 
 protected:
   virtual void UpdateChildren(double elapsedSeconds);
@@ -47,11 +48,11 @@ protected:
   std::vector<SceneNode *> m_children;
 
 private:
-  D3DXMATRIX scaleMat;
-  D3DXMATRIX rotation;
-  D3DXMATRIX translation;
-  D3DXMATRIX m_local;
-  D3DXMATRIX m_world;
+  Mat4x4 scaleMat;
+  Mat4x4 rotation;
+  Mat4x4 translation;
+  Mat4x4 m_world;
+
   bool m_isVisible;
 };
 
@@ -67,27 +68,24 @@ inline void SceneNode::SetVisible(bool val)
 
 inline void SceneNode::Translate(float x, float y, float z)
 {
-  D3DXMatrixTranslation(&translation, x, y, z);
-  m_local *= translation;
+  translation.SetPosition(x, y, z);
 }
 
 inline void SceneNode::Rotate(float x, float y, float z)
 {
-  D3DXMatrixRotationYawPitchRoll(&rotation, x, y, z);
-  m_local *= rotation;
+  rotation = Mat4x4::CreateYawPitchRoll(x, y, z);
 }
 
 inline void SceneNode::Scale(float scale)
 {
-  D3DXMatrixScaling(&scaleMat, scale, scale, scale);
-  m_local *= scaleMat;
+  scaleMat = Mat4x4::CreateScale(scale);
 }
 
 inline void SceneNode::LoadIdentity()
 {
-  D3DXMatrixIdentity(&translation);
-  D3DXMatrixIdentity(&rotation);
-  D3DXMatrixIdentity(&scaleMat);
+  translation = Mat4x4::kIdentity;
+  rotation    = Mat4x4::kIdentity;
+  scaleMat    = Mat4x4::kIdentity;
 }
 
 inline void SceneNode::SetParent(SceneNode *pNewParent)
@@ -100,7 +98,7 @@ inline const SceneNode *SceneNode::GetParent() const
   return m_pParent;
 }
 
-inline const D3DXMATRIX &SceneNode::GetTransform() const
+inline const Mat4x4 &SceneNode::GetTransform() const
 {
   return m_world;
 }

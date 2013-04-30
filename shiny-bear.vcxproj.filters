@@ -25,6 +25,9 @@
     <Filter Include="Source\graphics\shader">
       <UniqueIdentifier>{17381633-909c-419c-9997-1cd995fc9b1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\util\math">
+      <UniqueIdentifier>{25cd0a3b-c52f-4710-926c-6552e03d6680}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -105,6 +108,9 @@
     <ClInclude Include="Source\scene\LightNode.h">
       <Filter>Source\scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\util\math\Math.h">
+      <Filter>Source\util\math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -157,6 +163,9 @@
     </ClCompile>
     <ClCompile Include="Source\scene\CameraNode.cpp">
       <Filter>Source\scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\util\math\Math.cpp">
+      <Filter>Source\util\math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

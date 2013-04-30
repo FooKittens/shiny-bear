@@ -15,6 +15,10 @@
 // Macro to make sure deleted pointers are set to 0
 #define SAFEDELETE(X) delete X; X = 0
 
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&);               \
+  void operator=(const TypeName&);
+
 // Function for checking if a file exists
 namespace shinybear
 {
