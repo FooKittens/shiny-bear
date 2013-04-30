@@ -18,21 +18,23 @@ void InputManager::Initialize(const GameWindow &pGameWindow)
   HWND handle = pGameWindow.GetWindowHandle();
   RAWINPUTDEVICE Rid[3];
   
+  // http://www.usb.org/developers/devclass_docs/Hut1_11.pdf page 27
+
   // adds game pad
-  Rid[0].usUsagePage = 0x01;
-  Rid[0].usUsage = 0x05;
+  Rid[0].usUsagePage = 0x01; // Generic Desktop Device
+  Rid[0].usUsage = 0x05; // Game Pad
   Rid[0].dwFlags = 0;
   Rid[0].hwndTarget = handle;
 
   // adds HID mouse
-  Rid[1].usUsagePage = 0x01;
-  Rid[1].usUsage = 0x02;
-  Rid[1].dwFlags = 0;
+  Rid[1].usUsagePage = 0x01; // Generic Desktop Device
+  Rid[1].usUsage = 0x02; // Mouse
+  Rid[1].dwFlags = RIDEV_NOLEGACY;
   Rid[1].hwndTarget = handle;
 
   // adds HID keyboard
-  Rid[2].usUsagePage = 0x01;
-  Rid[2].usUsage = 0x06;
+  Rid[2].usUsagePage = 0x01; // Generic Desktop Device
+  Rid[2].usUsage = 0x06; // Keyboard
   Rid[2].dwFlags = RIDEV_NOLEGACY;
   Rid[2].hwndTarget = handle;
 
@@ -62,16 +64,16 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
     assert(false && "GetRawInputData does not return correct size!");
   }
 
-  RAWINPUT *raw = (RAWINPUT*)lpb;
+  RAWINPUT *pRawInput = (RAWINPUT*)lpb;
 
-  switch(raw->header.dwType)
+  switch(pRawInput->header.dwType)
   {
     case RIM_TYPEKEYBOARD:
     {
       // Get raw data
-      unsigned short scanCode = raw->data.keyboard.MakeCode;
-      unsigned short flags = raw->data.keyboard.Flags;
-      unsigned short vKey= raw->data.keyboard.VKey;
+      unsigned short scanCode = pRawInput->data.keyboard.MakeCode;
+      unsigned short flags = pRawInput->data.keyboard.Flags;
+      unsigned short vKey= pRawInput->data.keyboard.VKey;
       
       // Begin fix of bogus virtual keys
       if(vKey == 255)
@@ -225,10 +227,10 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
     case RIM_TYPEMOUSE:
     {
 
-      unsigned short flags = raw->data.mouse.usFlags;
-      unsigned short buttonFlags = raw->data.mouse.usButtonFlags;
-      long lastX = raw->data.mouse.lLastX;
-      long lastY = raw->data.mouse.lLastY;
+      unsigned short flags = pRawInput->data.mouse.usFlags;
+      unsigned short buttonFlags = pRawInput->data.mouse.usButtonFlags;
+      long lastX = pRawInput->data.mouse.lLastX;
+      long lastY = pRawInput->data.mouse.lLastY;
 
       // Check mouse movement parameters
       if(flags == MOUSE_MOVE_RELATIVE)
@@ -249,7 +251,7 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
       // Check button or scroll wheel status
       if(buttonFlags & RI_MOUSE_WHEEL)
       {
-        mouseState.mouseWheelChange = static_cast<short>(raw->data.mouse.usButtonData);
+        mouseState.mouseWheelChange = static_cast<short>(pRawInput->data.mouse.usButtonData);
       }
       else
       {
@@ -286,9 +288,11 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
     } // END OF MOUSE INPUT HANDLING
     case RIM_TYPEHID:
     {
-      BYTE *data = raw->data.hid.bRawData;
-      unsigned long sizePerReport = raw->data.hid.dwSizeHid;
-      unsigned long reportCount = raw->data.hid.dwCount;
+      BYTE *data = pRawInput->data.hid.bRawData;
+      unsigned long sizePerReport = pRawInput->data.hid.dwSizeHid;
+      unsigned long reportCount = pRawInput->data.hid.dwCount;
+
+      unsigned int bufferSize = sizePerReport * reportCount;
 
       break;
     } // END OF GAMEPAD INPUT HANDLING

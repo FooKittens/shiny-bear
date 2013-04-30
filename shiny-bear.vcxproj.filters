@@ -28,6 +28,9 @@
     <Filter Include="Source\util\math">
       <UniqueIdentifier>{25cd0a3b-c52f-4710-926c-6552e03d6680}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\util\input">
+      <UniqueIdentifier>{259b87c8-766f-4c0f-a98c-c859fd1b9fad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -55,9 +58,6 @@
       <Filter>Source\base</Filter>
     </ClInclude>
     <ClInclude Include="Source\util\Color4f.h">
-      <Filter>Source\util</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\util\input\InputManager.h">
       <Filter>Source\util</Filter>
     </ClInclude>
     <ClInclude Include="Source\graphics\Mesh.h">
@@ -111,6 +111,12 @@
     <ClInclude Include="Source\util\math\Math.h">
       <Filter>Source\util\math</Filter>
     </ClInclude>
+    <ClInclude Include="Source\util\input\InputManager.h">
+      <Filter>Source\util\input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\util\input\XboxController.h">
+      <Filter>Source\util\input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -129,9 +135,6 @@
       <Filter>Source\base</Filter>
     </ClCompile>
     <ClCompile Include="source\util\SBUtil.cpp">
-      <Filter>Source\util</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\util\input\InputManager.cpp">
       <Filter>Source\util</Filter>
     </ClCompile>
     <ClCompile Include="Source\scene\SceneNode.cpp">
@@ -166,6 +169,12 @@
     </ClCompile>
     <ClCompile Include="Source\util\math\Math.cpp">
       <Filter>Source\util\math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\util\input\InputManager.cpp">
+      <Filter>Source\util\input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\util\input\XboxController.cpp">
+      <Filter>Source\util\input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <bitset>
 #include <string>
+#include <util\input\XboxController.h>
+#include <cassert>
 
 namespace shinybear { class BaseGame; class GameWindow; }
 
@@ -229,6 +231,15 @@ struct KeyboardState
 {
 public:
   friend class InputManager;
+
+  //ctors
+  KeyboardState(){}
+  KeyboardState(const KeyboardState &keyState)
+  {
+    keyStates = keyState.keyStates;
+  }
+
+  //key checks
   bool const IsKeyDown(Keyboard::Key key) const
   {
     return !!(keyStates[key - 1] & 1);
@@ -246,7 +257,8 @@ public:
     return false;
   }
 
-  static std::string const GetKeyName(Keyboard::Key key)
+  //statics
+  static const std::string GetKeyName(Keyboard::Key key)
   {
     switch(key)
     {
@@ -443,8 +455,11 @@ public:
     }
   }
 
-  // TODO implicit assignment
-
+  // operators
+  void operator=(const KeyboardState &keyState)
+  {
+    keyStates = keyState.keyStates;
+  }
 private:
   // number 255 is used for fake keys, therefore
   // size is not 256; The range is 0-254.
@@ -467,11 +482,26 @@ struct MouseState
 {
 public:
   friend class InputManager;
+
+  //ctors
+  MouseState(){}
+  MouseState(const MouseState &mouseState)
+  {
+    mouseButtonStates = mouseState.mouseButtonStates;
+    mouseWheelChange = mouseState.mouseWheelChange;
+    absoluteX = mouseState.absoluteX;
+    absoluteY = mouseState.absoluteY;
+    changeX = mouseState.changeX;
+    changeY = mouseState.changeY;
+  }
+
+  //mouse checks
   bool const IsButtonDown(Mouse::Button button) const
   {
     return !!(mouseButtonStates[button - 1] & 1);
   }
 
+  //statics
   static std::string const GetButtonName(Mouse::Button button)
   {
     switch(button)
@@ -485,7 +515,16 @@ public:
     }
   }
 
-  // TODO implicit assignment
+  //operators
+  void operator=(const MouseState &mouseState)
+  {
+    mouseButtonStates = mouseState.mouseButtonStates;
+    mouseWheelChange = mouseState.mouseWheelChange;
+    absoluteX = mouseState.absoluteX;
+    absoluteY = mouseState.absoluteY;
+    changeX = mouseState.changeX;
+    changeY = mouseState.changeY;
+  }
 
 private:
   // size 6 to match Microsoft's VK_-defines, where 0x03 is a
@@ -507,30 +546,35 @@ public:
   friend class BaseGame;
   friend class GameWindow;
 
-  static const KeyboardState GetKeyboardState();
-  static const MouseState GetMouseState();
+  static void GetKeyboardState(KeyboardState * const pState);
+  static void GetMouseState(MouseState * const pState);
 
 private:
   static void Initialize(const GameWindow &pGameWindow);
+
+  static void Update();
 
   static void HandleInput(const HRAWINPUT &hInput);
 
   static MouseState mouseState;
   static KeyboardState keyboardState;
+  static XboxController xboxController;
   static std::bitset<255> tempKey;
 };
 
 // Inlines
-inline const KeyboardState InputManager::GetKeyboardState()
+inline void InputManager::GetKeyboardState(KeyboardState * const pState)
 {
-  return keyboardState;
+  assert(pState);
+  *pState = keyboardState;
 }
 
-inline const MouseState InputManager::GetMouseState()
+inline void InputManager::GetMouseState(MouseState * const pState)
 {
-  return mouseState;
+  assert(pState);
+  *pState = mouseState;
 }
 
-} // namespace framework
+} // namespace shinybear
 
 #endif
