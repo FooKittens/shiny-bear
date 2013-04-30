@@ -158,7 +158,7 @@ bool BaseGame::Run()
       m_pGraphicsProvider->Present();
     }
 
-    //Sleep(5);
+    //Sleep(1);
 
     if(m_isQuitting)
     {
@@ -172,10 +172,12 @@ bool BaseGame::Run()
 }
 
 void BaseGame::OnUpdate(double elapsedSeconds)
-{
+{ 
   ++m_currentFrame;
+
   m_fpsTimer += m_pGameTimer->GetElapsedTime();
-  if(m_fpsTimer > 1.0f)
+
+  if(m_fpsTimer >= 1.0f)
   {
     m_lastFps = m_currentFrame;
     m_currentFrame = 0;
@@ -262,7 +264,7 @@ void BaseGame::OnDeviceReset()
 {
   D3DXFONT_DESC fontdesc;
   fontdesc.CharSet = DEFAULT_CHARSET;
-  fontdesc.Height = 22;
+  fontdesc.Height = 16;
   fontdesc.Italic = false;
   fontdesc.MipLevels = 0;
   fontdesc.OutputPrecision = OUT_TT_ONLY_PRECIS;

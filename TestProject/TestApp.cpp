@@ -205,6 +205,8 @@ float rotB = 0.0f;
 KeyboardState keys;
 
 float x = 0.0f, y = 0.0f, z = 0.0f;
+float xT = 0.0f;
+float xDir = 1.0f;
 
 void TestApp::OnUpdate(double elapsedSeconds) 
 {
@@ -213,8 +215,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
 
   //rotA += -0.5f * elapsedSeconds;
   //rotB += 1.0f * elapsedSeconds;
-  m_pThirdNode->Rotate(2.5f * elapsedSeconds, -1.5f * elapsedSeconds, -0.5f * elapsedSeconds);
-  
+  m_pThirdNode->Rotate(2.5f * elapsedSeconds, 0, 0);
   
   //m_pOtherNode->Rotate(0, rotB, 0);
   
@@ -240,20 +241,20 @@ void TestApp::OnUpdate(double elapsedSeconds)
 
   if(keys.IsKeyDown(Keyboard::K_UP))
   {
-    z = -5.5f * elapsedSeconds;
+    z = -9.5f * elapsedSeconds;
   }
   if(keys.IsKeyDown(Keyboard::K_DOWN))
   {
-    z = 5.5f * elapsedSeconds;
+    z = 9.5f * elapsedSeconds;
   }
 
   if(keys.IsKeyDown(Keyboard::K_W))
   {
-    y = 5.5f * elapsedSeconds;
+    y = 9.5f * elapsedSeconds;
   }
   if(keys.IsKeyDown(Keyboard::K_S))
   {
-    y = -5.5f * elapsedSeconds;
+    y = -9.5f * elapsedSeconds;
   }
 
 
@@ -269,7 +270,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
 
 void TestApp::OnRender()
 {
-  GetGraphicsProvider()->Clear(Color4f(0.25f, 0.25f, 0.25f, 0.25f));
+  GetGraphicsProvider()->Clear(Color4f(0.0f, 0.0f, 0.0f, 0.0f));
   m_pScene->Render();
 }
 

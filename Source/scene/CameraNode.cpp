@@ -65,7 +65,7 @@ void CameraNode::OnResolutionChange(const Size &newSize)
 void CameraNode::SetupProjection()
 {
   m_projection = Mat4x4::CreatePerspectiveFovLH(m_aspectRatio,
-    m_fieldOfView * (D3DX_PI / 180.0f), 0.1f, m_viewDistance);
+    m_fieldOfView * (D3DX_PI / 180.0f), 1.0f, m_viewDistance);
 }
 
 
