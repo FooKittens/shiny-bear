@@ -48,9 +48,9 @@ protected:
   std::vector<SceneNode *> m_children;
 
 private:
-  Mat4x4 scaleMat;
-  Mat4x4 rotation;
-  Mat4x4 translation;
+  Mat4x4 m_scale;
+  Mat4x4 m_rotation;
+  Mat4x4 m_translation;
   Mat4x4 m_world;
 
   bool m_isVisible;
@@ -68,24 +68,28 @@ inline void SceneNode::SetVisible(bool val)
 
 inline void SceneNode::Translate(float x, float y, float z)
 {
-  translation.SetPosition(x, y, z);
+  Vector3 p = m_translation.GetPosition();
+
+  p += m_rotation.Transform(Vector3(x, y, z));
+
+  m_translation = Mat4x4::CreateTranslation(p);
 }
 
 inline void SceneNode::Rotate(float x, float y, float z)
 {
-  rotation = Mat4x4::CreateYawPitchRoll(x, y, z);
+  m_rotation *= Mat4x4::CreateYawPitchRoll(x, y, z);
 }
 
 inline void SceneNode::Scale(float scale)
 {
-  scaleMat = Mat4x4::CreateScale(scale);
+  m_scale *= Mat4x4::CreateScale(scale);
 }
 
 inline void SceneNode::LoadIdentity()
 {
-  translation = Mat4x4::kIdentity;
-  rotation    = Mat4x4::kIdentity;
-  scaleMat    = Mat4x4::kIdentity;
+  m_translation = Mat4x4::kIdentity;
+  m_rotation    = Mat4x4::kIdentity;
+  m_scale       = Mat4x4::kIdentity;
 }
 
 inline void SceneNode::SetParent(SceneNode *pNewParent)

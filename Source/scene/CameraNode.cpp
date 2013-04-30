@@ -36,10 +36,10 @@ void CameraNode::Update(double elapsedSeconds)
   }
 
   Mat4x4 mat = m_pTarget->GetTransform();
-  Vector4 target = Vector4::kUnitZ * -10.0f;
-  target += Vector4::kUnitY * -10.0f;
+  Vector4 target = Vector4::kUnitZ * 10.0f;
+  target += Vector4::kUnitY * 10.0f;
   Vector4 targetWorld = mat.Transform(target);
-  m_upVector = mat.Transform(Vector3::kUnitY);
+  m_upVector = Vector3::kUnitY;
   m_position = mat.GetPosition() + Vector3(targetWorld);
   
 

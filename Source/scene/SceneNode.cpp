@@ -66,7 +66,7 @@ void SceneNode::Update(double elapsedSeconds)
 
 void SceneNode::PreRender(SceneManager *pScene)
 {
-  pScene->PushMatrix(scaleMat * rotation * translation);
+  pScene->PushMatrix(m_scale * m_rotation * m_translation);
   m_world = *pScene->GetTransform();
   //pScene->GetTransform();
 }

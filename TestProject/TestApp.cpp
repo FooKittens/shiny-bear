@@ -139,25 +139,32 @@ bool TestApp::OnInitialize()
 
 
   BlockMaterial redMat;
-  redMat.diffuse = 0xFFFF0000;
+  redMat.diffuse = 0xFFABCDEF;
   redMat.specular = 0xFFFFFFFF;
   
 #pragma region OLDSTUFF
   m_pMeshNode = CreateMeshNode(&redMat);
+
+  redMat.diffuse = 0xFF8800AA;
+
   m_pOtherNode = CreateMeshNode(&redMat);
   m_pThirdNode = CreateMeshNode(&redMat);
 
   m_pScene->GetRoot()->Attach(m_pMeshNode);
-  m_pMeshNode->Attach(m_pOtherNode);
   
   m_pMeshNode->Translate(0, 20.0f, -20.0f);
-  m_pOtherNode->Translate(5.0f, 0.0f, -8.0f);
+  m_pOtherNode->Translate(50.0f, 0.0f, 0.0f);
   
-  m_pOtherNode->Attach(m_pThirdNode);
+  m_pThirdNode->Attach(m_pOtherNode);
 
-  m_pThirdNode->Translate(0, 2.0f, 3.5f);
+  m_pThirdNode->Scale(0.1f);
+  m_pOtherNode->Scale(10.0f);
 
-  m_pOtherNode->Scale(0.5f);
+  m_pMeshNode->Attach(m_pThirdNode);
+
+  //m_pThirdNode->Translate(0, 2.0f, 3.5f);
+
+  //m_pScene->GetRoot()->Scale(0.5f);
 
   //m_pMeshNode->Translate(0, 0, 0);
 
@@ -176,16 +183,16 @@ bool TestApp::OnInitialize()
     {
       Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
       m_pScene->GetRoot()->Attach(cluster);
-      cluster->Translate((i - 4) * 16, (k - 4) * 16, 0);
-      cluster->Rotate(0, 3.141592f / 2.0f, 0);
+      cluster->Translate((i - 4) * 16, 0, (k - 4) * 16);
+      //cluster->Rotate(0, 3.141592f / 2.0f, 0);
     }
 
  
 #pragma endregion
 
 
-  //CameraNode *pCam = new CameraNode(GetWindow(), m_pMeshNode);
-  CameraNode *pCam = new CameraNode(GetWindow(), m_pScene->GetRoot());
+  CameraNode *pCam = new CameraNode(GetWindow(), m_pMeshNode);
+  //CameraNode *pCam = new CameraNode(GetWindow(), m_pScene->GetRoot());
 
   m_pScene->SetCamera(pCam);
 
@@ -195,22 +202,64 @@ bool TestApp::OnInitialize()
 float rotA = 0.0f;
 float rotB = 0.0f;
 
+KeyboardState keys;
+
+float x = 0.0f, y = 0.0f, z = 0.0f;
+
 void TestApp::OnUpdate(double elapsedSeconds) 
 {
   BaseGame::OnUpdate(elapsedSeconds);
   m_pScene->Update(elapsedSeconds);
 
-  rotA += -0.5f * elapsedSeconds;
-  rotB += 1.0f * elapsedSeconds;
-
-  m_pMeshNode->Rotate(rotA, 0, 0);
+  //rotA += -0.5f * elapsedSeconds;
+  //rotB += 1.0f * elapsedSeconds;
+  m_pThirdNode->Rotate(2.5f * elapsedSeconds, -1.5f * elapsedSeconds, -0.5f * elapsedSeconds);
+  
+  
   //m_pOtherNode->Rotate(0, rotB, 0);
   
   //m_pThirdNode->Rotate(rotB, 0, 0);
   //m_pMeshNode->Translate(1.0f * elapsedSeconds, 0, 0);
 
-  KeyboardState keys = KeyboardState();
-  keys = InputManager::GetKeyboardState();
+
+  InputManager::GetKeyboardState(&keys);
+
+  rotA = 0.0f;
+  z = 0.0f;
+  x = 0.0f;
+  y = 0.0f;
+
+  if(keys.IsKeyDown(Keyboard::K_LEFT))
+  {
+    rotA = -1.5f * elapsedSeconds;
+  }
+  if(keys.IsKeyDown(Keyboard::K_RIGHT))
+  {
+    rotA = 1.5f * elapsedSeconds;
+  }
+
+  if(keys.IsKeyDown(Keyboard::K_UP))
+  {
+    z = -5.5f * elapsedSeconds;
+  }
+  if(keys.IsKeyDown(Keyboard::K_DOWN))
+  {
+    z = 5.5f * elapsedSeconds;
+  }
+
+  if(keys.IsKeyDown(Keyboard::K_W))
+  {
+    y = 5.5f * elapsedSeconds;
+  }
+  if(keys.IsKeyDown(Keyboard::K_S))
+  {
+    y = -5.5f * elapsedSeconds;
+  }
+
+
+  m_pMeshNode->Translate(x, y, z); 
+  m_pMeshNode->Rotate(rotA, 0, 0);
+
   if(keys.IsKeyDown(Keyboard::K_ESCAPE))
   {
     // exit(0); // wts memory leaks of doom.

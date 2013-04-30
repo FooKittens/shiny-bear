@@ -29,13 +29,13 @@ void InputManager::Initialize(const GameWindow &pGameWindow)
   // adds HID mouse
   Rid[1].usUsagePage = 0x01; // Generic Desktop Device
   Rid[1].usUsage = 0x02; // Mouse
-  Rid[1].dwFlags = RIDEV_NOLEGACY;
+  Rid[1].dwFlags = 0; //RIDEV_NOLEGACY;
   Rid[1].hwndTarget = handle;
 
   // adds HID keyboard
   Rid[2].usUsagePage = 0x01; // Generic Desktop Device
   Rid[2].usUsage = 0x06; // Keyboard
-  Rid[2].dwFlags = RIDEV_NOLEGACY;
+  Rid[2].dwFlags = 0; //RIDEV_NOLEGACY;
   Rid[2].hwndTarget = handle;
 
   if(!RegisterRawInputDevices(Rid, 3, sizeof(Rid[0])))

@@ -15,14 +15,23 @@ Cluster::Cluster(GraphicsProvider *pProvider)
   m_pMeshNode = DBG_NEW MeshNode(pMesh);
   Attach(m_pMeshNode);
   m_blocks = DBG_NEW Block**[kSizeX];
+
+  BlockMaterial mat;
+  mat.diffuse = 0xFF035502;
+
   for(int x = 0; x < kSizeX; ++x)
   {
     m_blocks[x] = DBG_NEW Block*[kSizeY];
     for(int y = 0; y < kSizeY; ++y)
     {
       m_blocks[x][y] = DBG_NEW Block[kSizeZ];
+      for(int z = 0; z < kSizeZ; ++z)
+      {
+        m_blocks[x][y][z].SetMaterial(mat);
+      }
     }
   }
+
 
   for(int x = 0; x < kSizeX; ++x)
       for(int z = 0; z < kSizeZ; ++z)
@@ -101,10 +110,6 @@ void Cluster::RecreateMesh()
 
         if(z < kSizeZ - 1 && m_blocks[x][y][z + 1].IsVisible())
           hideFlags |= HF_BACK;
-
-        BlockMaterial mat;
-        mat.diffuse = 0xFFFFFFFF;
-        m_blocks[x][y][z].SetMaterial(mat);
 
         CreateCube(blockX, blockY, blockZ, m_blocks[x][y][z], pMesh, hideFlags);
       }
