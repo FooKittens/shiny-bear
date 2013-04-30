@@ -37,7 +37,7 @@ PS_INPUT VS(VS_INPUT input)
 
 float4 PS(PS_INPUT input) : SV_TARGET
 {
-  return input.diffuse * dot(input.norm, normalize(-float3(0, -0.25f, 1.0f))) * float4(0.25f, 0.35f, 0.44f, 1.0f);
+  return input.diffuse * dot(input.norm, normalize(float3(0, -0.25f, 1.0f))) * float4(0.25f, 0.35f, 0.44f, 1.0f);
 }
 
 

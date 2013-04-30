@@ -150,7 +150,7 @@ bool TestApp::OnInitialize()
   m_pScene->GetRoot()->Attach(m_pMeshNode);
   m_pMeshNode->Attach(m_pOtherNode);
   
-  m_pMeshNode->Translate(0, 0.0f, 20.0f);
+  m_pMeshNode->Translate(0, 20.0f, -20.0f);
   m_pOtherNode->Translate(5.0f, 0.0f, -8.0f);
   
   m_pOtherNode->Attach(m_pThirdNode);
@@ -161,7 +161,7 @@ bool TestApp::OnInitialize()
 
   //m_pMeshNode->Translate(0, 0, 0);
 
-  m_pScene->GetRoot()->Rotate(0, -3.141592 / 1.70f, 0);
+  //m_pScene->GetRoot()->Rotate(0, -3.141592 / 1.70f, 0);
 
   //m_pOtherNode->Translate(2.0f, 0, 0);
   //m_pThirdNode->Translate(2.0f, 0, 2.0f);
@@ -184,8 +184,8 @@ bool TestApp::OnInitialize()
 #pragma endregion
 
 
-  CameraNode *pCam = new CameraNode(GetWindow(), m_pOtherNode);
-  //CameraNode *pCam = new CameraNode(GetWindow(), m_pOtherNode);
+  //CameraNode *pCam = new CameraNode(GetWindow(), m_pMeshNode);
+  CameraNode *pCam = new CameraNode(GetWindow(), m_pScene->GetRoot());
 
   m_pScene->SetCamera(pCam);
 
@@ -204,7 +204,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
   rotB += 1.0f * elapsedSeconds;
 
   m_pMeshNode->Rotate(rotA, 0, 0);
-  m_pOtherNode->Rotate(0, rotB, 0);
+  //m_pOtherNode->Rotate(0, rotB, 0);
   
   //m_pThirdNode->Rotate(rotB, 0, 0);
   //m_pMeshNode->Translate(1.0f * elapsedSeconds, 0, 0);
