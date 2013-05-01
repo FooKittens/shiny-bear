@@ -20,9 +20,9 @@ namespace shinybear
   const Quaternion Quaternion::kIdentity(D3DXQUATERNION(0, 0, 0, 1));
 
   const Mat4x4 Mat4x4::kIdentity(1, 0, 0, 0,
-                               0, 1, 0, 0,
-                               0, 0, 1, 0,
-                               0, 0, 0, 1);
+                                 0, 1, 0, 0,
+                                 0, 0, 1, 0,
+                                 0, 0, 0, 1);
 
 
 Mat4x4::Mat4x4(float m_0_0, float m_0_1, float m_0_2, float m_0_3,

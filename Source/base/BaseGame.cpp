@@ -133,10 +133,14 @@ bool BaseGame::Run()
     m_pGameWindow->HandleMessages();
 
     // Don't tick the timer if we're paused.
+    // InputManager returns false if it detects disconnected controllers
     if(!m_isPaused)
     {
       m_pGameTimer->Tick();
     }
+
+    // Update InputManager
+    InputManager::Update();
 
     // Update gamelogic.
     OnUpdate(m_pGameTimer->GetElapsedTime());
