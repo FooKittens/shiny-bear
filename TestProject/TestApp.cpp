@@ -192,7 +192,7 @@ bool TestApp::OnInitialize()
 
   light = Light::CreateDirectionalLight(
     D3DXCOLOR(0.85f, 0.15f, 0.15f, 1.0f),
-    Vector3(1.0f, 0.0f, 0));
+    Vector3(1.0f, 0.0f, 1.0f));
 
   light2 = Light::CreateDirectionalLight(
     D3DXCOLOR(0.15f, 0.85f, 0.15f, 1.0f),
@@ -240,7 +240,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
   //m_pMeshNode->Translate(1.0f * elapsedSeconds, 0, 0);
 
 
-  InputManager::GetControllerState(&gamePad);
+  //InputManager::GetControllerState(&gamePad);
   InputManager::GetKeyboardState(&keys);
 
   rotA = 0.0f;
@@ -248,33 +248,51 @@ void TestApp::OnUpdate(double elapsedSeconds)
   x = 0.0f;
   y = 0.0f;
 
-  rotA = 1.5f * elapsedSeconds * gamePad.rightThumbstick.x;
+  //rotA = 1.5f * elapsedSeconds * gamePad.rightThumbstick.x;
 
-  z += 5.5f * elapsedSeconds * gamePad.leftTrigger;
-  z -= 5.5f * elapsedSeconds * gamePad.rightTrigger;
+  //z += 5.5f * elapsedSeconds * gamePad.leftTrigger;
+  //z -= 5.5f * elapsedSeconds * gamePad.rightTrigger;
   gamePad.Vibrate(gamePad.leftTrigger, gamePad.rightTrigger);
-  if(keys.IsKeyDown(Keyboard::K_UP))
+  if(keys.IsKeyDown(Keys::K_UP))
   {
     z = -9.5f * elapsedSeconds;
   }
-  if(keys.IsKeyDown(Keyboard::K_DOWN))
+  if(keys.IsKeyDown(Keys::K_DOWN))
   {
     z = 9.5f * elapsedSeconds;
   }
 
-  if(gamePad.IsButtonDown(ControllerButtons::DPAD_UP))
+  if(keys.IsKeyDown(Keys::K_LEFT))
+  {
+    rotA = -1.5f * elapsedSeconds;
+  }
+  if(keys.IsKeyDown(Keys::K_RIGHT))
+  {
+    rotA = 1.5f * elapsedSeconds;
+  }
+
+  if(keys.IsKeyDown(Keys::K_W))
   {
     y = 9.5f * elapsedSeconds;
   }
-  if(gamePad.IsButtonDown(ControllerButtons::DPAD_DOWN))
+  if(keys.IsKeyDown(Keys::K_S))
   {
     y = -9.5f * elapsedSeconds;
   }
 
+  //if(gamePad.IsButtonDown(ControllerButtons::DPAD_UP))
+  //{
+  //  y = 9.5f * elapsedSeconds;
+  //}
+  //if(gamePad.IsButtonDown(ControllerButtons::DPAD_DOWN))
+  //{
+  //  y = -9.5f * elapsedSeconds;
+  //}
+
   m_pMeshNode->Translate(x, y, z); 
   m_pMeshNode->Rotate(rotA, 0, 0);
 
-  if(keys.IsKeyDown(Keys::K_ESCAPE) || gamePad.IsButtonDown(ControllerButtons::BACK))
+  if(keys.IsKeyDown(Keys::K_ESCAPE))// || gamePad.IsButtonDown(ControllerButtons::BACK))
   {
     Exit();
   }

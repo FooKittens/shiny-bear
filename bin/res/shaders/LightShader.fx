@@ -60,6 +60,7 @@ sampler samplerstate = sampler_state
   MinFilter = LINEAR;
   MagFilter = LINEAR;
   MipFilter = LINEAR;
+
 };
 
 // Expects coordinates to be in screen space.
@@ -175,9 +176,10 @@ texture g_normalMap;
 sampler g_normalSampler = sampler_state
 {
   Texture = <g_normalMap>;
-  MinFilter = LINEAR;
+  MinFilter = ANISOTROPIC;
   MagFilter = LINEAR;
   MipFilter = LINEAR;
+  MaxAnisotropy = 4;
 };
 
 
@@ -258,7 +260,7 @@ technique LightPassMRT
 
     AlphaBlendEnable = true;
     SrcBlend = One;
-    DestBlend = One;
+    DestBlend = DESTCOLOR;
     BlendOp = ADD;
   }
 }

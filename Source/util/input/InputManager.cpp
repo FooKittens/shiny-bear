@@ -48,7 +48,7 @@ void InputManager::Update()
 {
   for(int i = 0; i != kMaximumControllerCount; ++i)
   {
-    xboxControllers[i].Update();
+    xboxControllers[0].Update();
   }
 }
 

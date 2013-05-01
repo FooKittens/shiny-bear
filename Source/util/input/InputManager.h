@@ -717,6 +717,7 @@ private:
 
   void Update()
   {
+
     // Sets mState
     mConnected = XInputGetState(mIndex, &mState) == ERROR_SUCCESS;
 
