@@ -1,5 +1,6 @@
 #include "util\input\InputManager.h"
 #include "base\system\GameWindow.h"
+#include "base\system\GameTimer.h"
 
 #include <Windows.h>
 #include <cassert>
@@ -7,43 +8,48 @@
 
 namespace shinybear 
 {
-  // initialization of static variables
+  // Initialization of static variables
   MouseState InputManager::mouseState = MouseState();
   KeyboardState InputManager::keyboardState = KeyboardState();
   std::bitset<255> InputManager::tempKey(1);
+  ControllerState InputManager::xboxControllers[kMaximumControllerCount] =
+  {GamePadIndex::ONE, GamePadIndex::TWO, GamePadIndex::THREE, GamePadIndex::FOUR};
+
 
 void InputManager::Initialize(const GameWindow &pGameWindow)
 {
   // This method registers the application as listener to raw input
   HWND handle = pGameWindow.GetWindowHandle();
-  RAWINPUTDEVICE Rid[3];
+  RAWINPUTDEVICE Rid[2];
   
   // http://www.usb.org/developers/devclass_docs/Hut1_11.pdf page 27
 
-  // adds game pad
+  // adds HID mouse
   Rid[0].usUsagePage = 0x01; // Generic Desktop Device
-  Rid[0].usUsage = 0x05; // Game Pad
-  Rid[0].dwFlags = 0;
+  Rid[0].usUsage = 0x02; // Mouse
+  Rid[0].dwFlags = 0; //RIDEV_NOLEGACY;
   Rid[0].hwndTarget = handle;
 
-  // adds HID mouse
+  // adds HID keyboard
   Rid[1].usUsagePage = 0x01; // Generic Desktop Device
-  Rid[1].usUsage = 0x02; // Mouse
+  Rid[1].usUsage = 0x06; // Keyboard
   Rid[1].dwFlags = 0; //RIDEV_NOLEGACY;
   Rid[1].hwndTarget = handle;
 
-  // adds HID keyboard
-  Rid[2].usUsagePage = 0x01; // Generic Desktop Device
-  Rid[2].usUsage = 0x06; // Keyboard
-  Rid[2].dwFlags = 0; //RIDEV_NOLEGACY;
-  Rid[2].hwndTarget = handle;
-
-  if(!RegisterRawInputDevices(Rid, 3, sizeof(Rid[0])))
+  if(!RegisterRawInputDevices(Rid, 2, sizeof(Rid[0])))
   {
     assert (false && "Failed to register for raw input!");
   }
 
   return;
+}
+
+void InputManager::Update()
+{
+  for(int i = 0; i != kMaximumControllerCount; ++i)
+  {
+    xboxControllers[i].Update();
+  }
 }
 
 void InputManager::HandleInput(const HRAWINPUT &hInput)
@@ -114,82 +120,82 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
         // right-hand CONTROL and ALT have their e0 bit set
         case VK_CONTROL:
           if (isE0)
-            vKey = Keyboard::K_RIGHTCTRL;
+            vKey = Keys::K_RIGHTCTRL;
           else
-            vKey = Keyboard::K_LEFTCTRL;
+            vKey = Keys::K_LEFTCTRL;
           break;
 
         case VK_MENU:
           if (isE0)
-            vKey = Keyboard::K_RIGHTALT;
+            vKey = Keys::K_RIGHTALT;
           else
-            vKey = Keyboard::K_LEFTALT;
+            vKey = Keys::K_LEFTALT;
           break;
  
         // NUMPAD ENTER has its e0 bit set
         case VK_RETURN:
           if (isE0)
-            vKey = Keyboard::K_SEPARATOR;
+            vKey = Keys::K_SEPARATOR;
           break;
  
         // the standard INSERT, DELETE, HOME, END, PRIOR and NEXT keys will always
         // have their e0 bit set, but the corresponding keys on the NUMPAD will not.
         case VK_INSERT:
           if (!isE0)
-          vKey = Keyboard::K_NUMPAD0;
+          vKey = Keys::K_NUMPAD0;
           break;
  
         case VK_DELETE:
           if (!isE0)
-            vKey = Keyboard::K_DECIMAL;
+            vKey = Keys::K_DECIMAL;
           break;
  
         case VK_HOME:
           if (!isE0)
-            vKey = Keyboard::K_NUMPAD7;
+            vKey = Keys::K_NUMPAD7;
           break;
  
         case VK_END:
           if (!isE0)
-            vKey = Keyboard::K_NUMPAD1;
+            vKey = Keys::K_NUMPAD1;
           break;
  
         case VK_PRIOR:
           if (!isE0)
-            vKey = Keyboard::K_NUMPAD9;
+            vKey = Keys::K_NUMPAD9;
           break;
  
         case VK_NEXT:
           if (!isE0)
-            vKey = Keyboard::K_NUMPAD3;
+            vKey = Keys::K_NUMPAD3;
           break;
  
         // the standard arrow keys will always have their e0 bit set,
         // but the corresponding keys on the NUMPAD will not.
         case VK_LEFT:
           if (!isE0)
-            vKey = Keyboard::K_NUMPAD4;
+            vKey = Keys::K_NUMPAD4;
           break;
 
         case VK_RIGHT:
           if (!isE0)
-            vKey = Keyboard::K_NUMPAD6;
+            vKey = Keys::K_NUMPAD6;
           break;
  
         case VK_UP:
           if (!isE0)
-            vKey = Keyboard::K_NUMPAD8;
+            vKey = Keys::K_NUMPAD8;
           break;
  
         case VK_DOWN:
           if (!isE0)
-            vKey = Keyboard::K_NUMPAD2;
+            vKey = Keys::K_NUMPAD2;
           break;
  
         // NUMPAD 5 doesn't have its e0 bit set
         case VK_CLEAR:
           if (!isE0)
-            vKey = Keyboard::K_NUMPAD5;
+            vKey = Keys::K_NUMPAD5;
           break;
       }
 

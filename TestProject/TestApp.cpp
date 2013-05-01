@@ -218,6 +218,7 @@ bool TestApp::OnInitialize()
 float rotA = 0.0f;
 float rotB = 0.0f;
 
+ControllerState gamePad(GamePadIndex::ONE);
 KeyboardState keys;
 
 float x = 0.0f, y = 0.0f, z = 0.0f;
@@ -239,6 +240,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
   //m_pMeshNode->Translate(1.0f * elapsedSeconds, 0, 0);
 
 
+  InputManager::GetControllerState(&gamePad);
   InputManager::GetKeyboardState(&keys);
 
   rotA = 0.0f;
@@ -246,15 +248,11 @@ void TestApp::OnUpdate(double elapsedSeconds)
   x = 0.0f;
   y = 0.0f;
 
-  if(keys.IsKeyDown(Keyboard::K_LEFT))
-  {
-    rotA = -1.5f * elapsedSeconds;
-  }
-  if(keys.IsKeyDown(Keyboard::K_RIGHT))
-  {
-    rotA = 1.5f * elapsedSeconds;
-  }
+  rotA = 1.5f * elapsedSeconds * gamePad.rightThumbstick.x;
 
+  z += 5.5f * elapsedSeconds * gamePad.leftTrigger;
+  z -= 5.5f * elapsedSeconds * gamePad.rightTrigger;
+  gamePad.Vibrate(gamePad.leftTrigger, gamePad.rightTrigger);
   if(keys.IsKeyDown(Keyboard::K_UP))
   {
     z = -9.5f * elapsedSeconds;
@@ -264,22 +262,20 @@ void TestApp::OnUpdate(double elapsedSeconds)
     z = 9.5f * elapsedSeconds;
   }
 
-  if(keys.IsKeyDown(Keyboard::K_W))
+  if(gamePad.IsButtonDown(ControllerButtons::DPAD_UP))
   {
     y = 9.5f * elapsedSeconds;
   }
-  if(keys.IsKeyDown(Keyboard::K_S))
+  if(gamePad.IsButtonDown(ControllerButtons::DPAD_DOWN))
   {
     y = -9.5f * elapsedSeconds;
   }
 
-
   m_pMeshNode->Translate(x, y, z); 
   m_pMeshNode->Rotate(rotA, 0, 0);
 
-  if(keys.IsKeyDown(Keyboard::K_ESCAPE))
+  if(keys.IsKeyDown(Keys::K_ESCAPE) || gamePad.IsButtonDown(ControllerButtons::BACK))
   {
-    // exit(0); // wts memory leaks of doom.
     Exit();
   }
 }

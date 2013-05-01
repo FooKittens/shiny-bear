@@ -1,20 +1,25 @@
 #ifndef INPUTMANAGER_H
 #define INPUTMANAGER_H
 
+#include "base\system\GameTimer.h"
+#include "util\math\Math.h"
+
 #include <windows.h>
 #include <bitset>
 #include <string>
-#include <util\input\XboxController.h>
 #include <cassert>
+#include <climits>
+#include <XInput.h>
 
 namespace shinybear { class BaseGame; class GameWindow; }
 
 namespace shinybear
 {
 
-namespace Keyboard
+#pragma region Keyboard
+namespace Keys
 {
-enum Key
+enum Enum
 {
   // 0x01 , 0x02 Mouse buttons
   K_CONTROLBREAK = VK_CANCEL, // 0x03
@@ -240,7 +245,7 @@ public:
   }
 
   //key checks
-  bool const IsKeyDown(Keyboard::Key key) const
+  bool const IsKeyDown(const Keys::Enum key) const
   {
     return !!(keyStates[key - 1] & 1);
   }
@@ -258,199 +263,199 @@ public:
   }
 
   //statics
-  static const std::string GetKeyName(Keyboard::Key key)
+  static const std::string GetKeyName(const Keys::Enum key)
   {
     switch(key)
     {
-    case Keyboard::K_CONTROLBREAK: return "Control Break";
-    case Keyboard::K_BACKSPACE: return "Backspace";
-    case Keyboard::K_TAB: return "Tab";
-    case Keyboard::K_CLEAR: return "Clear";
-    case Keyboard::K_ENTER: return "Enter";
-    case Keyboard::K_SHIFT: return "Shift";
-    case Keyboard::K_CTRL: return "Ctrl";
-    case Keyboard::K_ALT: return "Alt";
-    case Keyboard::K_PAUSE: return "Pause";
-    case Keyboard::K_CAPSLOCK: return "Caps Lock";
-    case Keyboard::K_KANA: return "Kana";
-    case Keyboard::K_JUNJA: return "Junja";
-    case Keyboard::K_FINAL: return "Final";
-    case Keyboard::K_KANJI: return "Hanja / Kanji";
-    case Keyboard::K_ESCAPE: return "Escape";
-    case Keyboard::K_CONVERT: return "Convert";
-    case Keyboard::K_NONCONVERT: return "Non-convert";
-    case Keyboard::K_ACCEPT: return "Accept";
-    case Keyboard::K_MODECHANGE: return "Mode change";
-    case Keyboard::K_SPACEBAR: return "Space";
-    case Keyboard::K_PAGEUP: return "Page Up";
-    case Keyboard::K_PAGEDOWN: return "Page Down";
-    case Keyboard::K_END: return "End";
-    case Keyboard::K_HOME: return "Home";
-    case Keyboard::K_LEFT: return "Left";
-    case Keyboard::K_UP: return "Up";
-    case Keyboard::K_RIGHT: return "Right";
-    case Keyboard::K_DOWN: return "Down";
-    case Keyboard::K_SELECT: return "Select";
-    case Keyboard::K_PRINT: return "Print";
-    case Keyboard::K_EXECUTE: return "Execute";
-    case Keyboard::K_PRINTSCREEN: return "Print Screen";
-    case Keyboard::K_INSERT: return "Insert";
-    case Keyboard::K_DELETE: return "Delete";
-    case Keyboard::K_HELP: return "Help";
-    case Keyboard::K_0: return "0";
-    case Keyboard::K_1: return "1";
-    case Keyboard::K_2: return "2";
-    case Keyboard::K_3: return "3";
-    case Keyboard::K_4: return "4";
-    case Keyboard::K_5: return "5";
-    case Keyboard::K_6: return "6";
-    case Keyboard::K_7: return "7";
-    case Keyboard::K_8: return "8";
-    case Keyboard::K_9: return "9";
-    case Keyboard::K_A: return "A";
-    case Keyboard::K_B: return "B";
-    case Keyboard::K_C: return "C";
-    case Keyboard::K_D: return "D";
-    case Keyboard::K_E: return "E";
-    case Keyboard::K_F: return "F";
-    case Keyboard::K_G: return "G";
-    case Keyboard::K_H: return "H";
-    case Keyboard::K_I: return "I";
-    case Keyboard::K_J: return "J";
-    case Keyboard::K_K: return "K";
-    case Keyboard::K_L: return "L";
-    case Keyboard::K_M: return "M";
-    case Keyboard::K_N: return "N";
-    case Keyboard::K_O: return "O";
-    case Keyboard::K_P: return "P";
-    case Keyboard::K_Q: return "Q";
-    case Keyboard::K_R: return "R";
-    case Keyboard::K_S: return "S";
-    case Keyboard::K_T: return "T";
-    case Keyboard::K_U: return "U";
-    case Keyboard::K_V: return "V";
-    case Keyboard::K_W: return "W";
-    case Keyboard::K_X: return "X";
-    case Keyboard::K_Y: return "Y";
-    case Keyboard::K_Z: return "Z";
-    case Keyboard::K_LEFTWINDOWS: return "Left Windows";
-    case Keyboard::K_RIGHTWINDOWS: return "Right Windows";
-    case Keyboard::K_APPLICATIONS: return "Applications";
-    case Keyboard::K_SLEEP: return "Sleep";
-    case Keyboard::K_NUMPAD0: return "Numpad 0";
-    case Keyboard::K_NUMPAD1: return "Numpad 1";
-    case Keyboard::K_NUMPAD2: return "Numpad 2";
-    case Keyboard::K_NUMPAD3: return "Numpad 3";
-    case Keyboard::K_NUMPAD4: return "Numpad 4";
-    case Keyboard::K_NUMPAD5: return "Numpad 5";
-    case Keyboard::K_NUMPAD6: return "Numpad 6";
-    case Keyboard::K_NUMPAD7: return "Numpad 7";
-    case Keyboard::K_NUMPAD8: return "Numpad 8";
-    case Keyboard::K_NUMPAD9: return "Numpad 9";
-    case Keyboard::K_MULTIPLY: return "Numpad *";
-    case Keyboard::K_ADD: return "Numpad +";
-    case Keyboard::K_SEPARATOR: return "Numpad Enter";
-    case Keyboard::K_SUBTRACT: return "Numpad -";
-    case Keyboard::K_DECIMAL: return "Numpad .";
-    case Keyboard::K_DIVIDE: return "Numpad /";
-    case Keyboard::K_F1: return "F1";
-    case Keyboard::K_F2: return "F2";
-    case Keyboard::K_F3: return "F3";
-    case Keyboard::K_F4: return "F4";
-    case Keyboard::K_F5: return "F5";
-    case Keyboard::K_F6: return "F6";
-    case Keyboard::K_F7: return "F7";
-    case Keyboard::K_F8: return "F8";
-    case Keyboard::K_F9: return "F9";
-    case Keyboard::K_F10: return "F10";
-    case Keyboard::K_F11: return "F11";
-    case Keyboard::K_F12: return "F12";
-    case Keyboard::K_F13: return "F13";
-    case Keyboard::K_F14: return "F14";
-    case Keyboard::K_F15: return "F15";
-    case Keyboard::K_F16: return "F16";
-    case Keyboard::K_F17: return "F17";
-    case Keyboard::K_F18: return "F18";
-    case Keyboard::K_F19: return "F19";
-    case Keyboard::K_F20: return "F20";
-    case Keyboard::K_F21: return "F21";
-    case Keyboard::K_F22: return "F22";
-    case Keyboard::K_F23: return "F23";
-    case Keyboard::K_F24: return "F24";
-    case Keyboard::K_NUMLOCK: return "Num Lock";
-    case Keyboard::K_SCROLLLOCK: return "Scroll Lock";
-    case Keyboard::K_JISHO: return "Jisho";
-    case Keyboard::K_MASSHOU: return "Mashu";
-    case Keyboard::K_TOUROKU: return "Touroku";
-    case Keyboard::K_LOYA: return "Loya";
-    case Keyboard::K_ROYA: return "Roya";
-    case Keyboard::K_LEFTSHIFT: return "Left Shift";
-    case Keyboard::K_RIGHTSHIFT: return "Right Shift";
-    case Keyboard::K_LEFTCTRL: return "Left Ctrl";
-    case Keyboard::K_RIGHTCTRL: return "Right Ctrl";
-    case Keyboard::K_LEFTALT: return "Left Alt";
-    case Keyboard::K_RIGHTALT: return "Right Alt";
-    case Keyboard::K_BROWSER_BACK: return "Browser Back";
-    case Keyboard::K_BROWSER_FORWARD: return "Browser Forward";
-    case Keyboard::K_BROWSER_REFRESH: return "Browser Refresh";
-    case Keyboard::K_BROWSER_STOP: return "Browser Stop";
-    case Keyboard::K_BROWSER_SEARCH: return "Browser Search";
-    case Keyboard::K_BROWSER_FAVORITES: return "Browser Favorites";
-    case Keyboard::K_BROWSER_HOME: return "Browser Home";
-    case Keyboard::K_VOLUME_MUTE: return "Volume Mute";
-    case Keyboard::K_VOLUME_DOWN: return "Volume Down";
-    case Keyboard::K_VOLUME_UP: return "Volume Up";
-    case Keyboard::K_MEDIA_NEXT_TRACK: return "Next Track";
-    case Keyboard::K_MEDIA_PREV_TRACK: return "Previous Track";
-    case Keyboard::K_MEDIA_STOP: return "Stop Media";
-    case Keyboard::K_MEDIA_PLAY_PAUSE: return "Play/Pause";
-    case Keyboard::K_LAUNCH_MAIL: return "Launch Mail";
-    case Keyboard::K_LAUNCH_MEDIA_SELECT: return "Select Media";
-    case Keyboard::K_LAUNCH_APP1: return "Launch Application 1";
-    case Keyboard::K_LAUNCH_APP2: return "Launch Application 2";
-    case Keyboard::K_OEM_1: return "OEM 1 (; :)";
-    case Keyboard::K_OEM_PLUS: return "OEM Plus (= +)";
-    case Keyboard::K_OEM_COMMA: return "OEM Comma (, <)";
-    case Keyboard::K_OEM_MINUS: return "OEM Minus (- _)";
-    case Keyboard::K_OEM_PERIOD: return "OEM Period (. >)";
-    case Keyboard::K_OEM_2: return "OEM 2 (/ ?)";
-    case Keyboard::K_OEM_3: return "OEM 3 (` ~)";
-    case Keyboard::K_ABNT_C1: return "Abnt C1";
-    case Keyboard::K_ABNT_C2: return "Abnt C2";
-    case Keyboard::K_OEM_4: return "OEM 4 ([ {)";
-    case Keyboard::K_OEM_5: return "OEM 5 (\\ |)";
-    case Keyboard::K_OEM_6: return "OEM 6 (] })";
-    case Keyboard::K_OEM_7: return "OEM 7 (' @)";
-    case Keyboard::K_OEM_8: return "OEM 8 (! §)";
-    case Keyboard::K_OEM_AX: return "AX";
-    case Keyboard::K_OEM_102: return "OEM 102 (< >)";
-    case Keyboard::K_ICO_HELP: return "Ico Help";
-    case Keyboard::K_ICO_00: return "Ico 00";
-    case Keyboard::K_PROCESS: return "Process";
-    case Keyboard::K_ICO_CLEAR: return "Ico Clear";
-    case Keyboard::K_PACKET: return "Unicode Packet";
-    case Keyboard::K_OEM_RESET: return "Reset";
-    case Keyboard::K_OEM_JUMP: return "Jump";
-    case Keyboard::K_OEM_PA1: return "OEM Pa1";
-    case Keyboard::K_OEM_PA2: return "OEM Pa2";
-    case Keyboard::K_OEM_PA3: return "OEM Pa3";
-    case Keyboard::K_OEM_WSCTRL: return "WsCtrl";
-    case Keyboard::K_OEM_CUSEL: return "Cu Sel";
-    case Keyboard::K_OEM_ATTN: return "Oem Secure Attention";
-    case Keyboard::K_OEM_FINISH: return "Finish";
-    case Keyboard::K_OEM_COPY: return "Copy";
-    case Keyboard::K_OEM_AUTO: return "Auto";
-    case Keyboard::K_OEM_ENLW: return "Enlw";
-    case Keyboard::K_OEM_BACKTAB: return "Back Tab";
-    case Keyboard::K_ATTN: return "Secure Attention"; 
-    case Keyboard::K_CRSEL: return "Cr Sel";
-    case Keyboard::K_EXSEL: return "Ex Sel";
-    case Keyboard::K_EREOF: return "Erase EOF";
-    case Keyboard::K_PLAY: return "Play";
-    case Keyboard::K_ZOOM: return "Zoom";
-    case Keyboard::K_NONAME: return "NoName";
-    case Keyboard::K_PA1: return "PA1";
-    case Keyboard::K_OEM_CLEAR: return "OEM Clr";
+    case Keys::K_CONTROLBREAK: return "Control Break";
+    case Keys::K_BACKSPACE: return "Backspace";
+    case Keys::K_TAB: return "Tab";
+    case Keys::K_CLEAR: return "Clear";
+    case Keys::K_ENTER: return "Enter";
+    case Keys::K_SHIFT: return "Shift";
+    case Keys::K_CTRL: return "Ctrl";
+    case Keys::K_ALT: return "Alt";
+    case Keys::K_PAUSE: return "Pause";
+    case Keys::K_CAPSLOCK: return "Caps Lock";
+    case Keys::K_KANA: return "Kana";
+    case Keys::K_JUNJA: return "Junja";
+    case Keys::K_FINAL: return "Final";
+    case Keys::K_KANJI: return "Hanja / Kanji";
+    case Keys::K_ESCAPE: return "Escape";
+    case Keys::K_CONVERT: return "Convert";
+    case Keys::K_NONCONVERT: return "Non-convert";
+    case Keys::K_ACCEPT: return "Accept";
+    case Keys::K_MODECHANGE: return "Mode change";
+    case Keys::K_SPACEBAR: return "Space";
+    case Keys::K_PAGEUP: return "Page Up";
+    case Keys::K_PAGEDOWN: return "Page Down";
+    case Keys::K_END: return "End";
+    case Keys::K_HOME: return "Home";
+    case Keys::K_LEFT: return "Left";
+    case Keys::K_UP: return "Up";
+    case Keys::K_RIGHT: return "Right";
+    case Keys::K_DOWN: return "Down";
+    case Keys::K_SELECT: return "Select";
+    case Keys::K_PRINT: return "Print";
+    case Keys::K_EXECUTE: return "Execute";
+    case Keys::K_PRINTSCREEN: return "Print Screen";
+    case Keys::K_INSERT: return "Insert";
+    case Keys::K_DELETE: return "Delete";
+    case Keys::K_HELP: return "Help";
+    case Keys::K_0: return "0";
+    case Keys::K_1: return "1";
+    case Keys::K_2: return "2";
+    case Keys::K_3: return "3";
+    case Keys::K_4: return "4";
+    case Keys::K_5: return "5";
+    case Keys::K_6: return "6";
+    case Keys::K_7: return "7";
+    case Keys::K_8: return "8";
+    case Keys::K_9: return "9";
+    case Keys::K_A: return "A";
+    case Keys::K_B: return "B";
+    case Keys::K_C: return "C";
+    case Keys::K_D: return "D";
+    case Keys::K_E: return "E";
+    case Keys::K_F: return "F";
+    case Keys::K_G: return "G";
+    case Keys::K_H: return "H";
+    case Keys::K_I: return "I";
+    case Keys::K_J: return "J";
+    case Keys::K_K: return "K";
+    case Keys::K_L: return "L";
+    case Keys::K_M: return "M";
+    case Keys::K_N: return "N";
+    case Keys::K_O: return "O";
+    case Keys::K_P: return "P";
+    case Keys::K_Q: return "Q";
+    case Keys::K_R: return "R";
+    case Keys::K_S: return "S";
+    case Keys::K_T: return "T";
+    case Keys::K_U: return "U";
+    case Keys::K_V: return "V";
+    case Keys::K_W: return "W";
+    case Keys::K_X: return "X";
+    case Keys::K_Y: return "Y";
+    case Keys::K_Z: return "Z";
+    case Keys::K_LEFTWINDOWS: return "Left Windows";
+    case Keys::K_RIGHTWINDOWS: return "Right Windows";
+    case Keys::K_APPLICATIONS: return "Applications";
+    case Keys::K_SLEEP: return "Sleep";
+    case Keys::K_NUMPAD0: return "Numpad 0";
+    case Keys::K_NUMPAD1: return "Numpad 1";
+    case Keys::K_NUMPAD2: return "Numpad 2";
+    case Keys::K_NUMPAD3: return "Numpad 3";
+    case Keys::K_NUMPAD4: return "Numpad 4";
+    case Keys::K_NUMPAD5: return "Numpad 5";
+    case Keys::K_NUMPAD6: return "Numpad 6";
+    case Keys::K_NUMPAD7: return "Numpad 7";
+    case Keys::K_NUMPAD8: return "Numpad 8";
+    case Keys::K_NUMPAD9: return "Numpad 9";
+    case Keys::K_MULTIPLY: return "Numpad *";
+    case Keys::K_ADD: return "Numpad +";
+    case Keys::K_SEPARATOR: return "Numpad Enter";
+    case Keys::K_SUBTRACT: return "Numpad -";
+    case Keys::K_DECIMAL: return "Numpad .";
+    case Keys::K_DIVIDE: return "Numpad /";
+    case Keys::K_F1: return "F1";
+    case Keys::K_F2: return "F2";
+    case Keys::K_F3: return "F3";
+    case Keys::K_F4: return "F4";
+    case Keys::K_F5: return "F5";
+    case Keys::K_F6: return "F6";
+    case Keys::K_F7: return "F7";
+    case Keys::K_F8: return "F8";
+    case Keys::K_F9: return "F9";
+    case Keys::K_F10: return "F10";
+    case Keys::K_F11: return "F11";
+    case Keys::K_F12: return "F12";
+    case Keys::K_F13: return "F13";
+    case Keys::K_F14: return "F14";
+    case Keys::K_F15: return "F15";
+    case Keys::K_F16: return "F16";
+    case Keys::K_F17: return "F17";
+    case Keys::K_F18: return "F18";
+    case Keys::K_F19: return "F19";
+    case Keys::K_F20: return "F20";
+    case Keys::K_F21: return "F21";
+    case Keys::K_F22: return "F22";
+    case Keys::K_F23: return "F23";
+    case Keys::K_F24: return "F24";
+    case Keys::K_NUMLOCK: return "Num Lock";
+    case Keys::K_SCROLLLOCK: return "Scroll Lock";
+    case Keys::K_JISHO: return "Jisho";
+    case Keys::K_MASSHOU: return "Mashu";
+    case Keys::K_TOUROKU: return "Touroku";
+    case Keys::K_LOYA: return "Loya";
+    case Keys::K_ROYA: return "Roya";
+    case Keys::K_LEFTSHIFT: return "Left Shift";
+    case Keys::K_RIGHTSHIFT: return "Right Shift";
+    case Keys::K_LEFTCTRL: return "Left Ctrl";
+    case Keys::K_RIGHTCTRL: return "Right Ctrl";
+    case Keys::K_LEFTALT: return "Left Alt";
+    case Keys::K_RIGHTALT: return "Right Alt";
+    case Keys::K_BROWSER_BACK: return "Browser Back";
+    case Keys::K_BROWSER_FORWARD: return "Browser Forward";
+    case Keys::K_BROWSER_REFRESH: return "Browser Refresh";
+    case Keys::K_BROWSER_STOP: return "Browser Stop";
+    case Keys::K_BROWSER_SEARCH: return "Browser Search";
+    case Keys::K_BROWSER_FAVORITES: return "Browser Favorites";
+    case Keys::K_BROWSER_HOME: return "Browser Home";
+    case Keys::K_VOLUME_MUTE: return "Volume Mute";
+    case Keys::K_VOLUME_DOWN: return "Volume Down";
+    case Keys::K_VOLUME_UP: return "Volume Up";
+    case Keys::K_MEDIA_NEXT_TRACK: return "Next Track";
+    case Keys::K_MEDIA_PREV_TRACK: return "Previous Track";
+    case Keys::K_MEDIA_STOP: return "Stop Media";
+    case Keys::K_MEDIA_PLAY_PAUSE: return "Play/Pause";
+    case Keys::K_LAUNCH_MAIL: return "Launch Mail";
+    case Keys::K_LAUNCH_MEDIA_SELECT: return "Select Media";
+    case Keys::K_LAUNCH_APP1: return "Launch Application 1";
+    case Keys::K_LAUNCH_APP2: return "Launch Application 2";
+    case Keys::K_OEM_1: return "OEM 1 (; :)";
+    case Keys::K_OEM_PLUS: return "OEM Plus (= +)";
+    case Keys::K_OEM_COMMA: return "OEM Comma (, <)";
+    case Keys::K_OEM_MINUS: return "OEM Minus (- _)";
+    case Keys::K_OEM_PERIOD: return "OEM Period (. >)";
+    case Keys::K_OEM_2: return "OEM 2 (/ ?)";
+    case Keys::K_OEM_3: return "OEM 3 (` ~)";
+    case Keys::K_ABNT_C1: return "Abnt C1";
+    case Keys::K_ABNT_C2: return "Abnt C2";
+    case Keys::K_OEM_4: return "OEM 4 ([ {)";
+    case Keys::K_OEM_5: return "OEM 5 (\\ |)";
+    case Keys::K_OEM_6: return "OEM 6 (] })";
+    case Keys::K_OEM_7: return "OEM 7 (' @)";
+    case Keys::K_OEM_8: return "OEM 8 (! §)";
+    case Keys::K_OEM_AX: return "AX";
+    case Keys::K_OEM_102: return "OEM 102 (< >)";
+    case Keys::K_ICO_HELP: return "Ico Help";
+    case Keys::K_ICO_00: return "Ico 00";
+    case Keys::K_PROCESS: return "Process";
+    case Keys::K_ICO_CLEAR: return "Ico Clear";
+    case Keys::K_PACKET: return "Unicode Packet";
+    case Keys::K_OEM_RESET: return "Reset";
+    case Keys::K_OEM_JUMP: return "Jump";
+    case Keys::K_OEM_PA1: return "OEM Pa1";
+    case Keys::K_OEM_PA2: return "OEM Pa2";
+    case Keys::K_OEM_PA3: return "OEM Pa3";
+    case Keys::K_OEM_WSCTRL: return "WsCtrl";
+    case Keys::K_OEM_CUSEL: return "Cu Sel";
+    case Keys::K_OEM_ATTN: return "Oem Secure Attention";
+    case Keys::K_OEM_FINISH: return "Finish";
+    case Keys::K_OEM_COPY: return "Copy";
+    case Keys::K_OEM_AUTO: return "Auto";
+    case Keys::K_OEM_ENLW: return "Enlw";
+    case Keys::K_OEM_BACKTAB: return "Back Tab";
+    case Keys::K_ATTN: return "Secure Attention"; 
+    case Keys::K_CRSEL: return "Cr Sel";
+    case Keys::K_EXSEL: return "Ex Sel";
+    case Keys::K_EREOF: return "Erase EOF";
+    case Keys::K_PLAY: return "Play";
+    case Keys::K_ZOOM: return "Zoom";
+    case Keys::K_NONAME: return "NoName";
+    case Keys::K_PA1: return "PA1";
+    case Keys::K_OEM_CLEAR: return "OEM Clr";
     default: return "OEM Special";
     }
   }
@@ -465,16 +470,18 @@ private:
   // size is not 256; The range is 0-254.
   std::bitset<255> keyStates;
 };
+#pragma endregion
 
-namespace Mouse
+#pragma region Mouse
+namespace MouseButtons
 {
-enum Button
+enum Enum
 {
-  M_LEFTMOUSE = VK_LBUTTON, // 0x01
-  M_RIGHTMOUSE = VK_RBUTTON, // 0x02
-  M_MIDDLEMOUSE = VK_MBUTTON, // 0x04
-  M_XBUTTON1 = VK_XBUTTON1, // 0x05
-  M_XBUTTON2 = VK_XBUTTON2, // 0x06
+  MB_LEFTMOUSE = VK_LBUTTON, // 0x01
+  MB_RIGHTMOUSE = VK_RBUTTON, // 0x02
+  MB_MIDDLEMOUSE = VK_MBUTTON, // 0x04
+  MB_XBUTTON1 = VK_XBUTTON1, // 0x05
+  MB_XBUTTON2 = VK_XBUTTON2, // 0x06
 };
 }
 
@@ -496,21 +503,21 @@ public:
   }
 
   //mouse checks
-  bool const IsButtonDown(Mouse::Button button) const
+  const bool IsButtonDown(const MouseButtons::Enum button) const
   {
     return !!(mouseButtonStates[button - 1] & 1);
   }
 
   //statics
-  static std::string const GetButtonName(Mouse::Button button)
+  static const std::string GetButtonName(const MouseButtons::Enum button)
   {
     switch(button)
     {
-    case Mouse::M_LEFTMOUSE: return "Left Mouse";
-    case Mouse::M_RIGHTMOUSE: return "Right Mouse";
-    case Mouse::M_MIDDLEMOUSE: return "Middle Mouse";
-    case Mouse::M_XBUTTON1: return "X1 Mouse";
-    case Mouse::M_XBUTTON2: return "X2 Mouse";
+    case MouseButtons::MB_LEFTMOUSE: return "Left Mouse";
+    case MouseButtons::MB_RIGHTMOUSE: return "Right Mouse";
+    case MouseButtons::MB_MIDDLEMOUSE: return "Middle Mouse";
+    case MouseButtons::MB_XBUTTON1: return "X1 Mouse";
+    case MouseButtons::MB_XBUTTON2: return "X2 Mouse";
     default: return "OEM Special";
     }
   }
@@ -533,12 +540,232 @@ private:
   // Mouse wheel change
   short mouseWheelChange;
   // Absolute mouse position, according to windows
-  int absoluteX;
-  int absoluteY;
+  int absoluteX, absoluteY;
   // Mouse XY change since previous event
-  int changeX;
-  int changeY;
+  int changeX, changeY;
 };
+#pragma endregion
+
+#pragma region GamePad
+namespace GamePadIndex
+{
+  enum Enum
+  {
+    ONE = 0,
+    TWO = 1,
+    THREE = 2,
+    FOUR = 3,
+  };
+}
+
+namespace ControllerButtons
+{
+  enum Enum
+  {
+    DPAD_UP = 1,
+    DPAD_DOWN = 2,
+    DPAD_LEFT = 3,
+    DPAD_RIGHT = 4,
+    START = 5,
+    BACK = 6,
+    LEFT_THUMB = 7,
+    RIGHT_THUMB = 8,
+    LEFT_SHOULDER = 9,
+    RIGHT_SHOULDER = 10,
+    GAMEPAD_A = 11,
+    GAMEPAD_B = 12,
+    GAMEPAD_X = 13,
+    GAMEPAD_Y = 14,
+  };
+}
+
+struct ControllerState
+{
+public:
+  friend class InputManager;
+  
+  //ctors
+  ControllerState(const GamePadIndex::Enum index)
+    : leftTrigger(mLTrigger), rightTrigger(mRTrigger),
+      leftThumbstick(mLThumb), rightThumbstick(mRThumb),
+      isConnected(mConnected)
+  {
+    mIndex = index;
+    Update();
+  }
+  ControllerState(const ControllerState &controllerState)
+    : leftTrigger(mLTrigger), rightTrigger(mRTrigger),
+      leftThumbstick(mLThumb), rightThumbstick(mRThumb),
+      isConnected(mConnected)
+  {
+    mLTrigger = controllerState.mLTrigger;
+    mRTrigger = controllerState.mRTrigger;
+    mLThumb = controllerState.mLThumb;
+    mRThumb = controllerState.mRThumb;
+
+    mState = controllerState.mState;
+  }
+
+  //dtors
+  ~ControllerState()
+  {
+    //stop controller vibration
+    Vibrate();
+  }
+  
+  const bool IsButtonDown(const ControllerButtons::Enum button) const
+  {
+    switch(button)
+    {
+    case ControllerButtons::DPAD_UP:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_UP ? true : false;
+    case ControllerButtons::DPAD_DOWN:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_DOWN ? true : false;
+    case ControllerButtons::DPAD_LEFT:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_LEFT ? true : false;
+    case ControllerButtons::DPAD_RIGHT:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_DPAD_RIGHT ? true : false;
+    case ControllerButtons::START:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_START ? true : false;
+    case ControllerButtons::BACK:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_BACK ? true : false;
+    case ControllerButtons::LEFT_THUMB:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_THUMB ? true : false;
+    case ControllerButtons::RIGHT_THUMB:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_THUMB ? true : false;
+    case ControllerButtons::LEFT_SHOULDER:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_LEFT_SHOULDER ? true : false;
+    case ControllerButtons::RIGHT_SHOULDER:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER ? true : false;
+    case ControllerButtons::GAMEPAD_A:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_A ? true : false;
+    case ControllerButtons::GAMEPAD_B:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_B ? true : false;
+    case ControllerButtons::GAMEPAD_X:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_X ? true : false;
+    case ControllerButtons::GAMEPAD_Y:
+      return mState.Gamepad.wButtons & XINPUT_GAMEPAD_Y ? true : false;
+    default:
+      return false;
+    }
+  }
+  void SetGamePadIndex(const GamePadIndex::Enum index)
+  {
+    mIndex = index;
+  }
+  
+  const float &leftTrigger, &rightTrigger;
+  const Vector2 &leftThumbstick, &rightThumbstick;
+  const bool &isConnected;
+
+  //takes float values 0.0f - 1.0f
+  void Vibrate(const float leftMotor = 0, const float rightMotor = 0)
+  {
+    // Create a Vibraton State
+    XINPUT_VIBRATION vibration;
+
+    // Set the Vibration Values
+    vibration.wLeftMotorSpeed = (unsigned short)(max(0.0f, min(leftMotor, 1.0f)) * USHRT_MAX);
+    vibration.wRightMotorSpeed = (unsigned short)(max(0.0f, min(rightMotor, 1.0f)) * USHRT_MAX);
+
+    // Vibrate the controller
+    XInputSetState(mIndex, &vibration);
+  }
+
+  //statics
+  static const std::string GetButtonName(const ControllerButtons::Enum button)
+  {
+    switch(button)
+    {
+    case ControllerButtons::DPAD_UP: return "Dpad Up";
+    case ControllerButtons::DPAD_DOWN: return "Dpad Down";
+    case ControllerButtons::DPAD_LEFT: return "Dpad Down";
+    case ControllerButtons::DPAD_RIGHT: return "Dpad Right";
+    case ControllerButtons::START: return "Start";
+    case ControllerButtons::BACK: return "Back";
+    case ControllerButtons::LEFT_THUMB: return "Left thumbstick";
+    case ControllerButtons::RIGHT_THUMB: return "Right thumbstick";
+    case ControllerButtons::LEFT_SHOULDER: return "Left shoulder";
+    case ControllerButtons::RIGHT_SHOULDER: return "Right shoulder";
+    case ControllerButtons::GAMEPAD_A: return "A";
+    case ControllerButtons::GAMEPAD_B: return "B";
+    case ControllerButtons::GAMEPAD_X: return "X";
+    case ControllerButtons::GAMEPAD_Y: return "Y";
+    }
+  }
+
+  //operators
+  void operator=(const ControllerState &controllerState)
+  {
+    mLTrigger = controllerState.mLTrigger;
+    mRTrigger = controllerState.mRTrigger;
+    mLThumb = controllerState.mLThumb;
+    mRThumb = controllerState.mRThumb;
+    mState = controllerState.mState;
+  }
+
+private:
+  // All 14 Xbox Controller buttons:
+  // DPAD (4), start, back, thumbsticks (2), shoulders (2), ABXY (4)
+  float mLTrigger, mRTrigger;
+  Vector2 mLThumb, mRThumb;
+
+  XINPUT_STATE mState;
+  bool mConnected;
+  
+  GamePadIndex::Enum mIndex;
+
+  void Update()
+  {
+    // Sets mState
+    mConnected = XInputGetState(mIndex, &mState) == ERROR_SUCCESS;
+
+    if(mConnected)
+    {
+      // Check to make sure we are not moving during the dead zone (LTHUMB)
+      if(mState.Gamepad.sThumbLX < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+	       mState.Gamepad.sThumbLX > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+      {    
+	      mState.Gamepad.sThumbLX = 0;
+      }
+      if(mState.Gamepad.sThumbLY < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+	       mState.Gamepad.sThumbLY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+      {
+        mState.Gamepad.sThumbLY = 0;
+      }
+      mLThumb.x = mState.Gamepad.sThumbLX / (float)SHRT_MAX;
+      mLThumb.y = mState.Gamepad.sThumbLY / (float)SHRT_MAX;
+
+      // Check to make sure we are not moving during the dead zone (RTHUMB)
+      if(mState.Gamepad.sThumbRX < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+	       mState.Gamepad.sThumbRX > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+      {    
+	      mState.Gamepad.sThumbRX = 0;
+      }
+      if(mState.Gamepad.sThumbRY < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
+	       mState.Gamepad.sThumbRY > -XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE)
+      {
+        mState.Gamepad.sThumbRY = 0;
+      }
+      mRThumb.x = mState.Gamepad.sThumbRX / (float)SHRT_MAX;
+      mRThumb.y = mState.Gamepad.sThumbRY / (float)SHRT_MAX;
+
+      // Check to make sure we are not moving during the dead zone (LTRIGGER)
+      if(mState.Gamepad.bLeftTrigger < XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+      {    
+	      mState.Gamepad.bLeftTrigger = 0;
+      }
+      mLTrigger = mState.Gamepad.bLeftTrigger / (float)UCHAR_MAX;
+      // Check to make sure we are not moving during the dead zone (RTRIGGER)
+      if(mState.Gamepad.bRightTrigger < XINPUT_GAMEPAD_TRIGGER_THRESHOLD)
+      {    
+	      mState.Gamepad.bRightTrigger = 0;
+      }
+      mRTrigger = mState.Gamepad.bRightTrigger / (float)UCHAR_MAX;
+    }
+  }
+};
+#pragma endregion
 
 class InputManager
 {
@@ -546,19 +773,21 @@ public:
   friend class BaseGame;
   friend class GameWindow;
 
-  static void GetKeyboardState(KeyboardState * const pState);
-  static void GetMouseState(MouseState * const pState);
+  static void GetKeyboardState(KeyboardState * const);
+  static void GetMouseState(MouseState * const);
+  static void GetControllerState(ControllerState * const);
 
 private:
   static void Initialize(const GameWindow &pGameWindow);
 
   static void Update();
 
-  static void HandleInput(const HRAWINPUT &hInput);
+  static void HandleInput(const HRAWINPUT &);
 
   static MouseState mouseState;
   static KeyboardState keyboardState;
-  static XboxController xboxController;
+  static const int kMaximumControllerCount = 4;
+  static ControllerState xboxControllers[kMaximumControllerCount];
   static std::bitset<255> tempKey;
 };
 
@@ -573,6 +802,12 @@ inline void InputManager::GetMouseState(MouseState * const pState)
 {
   assert(pState);
   *pState = mouseState;
+}
+
+inline void InputManager::GetControllerState(ControllerState * const pState)
+{
+  assert(pState);
+  *pState = xboxControllers[pState->mIndex];
 }
 
 } // namespace shinybear
