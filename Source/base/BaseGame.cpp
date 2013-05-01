@@ -166,7 +166,7 @@ bool BaseGame::Run()
       m_pGraphicsProvider->Present();
     }
 
-    //Sleep(1);
+    //Sleep(6);
 
     if(m_isQuitting)
     {

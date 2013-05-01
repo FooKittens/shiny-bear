@@ -13,12 +13,12 @@ LightNode::LightNode(Light *pLight)
 
 LightNode::~LightNode()
 {
-  delete m_pLight;
+  //delete m_pLight;
 }
 
 void LightNode::Update(double elapsedSeconds)
 {
-  if(m_pLight->type == LT_SPOT || m_pLight->type == LT_POINT)
+  if(m_pLight->type == LightType::LT_SPOT || m_pLight->type == LightType::LT_POINT)
   {
     D3DXVECTOR3 zero(0, 0, 0);
     D3DXVECTOR4 t;
@@ -34,8 +34,13 @@ void LightNode::Update(double elapsedSeconds)
 
 void LightNode::Render(SceneManager *pScene)
 {
-  //pRenderer->AddLight(this);
   RenderChildren(pScene);
+
+  RenderData rd;
+  rd.data.pLight = m_pLight;
+  rd.type = RenderType::LIGHT;
+  rd.world = *(pScene->GetTransform());
+  pScene->PushRenderData(rd);
 }
 
 } // namespace shinybear

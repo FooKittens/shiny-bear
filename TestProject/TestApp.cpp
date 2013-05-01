@@ -7,6 +7,7 @@
 #include <scene\LightNode.h>
 #include <scene\CameraNode.h>
 #include <graphics\Mesh.h>
+#include <graphics\Light.h>
 #include <world\Block.h>
 #include <world\Cluster.h>
 #include <util\SBUtil.h>
@@ -132,6 +133,8 @@ MeshNode *TestApp::CreateMeshNode(BlockMaterial *mat)
   return pNode;
 }
 
+Light light;
+Light light2;
 
 bool TestApp::OnInitialize() 
 {
@@ -187,7 +190,20 @@ bool TestApp::OnInitialize()
       //cluster->Rotate(0, 3.141592f / 2.0f, 0);
     }
 
+  light = Light::CreateDirectionalLight(
+    D3DXCOLOR(0.85f, 0.15f, 0.15f, 1.0f),
+    Vector3(1.0f, 0.0f, 0));
+
+  light2 = Light::CreateDirectionalLight(
+    D3DXCOLOR(0.15f, 0.85f, 0.15f, 1.0f),
+    Vector3(1.0f, -1.0f, 0));
+
+  LightNode *pLightNode = new LightNode(&light);
+  LightNode *pLightNode2 = new LightNode(&light2);
+
  
+  m_pScene->GetRoot()->Attach(pLightNode);
+  m_pScene->GetRoot()->Attach(pLightNode2);
 #pragma endregion
 
 
@@ -270,7 +286,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
 
 void TestApp::OnRender()
 {
-  GetGraphicsProvider()->Clear(Color4f(0.0f, 0.0f, 0.0f, 0.0f));
+  GetGraphicsProvider()->Clear(Color4f(0.0f, 0.15f, 0.0f, 0.0f));
   m_pScene->Render();
 }
 
