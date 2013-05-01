@@ -28,6 +28,7 @@ GraphicsProvider::~GraphicsProvider()
 {
   RELEASECOM(m_pD3DCreate);
   RELEASECOM(m_pDevice);  
+  delete[] m_pValidDisplayModes;
 }
 
 bool GraphicsProvider::Initialize()
@@ -35,6 +36,8 @@ bool GraphicsProvider::Initialize()
   m_pD3DCreate = Direct3DCreate9(D3D_SDK_VERSION);
   
   assert(m_pD3DCreate && "Failed to create Direct3D9 object!");
+
+  m_pValidDisplayModes = GetValidDisplayModes(&m_numValidDisplayModes);
 
   //EventManager::RegisterEventType(DeviceLostEvent::kEventType);
   //EventManager::RegisterEventType(DeviceResetEvent::kEventType);
@@ -76,6 +79,21 @@ const DisplayMode& GraphicsProvider::GetDisplayMode()
 const MultiSampleMode& GraphicsProvider::GetMultiSampleMode()
 {
   return m_currentMSAAMode;
+}
+
+bool GraphicsProvider::CheckDisplayMode(const DisplayMode &mode)
+{
+  for(int i = 0; i < m_numValidDisplayModes; ++i)
+  {
+    if(mode.height == m_pValidDisplayModes[i].height &&
+       mode.width == m_pValidDisplayModes[i].width &&
+       mode.refreshRate == m_pValidDisplayModes[i].refreshRate)
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 // Returns an array of all the valid 

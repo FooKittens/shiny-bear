@@ -40,6 +40,8 @@ public:
   DisplayMode* GetValidDisplayModes(UINT *numModes);
   MultiSampleMode* GetValidMultiSampleModes(UINT *numModes);
 
+  bool CheckDisplayMode(const DisplayMode &mode);
+
   // Rendering Functions
 #pragma region RenderingFunctions
   
@@ -64,6 +66,8 @@ private:
   // Helper function to pretty up code.
   bool IsDisplayModeValid(const DisplayMode &mode);
 
+  bool IsMSAAValid(const MultiSampleMode &mode);
+
   // Returns all possible MSAA modes.
   MultiSampleMode* GetAllMSAAModes(UINT *numModes);
   
@@ -71,11 +75,11 @@ private:
   // and returns a new array with valid modes.
   MultiSampleMode* FilterInvalidMSAAModes(MultiSampleMode *pModes, UINT count, UINT *numValid);
 
-  bool IsMSAAValid(const MultiSampleMode &mode);
-
   // Helper function to convert from integer sample input to a DirectX type.
   D3DMULTISAMPLE_TYPE GetMultiSampleType(const MultiSampleMode &mode);
 
+  UINT m_numValidDisplayModes;
+  DisplayMode *m_pValidDisplayModes;
   UINT m_adapterIndex;
   HWND m_hTargetWindow;
   IDirect3D9 *m_pD3DCreate;

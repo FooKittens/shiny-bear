@@ -79,6 +79,14 @@ bool BaseGame::Initialize()
   m_pGraphicsProvider = DBG_NEW GraphicsProvider(m_pGameWindow->GetWindowHandle());
   if(m_pGraphicsProvider->Initialize())
   {  
+    if(!m_pGraphicsProvider->CheckDisplayMode(cfg.displayMode))
+    {
+      cfg = Config::GetDefault();
+      Size nsize = { cfg.displayMode.width, cfg.displayMode.height };
+      m_pGameWindow->SetSize(nsize);
+      SaveConfig(cfg);
+    }
+
     m_pGraphicsProvider->SetDisplayMode(cfg.displayMode);
     m_pGraphicsProvider->SetMultiSampleMode(cfg.multiSampleMode);
     m_pGraphicsProvider->ApplyChanges();
