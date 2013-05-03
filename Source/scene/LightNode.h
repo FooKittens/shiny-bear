@@ -17,6 +17,9 @@ public:
   void Update(double);
   void Render(SceneManager *pScene);
 
+  void OnDeviceLost();
+  void OnDeviceReset();
+
 protected:
 
 private:

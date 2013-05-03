@@ -142,7 +142,7 @@ bool TestApp::OnInitialize()
 
 
   BlockMaterial redMat;
-  redMat.diffuse = 0xFFABCDEF;
+  redMat.diffuse = 0xFF8800AA;
   redMat.specular = 0xFFFFFFFF;
   
 #pragma region OLDSTUFF
@@ -191,7 +191,7 @@ bool TestApp::OnInitialize()
     }
 
   light = Light::CreateDirectionalLight(
-    D3DXCOLOR(0.85f, 0.15f, 0.15f, 1.0f),
+    D3DXCOLOR(0.55f, 0.55f, 0.55f, 1.0f),
     Vector3(1.0f, 0.0f, 1.0f));
 
   light2 = Light::CreateDirectionalLight(

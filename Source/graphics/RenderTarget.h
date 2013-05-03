@@ -25,6 +25,7 @@ public:
   void OnDeviceLost();
 
   IDirect3DTexture9 *GetTexture() const;
+  IDirect3DSurface9 *GetSurface() const;
 
   void Activate(UINT slot);
   void Deactivate();
@@ -50,6 +51,11 @@ inline bool RenderTarget::IsValid() const
 inline IDirect3DTexture9 *RenderTarget::GetTexture() const
 {
   return m_pTexture;
+}
+
+inline IDirect3DSurface9 *RenderTarget::GetSurface() const
+{
+  return m_pSurface;
 }
 
 } // namespace shinybear

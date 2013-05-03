@@ -43,6 +43,9 @@ private:
   // Accumulates all lighting data into a buffer.
   void RenderLightPass();
 
+  // Renders the combined scene with the lighting data and geometry.
+  void RenderCombinedScene();
+
   void DisplayRenderTarget(const RenderTarget *pTarget);
 
   static const int kScreenVertCount = 4;
@@ -76,6 +79,10 @@ private:
   D3DXHANDLE m_hFxLight;
   D3DXHANDLE m_hFxCamPos;
   D3DXHANDLE m_hFxNormalMap;
+  D3DXHANDLE m_hFxFarPlane;
+  D3DXHANDLE m_hFxNearPlane;
+  D3DXHANDLE m_hFxDiffuseMap;
+  D3DXHANDLE m_hFxSpecularMap;
 
   D3DXHANDLE m_hFxNormalTech;
   D3DXHANDLE m_hFxGeometryTech;
@@ -88,6 +95,7 @@ private:
   RenderTarget *m_pNormalTarget;
   RenderTarget *m_pDiffuseTarget;
   RenderTarget *m_pSpecularTarget;
+  RenderTarget *m_pDepthTarget;
 };
 
 } // namespace shinybear

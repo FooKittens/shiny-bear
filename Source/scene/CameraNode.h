@@ -20,7 +20,10 @@ public:
   virtual void SetAspectRatio(float aspect);
   virtual void SetAspectRatio(const Size &newSize);
   virtual void SetViewDistance(float distance);
-
+  virtual float GetViewDistance() const;
+  virtual void SetNearPlane(float value);
+  virtual float GetNearPlane() const;
+  
   const Mat4x4 &GetViewMatrix() const;
   const Mat4x4 &GetProjectionMatrix() const;
 
@@ -42,6 +45,7 @@ private:
   float m_fieldOfView;
   float m_aspectRatio;
   float m_viewDistance;
+  float m_near;
   
 };
 
@@ -64,6 +68,22 @@ inline void CameraNode::SetViewDistance(float distance)
 {
   m_viewDistance = distance;
 }
+
+inline float CameraNode::GetViewDistance() const
+{
+  return m_viewDistance;
+}
+
+inline void CameraNode::SetNearPlane(float val)
+{
+  m_near = val;
+}
+
+inline float CameraNode::GetNearPlane() const
+{
+  return m_near;
+}
+
 
 inline void CameraNode::SetAspectRatio(float aspect)
 {

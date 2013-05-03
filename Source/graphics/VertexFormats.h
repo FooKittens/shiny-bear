@@ -3,6 +3,7 @@
 
 #include "util\Typedefs.h"
 #include <d3dx9.h>
+#include <math.h>
 
 
 namespace shinybear
@@ -34,6 +35,7 @@ struct BlockVertex
   D3DXCOLOR diffuse;
   D3DXCOLOR specular;
 };
+
 
 } // namepspace shinybear
 

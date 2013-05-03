@@ -14,8 +14,8 @@ namespace shinybear
 const SceneView::ScreenVertexData SceneView::kScreenVertices[kScreenVertCount] = 
 {
   // Top right triangle
-  { Vector4(-1, +1, 0, 1), Vector2(0, 0) },
-  { Vector4(+1, +1, 0, 1), Vector2(1, 0) },
+  { Vector4(-1, +1.0, 0, 1), Vector2(0, 0) },
+  { Vector4(+1, +1.0, 0, 1), Vector2(1, 0) },
   { Vector4(-1, -1, 0, 1), Vector2(0, 1) },
   { Vector4(+1, -1, 0, 1), Vector2(1, 1) },
 };
@@ -32,9 +32,10 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
 
   GetAbsolutePath(L"res\\shaders\\LightShader.fx", &m_pShaderPath);
 
-  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
-  m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
-  m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
+  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
+  m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
+  m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
+  m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
 
   OnDeviceReset();
 }
@@ -45,6 +46,7 @@ SceneView::~SceneView()
   delete m_pNormalTarget;
   delete m_pDiffuseTarget;
   delete m_pSpecularTarget;
+  delete m_pDepthTarget;
   RELEASECOM(m_pDecl);
   RELEASECOM(m_pTextureDecl);
   RELEASECOM(m_pShader);
@@ -80,6 +82,8 @@ void SceneView::Render(const RenderList &list)
   CameraNode *pCam = m_pScene->GetCamera();
   m_pShader->SetMatrix(m_hFxView, &pCam->GetViewMatrix());
   m_pShader->SetMatrix(m_hFxProjection, &pCam->GetProjectionMatrix());
+  m_pShader->SetFloat(m_hFxNearPlane, pCam->GetNearPlane());
+  m_pShader->SetFloat(m_hFxFarPlane, pCam->GetViewDistance());
 
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();  
   
@@ -90,8 +94,14 @@ void SceneView::Render(const RenderList &list)
 
   RenderLightPass();
 
+  RenderCombinedScene();
+
   // 
-  DisplayRenderTarget(m_pDiffuseTarget);
+  //DisplayRenderTarget(m_pNormalTarget);
+
+  
+
+  pDevice->BeginScene();
 
   m_isRendering = false;
 }
@@ -102,7 +112,8 @@ void SceneView::RenderNormalPass()
   
   // Activate the render target for normals, in slot 0.
   m_pNormalTarget->Activate(0);
-  
+  m_pDepthTarget->Activate(1);
+    
   // Normal voxel vertexdeclaration.
   HR(pDevice->SetVertexDeclaration(m_pDecl));
 
@@ -116,8 +127,9 @@ void SceneView::RenderNormalPass()
   // Render geometry using normal-specular technique.
   RenderGeometry(m_hFxNormalTech);
 
-  pDevice->EndScene();
+  HR(pDevice->EndScene());
 
+  m_pDepthTarget->Deactivate();
   // Deactivate rendertarget, which sets the current target to the backbuffer.
   m_pNormalTarget->Deactivate();
 }
@@ -128,7 +140,6 @@ void SceneView::RenderLightPass()
 
   m_pDiffuseTarget->Activate(0);
   m_pSpecularTarget->Activate(1);
-
 
   HR(pDevice->SetVertexDeclaration(m_pTextureDecl));
   HR(pDevice->SetStreamSource(0, m_pScreenVBuffer, 0, sizeof(ScreenVertexData)));
@@ -168,6 +179,29 @@ void SceneView::RenderLightPass()
   m_pDiffuseTarget->Deactivate();
 }
 
+
+void SceneView::RenderCombinedScene()
+{
+  IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
+
+  // Normal voxel vertexdeclaration.
+  HR(pDevice->SetVertexDeclaration(m_pDecl));
+
+  HR(m_pShader->SetTexture(m_hFxDiffuseMap, m_pDiffuseTarget->GetTexture()));
+  HR(m_pShader->SetTexture(m_hFxSpecularMap, m_pSpecularTarget->GetTexture()));
+
+  // Clear render target.
+  HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
+    0, 1.0f, 0));
+
+  // Begin rendering.
+  HR(pDevice->BeginScene());
+
+  RenderGeometry(m_hFxCombineTech);
+
+  HR(pDevice->EndScene());
+}
+
 void SceneView::RenderGeometry(D3DXHANDLE hTech)
 {
   // Enable the normal pass rendering technique.
@@ -192,7 +226,6 @@ void SceneView::RenderGeometry(D3DXHANDLE hTech)
   HR(m_pShader->End());
 }
 
-
 void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)
 {
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
@@ -213,6 +246,8 @@ void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)
   pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
   HR(m_pShader->EndPass());
   HR(m_pShader->End());
+
+  //HR(pDevice->EndScene());
 }
 
 void SceneView::OnDeviceLost()
@@ -223,6 +258,7 @@ void SceneView::OnDeviceLost()
   m_pNormalTarget->OnDeviceLost();
   m_pDiffuseTarget->OnDeviceLost();
   m_pSpecularTarget->OnDeviceLost();
+  m_pDepthTarget->OnDeviceLost();
 }
 
 void SceneView::OnDeviceReset()
@@ -241,12 +277,17 @@ void SceneView::OnDeviceReset()
   m_hFxLight = m_pShader->GetParameterByName(0, "g_light");
   m_hFxCamPos = m_pShader->GetParameterByName(0, "g_cameraPosition");
   m_hFxNormalMap = m_pShader->GetParameterByName(0, "g_normalMap");
+  m_hFxFarPlane = m_pShader->GetParameterByName(0, "g_zfar");
+  m_hFxNearPlane = m_pShader->GetParameterByName(0, "g_znear");
+  m_hFxDiffuseMap = m_pShader->GetParameterByName(0, "g_diffuseMap");
+  m_hFxSpecularMap = m_pShader->GetParameterByName(0, "g_specularMap");
 
   // Retrieve handles to our techniques.
   m_hFxNormalTech = m_pShader->GetTechniqueByName("NormalTech");
   m_hFxGeometryTech = m_pShader->GetTechniqueByName("GeometryTech");
   m_hFxRenderScreenTech = m_pShader->GetTechniqueByName("RenderToScreen");
   m_hFxLightMRTTech = m_pShader->GetTechniqueByName("LightPassMRT");
+  m_hFxCombineTech = m_pShader->GetTechniqueByName("CombineTech");
 
   // Create Vertexbuffer used to draw rendertargets to screen.
   CreateScreenVBuffer();
@@ -254,6 +295,7 @@ void SceneView::OnDeviceReset()
   m_pNormalTarget->OnDeviceReset();
   m_pDiffuseTarget->OnDeviceReset();
   m_pSpecularTarget->OnDeviceReset();
+  m_pDepthTarget->OnDeviceReset();
 }
 
 void SceneView::CreateVertexDecl()

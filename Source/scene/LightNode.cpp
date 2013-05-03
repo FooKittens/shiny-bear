@@ -3,6 +3,9 @@
 #include "scene\SceneView.h"
 #include "graphics\Light.h"
 
+#include <cassert>
+
+
 namespace shinybear
 {
 
@@ -15,6 +18,17 @@ LightNode::~LightNode()
 {
   //delete m_pLight;
 }
+
+void LightNode::OnDeviceLost()
+{
+  SceneNode::OnDeviceLost();
+}
+
+void LightNode::OnDeviceReset()
+{
+  SceneNode::OnDeviceReset();
+}
+
 
 void LightNode::Update(double elapsedSeconds)
 {

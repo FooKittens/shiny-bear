@@ -8,7 +8,7 @@ namespace shinybear
 
 namespace LightType
 {
-enum Enum
+enum Enum : UINT
 {
   LT_AMBIENT = 1, 
   LT_DIRECTIONAL = 2,
@@ -19,16 +19,17 @@ enum Enum
   
 struct Light
 {
-  LightType::Enum type;
-  float filler_1;
-  float filler_2;
-  float filler_3;
   Vector3 position;
-  float filler;
+  float filler_1;
+  LightType::Enum type;
+  
+   float filler_2;
+   float filler_3;
+   float filler;
   Vector3 direction;
   float filler2;
   D3DXCOLOR color;
-  float filler3;
+  //float filler3;
     
   // Should only be created through factory methods.
   Light() { }

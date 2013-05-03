@@ -13,6 +13,7 @@ CameraNode::CameraNode(GameWindow *pWindow, SceneNode *pTarget)
   SetFieldOfView(60.0f);
   SetAspectRatio(pWindow->GetSize());
   SetViewDistance(1000.0f);
+  SetNearPlane(1.0f);
   SetupProjection();
 
   if(m_pTarget == nullptr)
@@ -65,7 +66,7 @@ void CameraNode::OnResolutionChange(const Size &newSize)
 void CameraNode::SetupProjection()
 {
   m_projection = Mat4x4::CreatePerspectiveFovLH(m_aspectRatio,
-    m_fieldOfView * (D3DX_PI / 180.0f), 1.0f, m_viewDistance);
+    m_fieldOfView * (D3DX_PI / 180.0f), m_near, m_viewDistance);
 }
 
 

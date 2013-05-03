@@ -37,7 +37,6 @@ void RenderTarget::Activate(UINT slot)
   {
     m_pProvider->GetDevice()->GetRenderTarget(0, &m_pBackBuffer);
   }
-  HR(m_pTexture->GetSurfaceLevel(0, &m_pSurface));
   m_pProvider->GetDevice()->SetRenderTarget(slot, m_pSurface);
   m_currentSlot = slot;
   m_isActive = true;
@@ -52,7 +51,6 @@ void RenderTarget::Deactivate()
     m_pProvider->GetDevice()->SetRenderTarget(m_currentSlot, m_pBackBuffer);
     RELEASECOM(m_pBackBuffer);
   }
-  RELEASECOM(m_pSurface);
 }
 
 void RenderTarget::OnDeviceLost()
@@ -80,8 +78,7 @@ void RenderTarget::OnDeviceReset()
     NULL
   ));
 
-  //pDevice->CreateRenderTarget(
-
+  HR(m_pTexture->GetSurfaceLevel(0, &m_pSurface));
   RELEASECOM(m_pBackBuffer);
 }
 
