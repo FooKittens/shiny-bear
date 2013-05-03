@@ -590,6 +590,7 @@ public:
       leftThumbstick(mLThumb), rightThumbstick(mRThumb),
       isConnected(mConnected)
   {
+    m_isVibrating = false;
     mIndex = index;
     Update();
   }
@@ -604,6 +605,7 @@ public:
     mRThumb = controllerState.mRThumb;
 
     mState = controllerState.mState;
+    m_isVibrating = false;
   }
 
   //dtors
@@ -657,10 +659,30 @@ public:
   const float &leftTrigger, &rightTrigger;
   const Vector2 &leftThumbstick, &rightThumbstick;
   const bool &isConnected;
+  bool m_isVibrating;
 
   //takes float values 0.0f - 1.0f
   void Vibrate(const float leftMotor = 0, const float rightMotor = 0)
   {
+    if(m_isVibrating == false)
+    {
+      if(abs(leftMotor) < FLT_EPSILON && abs(rightMotor) < FLT_EPSILON)
+      {
+        return;
+      }
+      else
+      {
+        m_isVibrating = true;
+      }
+    }
+    else
+    {
+      if(abs(leftMotor) < FLT_EPSILON && abs(rightMotor) < FLT_EPSILON)
+      {
+        m_isVibrating = false;
+      }
+    }
+
     // Create a Vibraton State
     XINPUT_VIBRATION vibration;
 

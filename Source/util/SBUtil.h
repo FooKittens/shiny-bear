@@ -7,10 +7,20 @@
 
 #define RELEASECOM(X) if(X) { X->Release(); X = nullptr; }
 
+#if defined(DEBUG) | defined(_DEBUG)
+
+// Error checking macro.
 #define HR(X) if(FAILED(X)) \
   MessageBox(NULL, TEXT(#X), TEXT("HR ERROR"), MB_OK | MB_ICONERROR)
 
-#define DBG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__) 
+// Memory leak detection.
+#define DBG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#else
+#define HR(X) X
+#define DBG_NEW new
+#endif
+
+ 
 
 // Macro to make sure deleted pointers are set to 0
 #define SAFEDELETE(X) delete X; X = 0

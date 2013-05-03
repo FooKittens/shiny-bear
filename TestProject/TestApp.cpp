@@ -165,21 +165,6 @@ bool TestApp::OnInitialize()
 
   m_pMeshNode->Attach(m_pThirdNode);
 
-  //m_pThirdNode->Translate(0, 2.0f, 3.5f);
-
-  //m_pScene->GetRoot()->Scale(0.5f);
-
-  //m_pMeshNode->Translate(0, 0, 0);
-
-  //m_pScene->GetRoot()->Rotate(0, -3.141592 / 1.70f, 0);
-
-  //m_pOtherNode->Translate(2.0f, 0, 0);
-  //m_pThirdNode->Translate(2.0f, 0, 2.0f);
-
-  //m_meshes.push_back(m_pMeshNode);
-
-  //m_meshes.push_back(m_pOtherNode);
-  //m_meshes.push_back(m_pThirdNode);
 
   for(int i = 0; i < 8; ++i)
     for(int k = 0; k < 8; ++k)
@@ -230,15 +215,8 @@ void TestApp::OnUpdate(double elapsedSeconds)
   BaseGame::OnUpdate(elapsedSeconds);
   m_pScene->Update(elapsedSeconds);
 
-  //rotA += -0.5f * elapsedSeconds;
-  //rotB += 1.0f * elapsedSeconds;
   m_pThirdNode->Rotate(2.5f * elapsedSeconds, 0, 0);
   
-  //m_pOtherNode->Rotate(0, rotB, 0);
-  
-  //m_pThirdNode->Rotate(rotB, 0, 0);
-  //m_pMeshNode->Translate(1.0f * elapsedSeconds, 0, 0);
-
 
   //InputManager::GetControllerState(&gamePad);
   InputManager::GetKeyboardState(&keys);

@@ -21,13 +21,12 @@ const SceneView::ScreenVertexData SceneView::kScreenVertices[kScreenVertCount] =
 };
 
 SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
+  :m_voxelDeclaration(pProvider), m_textureDeclaration(pProvider)
 {
   m_pScene = pScene;
   m_pProvider = pProvider;
   m_isRendering = false;
   m_pShader = nullptr;
-  m_pDecl = nullptr;
-  m_pTextureDecl = nullptr;
   m_pScreenVBuffer = nullptr;
 
   GetAbsolutePath(L"res\\shaders\\LightShader.fx", &m_pShaderPath);
@@ -36,6 +35,8 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
   m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
+
+  CreateVertexDecl();
 
   OnDeviceReset();
 }
@@ -47,8 +48,6 @@ SceneView::~SceneView()
   delete m_pDiffuseTarget;
   delete m_pSpecularTarget;
   delete m_pDepthTarget;
-  RELEASECOM(m_pDecl);
-  RELEASECOM(m_pTextureDecl);
   RELEASECOM(m_pShader);
   RELEASECOM(m_pScreenVBuffer);
 }
@@ -60,6 +59,7 @@ void SceneView::Render(const RenderList &list)
 
   m_lights.clear();
   m_meshes.clear();  
+  m_alphaList.clear();
 
   // Filter RenderData into different lists for different passes.
   for(int i = 0; i < list.size(); ++i)
@@ -100,8 +100,6 @@ void SceneView::Render(const RenderList &list)
   // 
   //DisplayRenderTarget(m_pNormalTarget);
 
-  
-
   pDevice->BeginScene();
 
   m_isRendering = false;
@@ -116,7 +114,7 @@ void SceneView::RenderNormalPass()
   m_pDepthTarget->Activate(1);
     
   // Normal voxel vertexdeclaration.
-  HR(pDevice->SetVertexDeclaration(m_pDecl));
+  m_voxelDeclaration.Activate();
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
@@ -142,7 +140,8 @@ void SceneView::RenderLightPass()
   m_pDiffuseTarget->Activate(0);
   m_pSpecularTarget->Activate(1);
 
-  HR(pDevice->SetVertexDeclaration(m_pTextureDecl));
+  m_textureDeclaration.Activate();
+
   HR(pDevice->SetStreamSource(0, m_pScreenVBuffer, 0, sizeof(ScreenVertexData)));
 
   CameraNode *pCam = m_pScene->GetCamera();
@@ -153,8 +152,7 @@ void SceneView::RenderLightPass()
   HR(m_pShader->SetTexture(m_hFxNormalMap, m_pNormalTarget->GetTexture()));
 
   // Clear render target.
-  HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
-    0, 1.0f, 0));
+  HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0, 1.0f, 0));
 
   HR(pDevice->BeginScene());
 
@@ -164,7 +162,13 @@ void SceneView::RenderLightPass()
   HR(m_pShader->Begin(&numPasses, 0));
   for(size_t li = 0; li < m_lights.size(); ++li)
   {
-    HR(m_pShader->SetRawValue(m_hFxLight, (void*)m_lights[li]->data.pLight, 0, sizeof(Light)));
+    HR(m_pShader->SetRawValue(
+      m_hFxLight,
+      (void*)m_lights[li]->data.pLight,
+      0,
+      sizeof(Light)
+    ));
+
     for(UINT i = 0; i < numPasses; ++i)
     {
       HR(m_pShader->BeginPass(i));
@@ -186,7 +190,7 @@ void SceneView::RenderCombinedScene()
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
 
   // Normal voxel vertexdeclaration.
-  HR(pDevice->SetVertexDeclaration(m_pDecl));
+  m_voxelDeclaration.Activate();
 
   HR(m_pShader->SetTexture(m_hFxDiffuseMap, m_pDiffuseTarget->GetTexture()));
   HR(m_pShader->SetTexture(m_hFxSpecularMap, m_pSpecularTarget->GetTexture()));
@@ -231,7 +235,8 @@ void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)
 {
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
 
-  HR(pDevice->SetVertexDeclaration(m_pTextureDecl));
+  m_textureDeclaration.Activate();
+
   HR(pDevice->BeginScene());
 
   // Draw output.
@@ -253,20 +258,19 @@ void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)
 
 void SceneView::OnDeviceLost()
 {
-  RELEASECOM(m_pDecl);
   RELEASECOM(m_pShader);
 
   m_pNormalTarget->OnDeviceLost();
   m_pDiffuseTarget->OnDeviceLost();
   m_pSpecularTarget->OnDeviceLost();
   m_pDepthTarget->OnDeviceLost();
+
+  m_voxelDeclaration.OnDeviceLost();
+  m_textureDeclaration.OnDeviceLost();
 }
 
 void SceneView::OnDeviceReset()
 {
-  // Create Vertex Declarations.
-  CreateVertexDecl();
-
   // Reloads the shader.
   LoadShader();
 
@@ -297,36 +301,36 @@ void SceneView::OnDeviceReset()
   m_pDiffuseTarget->OnDeviceReset();
   m_pSpecularTarget->OnDeviceReset();
   m_pDepthTarget->OnDeviceReset();
+
+  m_voxelDeclaration.OnDeviceReset();
+  m_textureDeclaration.OnDeviceReset();
 }
 
 void SceneView::CreateVertexDecl()
 {
-  // For easier access.
-  IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
+  m_textureDeclaration.AddElement(
+    VertexElement(VertexDataType::VDT_FLOAT4, VertexUsageType::VUT_POSITION, 0)
+  );
 
-  // Vertex declaration used for voxels.
-  D3DVERTEXELEMENT9 elements[] = 
-  {
-    { 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-    { 0, 12, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0 },
-    { 0, 24, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
-    { 0, 40, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 1 },
-    D3DDECL_END()
-  };
-  RELEASECOM(m_pDecl);
-  HR(pDevice->CreateVertexDeclaration(elements, &m_pDecl));
+  m_textureDeclaration.AddElement(
+    VertexElement(VertexDataType::VDT_FLOAT2, VertexUsageType::VUT_TEXCOORDS, 0)
+  );
 
-  
-  // Declaration used for drawing rendertargets to screen.
-  D3DVERTEXELEMENT9 tElements[] = 
-  {
-    { 0, 0, D3DDECLTYPE_FLOAT4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-    { 0, 16, D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
-    D3DDECL_END()
-  };
+  m_voxelDeclaration.AddElement(
+    VertexElement(VertexDataType::VDT_FLOAT3, VertexUsageType::VUT_POSITION, 0)
+  );
 
-  RELEASECOM(m_pTextureDecl);
-  HR(pDevice->CreateVertexDeclaration(tElements, &m_pTextureDecl));
+  m_voxelDeclaration.AddElement(
+    VertexElement(VertexDataType::VDT_FLOAT3, VertexUsageType::VUT_NORMAL, 0)
+  );
+
+  m_voxelDeclaration.AddElement(
+    VertexElement(VertexDataType::VDT_FLOAT4, VertexUsageType::VUT_COLOR, 0)
+  );
+
+  m_voxelDeclaration.AddElement(
+    VertexElement(VertexDataType::VDT_FLOAT4, VertexUsageType::VUT_COLOR, 1)
+  );
 }
 
 void SceneView::LoadShader()

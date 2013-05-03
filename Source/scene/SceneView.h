@@ -5,6 +5,7 @@
 #include "scene\MeshNode.h"
 #include "scene\SceneManager.h"
 #include "graphics\RenderTarget.h"
+#include "graphics\VertexDeclaration.h"
 
 #include <vector>
 #include <d3dx9.h>
@@ -66,8 +67,6 @@ private:
   bool m_isRendering;
   ID3DXEffect *m_pShader;
   wchar_t *m_pShaderPath;
-  IDirect3DVertexDeclaration9 *m_pDecl;
-  IDirect3DVertexDeclaration9 *m_pTextureDecl;
 
   IDirect3DVertexBuffer9 *m_pScreenVBuffer;
 
@@ -86,8 +85,6 @@ private:
 
   D3DXHANDLE m_hFxNormalTech;
   D3DXHANDLE m_hFxGeometryTech;
-  D3DXHANDLE m_hFxDiffuseTech;
-  D3DXHANDLE m_hFxSpecularTech;
   D3DXHANDLE m_hFxCombineTech;
   D3DXHANDLE m_hFxRenderScreenTech;
   D3DXHANDLE m_hFxLightMRTTech;
@@ -96,6 +93,9 @@ private:
   RenderTarget *m_pDiffuseTarget;
   RenderTarget *m_pSpecularTarget;
   RenderTarget *m_pDepthTarget;
+
+  VertexDeclaration m_voxelDeclaration;
+  VertexDeclaration m_textureDeclaration;
 };
 
 } // namespace shinybear

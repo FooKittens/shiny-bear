@@ -11,7 +11,6 @@ namespace shinybear { class GraphicsProvider; }
 namespace shinybear
 {
 
-
 class Mesh
 {
 public:

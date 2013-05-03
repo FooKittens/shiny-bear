@@ -8,6 +8,7 @@ namespace shinybear
   typedef UINT BlockColor;
   typedef unsigned long DWORD;
   typedef unsigned char UBYTE;
+
 }
 
 #endif // SHINYBEAR_TYPEDEFS_H

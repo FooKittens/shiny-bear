@@ -31,3 +31,5 @@
 *.unsuccessfulbuild
 
 *.manifest
+*.psess
+*.vsp
