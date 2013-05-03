@@ -82,7 +82,7 @@ private:
   GamePadIndex::Enum m_index;
 
   void Update();
-  void ReevaluateConnection();
+  void ReEvaluateConnection();
 };
 
 //inlines

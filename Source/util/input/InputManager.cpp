@@ -301,11 +301,11 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
   return;
 }
 
-void InputManager::ReevaluateGamePadConnections()
+void InputManager::ReEvaluateGamePadConnections()
 {
   for(int i = 0; i != kMaximumGamePadCount; ++i)
   {
-    m_gamePads[i].ReevaluateConnection();
+    m_gamePads[i].ReEvaluateConnection();
   }
 }
 

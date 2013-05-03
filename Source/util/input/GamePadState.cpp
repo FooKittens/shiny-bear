@@ -10,6 +10,7 @@ GamePadState::GamePadState(const GamePadIndex::Enum index)
     isConnected(m_connected)
 {
   m_index = index;
+  ReEvaluateConnection();
   Update();
 }
 
@@ -24,6 +25,9 @@ GamePadState::GamePadState(const GamePadState &gamePadState)
   m_rThumb = gamePadState.m_rThumb;
 
   m_state = gamePadState.m_state;
+
+  m_index = gamePadState.m_index;
+  ReEvaluateConnection();
 }
 
 //dtors
@@ -134,8 +138,8 @@ void GamePadState::Update()
 {
   if(m_connected)
   {
-  // Sets mState
-  m_connected = XInputGetState(m_index, &m_state) == ERROR_SUCCESS;
+    // Sets mState
+    m_connected = XInputGetState(m_index, &m_state) == ERROR_SUCCESS;
 
     // Check to make sure we are not moving during the dead zone (LTHUMB)
     if(m_state.Gamepad.sThumbLX < XINPUT_GAMEPAD_LEFT_THUMB_DEADZONE &&
@@ -180,7 +184,7 @@ void GamePadState::Update()
   }
 }
 
-void GamePadState::ReevaluateConnection()
+void GamePadState::ReEvaluateConnection()
 {
   m_connected = XInputGetState(m_index, &m_state) == ERROR_SUCCESS;
 }

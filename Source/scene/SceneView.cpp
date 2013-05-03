@@ -90,15 +90,11 @@ void SceneView::Render(const RenderList &list)
   
   pDevice->EndScene();
 
-  pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
-
   // Render N/M Buffer.
   RenderNormalPass();
 
   RenderLightPass();
 
-
-  //pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
   RenderCombinedScene();
 

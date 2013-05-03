@@ -30,7 +30,7 @@ private:
   static void Initialize(const GameWindow &pGameWindow);
 
   static void Update();
-  static void ReevaluateGamePadConnections();
+  static void ReEvaluateGamePadConnections();
   static void HandleInput(const HRAWINPUT &);
 
   static MouseState m_mouseState;

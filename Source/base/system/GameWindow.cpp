@@ -101,7 +101,7 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
   case WM_DEVICECHANGE:
     if(wparam == DBT_DEVNODES_CHANGED)
     {
-
+      InputManager::ReEvaluateGamePadConnections();
     }
     return DefWindowProc(hwnd, msg, wparam, lparam);
   case WM_DESTROY:
