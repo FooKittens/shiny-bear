@@ -67,7 +67,7 @@ void GameWindow::HandleMessages()
 {
   MSG msg = { 0 };
 
-  if(PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
+  while(PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
   {
     TranslateMessage(&msg);
     DispatchMessage(&msg);

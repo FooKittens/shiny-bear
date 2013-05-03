@@ -80,6 +80,7 @@ void SceneView::Render(const RenderList &list)
 
   // Set matrices for geometry rendering.
   CameraNode *pCam = m_pScene->GetCamera();
+  pCam->Update(0);
   m_pShader->SetMatrix(m_hFxView, &pCam->GetViewMatrix());
   m_pShader->SetMatrix(m_hFxProjection, &pCam->GetProjectionMatrix());
   m_pShader->SetFloat(m_hFxNearPlane, pCam->GetNearPlane());
