@@ -177,7 +177,7 @@ bool TestApp::OnInitialize()
 
   light = Light::CreateDirectionalLight(
     D3DXCOLOR(0.55f, 0.55f, 0.55f, 1.0f),
-    Vector3(1.0f, 0.0f, 1.0f));
+    Vector3(1.0f, -3.0f, 1.5f));
 
   light2 = Light::CreateDirectionalLight(
     D3DXCOLOR(0.15f, 0.85f, 0.15f, 1.0f),
@@ -188,7 +188,7 @@ bool TestApp::OnInitialize()
 
  
   m_pScene->GetRoot()->Attach(pLightNode);
-  m_pScene->GetRoot()->Attach(pLightNode2);
+  //m_pScene->GetRoot()->Attach(pLightNode2);
 #pragma endregion
 
 

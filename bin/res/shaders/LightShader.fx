@@ -296,10 +296,10 @@ texture g_specularMap;
 sampler g_diffSampler = sampler_state
 {
   Texture = <g_diffuseMap>;
-  MinFilter = ANISOTROPIC;
-  MagFilter = LINEAR;
-  MipFilter = LINEAR;
-  MaxAnisotropy = 16;
+  MinFilter = POINT;
+  MagFilter = POINT;
+  MipFilter = POINT;
+  //MaxAnisotropy = 16;
 };
 
 sampler g_specSampler = sampler_state
@@ -351,7 +351,7 @@ float4 PSCombine(VSCombineOutput input) : SV_TARGET
   uv.xy = uv.xy + float2(1.5f / 1280.0f, 1.5f / 720.0f);
 
 
-  return input.diffuse * float4(0.15f, 0.15f, 0.15f, 1.0f) + input.diffuse * tex2D(g_diffSampler, uv);
+  return input.diffuse * float4(0.45f, 0.45f, 0.45f, 1.0f) + input.diffuse * tex2D(g_diffSampler, uv);
 }
 
 technique CombineTech

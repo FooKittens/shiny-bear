@@ -31,9 +31,9 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
 
   GetAbsolutePath(L"res\\shaders\\LightShader.fx", &m_pShaderPath);
 
-  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
-  m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
-  m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
+  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_X8R8G8B8);
+  m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_X8R8G8B8);
+  m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_X8R8G8B8);
   m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
 
   CreateVertexDecl();
@@ -90,10 +90,15 @@ void SceneView::Render(const RenderList &list)
   
   pDevice->EndScene();
 
+  pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
+
   // Render N/M Buffer.
   RenderNormalPass();
 
   RenderLightPass();
+
+
+  //pDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
   RenderCombinedScene();
 
