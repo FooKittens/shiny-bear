@@ -4,6 +4,7 @@
 #include "util\input\InputManager.h"
 #include <cassert>
 #include <WtsApi32.h>
+#include <Dbt.h>
 
 using std::string;
 
@@ -96,7 +97,12 @@ LRESULT GameWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
       HRAWINPUT hInput = reinterpret_cast<HRAWINPUT>(lparam);
       InputManager::HandleInput(hInput);
     }
-    
+    return DefWindowProc(hwnd, msg, wparam, lparam);
+  case WM_DEVICECHANGE:
+    if(wparam == DBT_DEVNODES_CHANGED)
+    {
+
+    }
     return DefWindowProc(hwnd, msg, wparam, lparam);
   case WM_DESTROY:
     m_pGame->OnWindowClosed();

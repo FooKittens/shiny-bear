@@ -147,8 +147,8 @@ bool BaseGame::Run()
       m_pGameTimer->Tick();
     }
 
-    // Update InputManager
-    //InputManager::Update();
+    // Update input.
+    InputManager::Update();
 
     // Update gamelogic.
     OnUpdate(m_pGameTimer->GetElapsedTime());

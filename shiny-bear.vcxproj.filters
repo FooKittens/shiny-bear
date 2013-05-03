@@ -117,6 +117,15 @@
     <ClInclude Include="Source\graphics\RenderTarget.h">
       <Filter>Source\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\util\input\KeyboardState.h">
+      <Filter>Source\util\input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\util\input\MouseState.h">
+      <Filter>Source\util\input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\util\input\GamePadState.h">
+      <Filter>Source\util\input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -175,6 +184,15 @@
     </ClCompile>
     <ClCompile Include="Source\graphics\RenderTarget.cpp">
       <Filter>Source\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\util\input\KeyboardState.cpp">
+      <Filter>Source\util\input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\util\input\MouseState.cpp">
+      <Filter>Source\util\input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\util\input\GamePadState.cpp">
+      <Filter>Source\util\input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
