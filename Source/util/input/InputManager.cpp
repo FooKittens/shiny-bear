@@ -1,6 +1,9 @@
 #include "util\input\InputManager.h"
 #include "base\system\GameWindow.h"
 #include "base\system\GameTimer.h"
+#include "util\input\MouseState.h"
+#include "util\input\KeyboardState.h"
+#include "util\input\GamePadState.h"
 
 #include <Windows.h>
 #include <cassert>
@@ -9,10 +12,10 @@
 namespace shinybear 
 {
   // Initialization of static variables
-  MouseState InputManager::mouseState = MouseState();
-  KeyboardState InputManager::keyboardState = KeyboardState();
-  std::bitset<255> InputManager::tempKey(1);
-  ControllerState InputManager::xboxControllers[kMaximumControllerCount] =
+  MouseState InputManager::m_mouseState = MouseState();
+  KeyboardState InputManager::m_keyboardState = KeyboardState();
+  std::bitset<255> InputManager::m_tempKey(1);
+  GamePadState InputManager::m_gamePads[kMaximumGamePadCount] =
   {GamePadIndex::ONE, GamePadIndex::TWO, GamePadIndex::THREE, GamePadIndex::FOUR};
 
 
@@ -46,9 +49,9 @@ void InputManager::Initialize(const GameWindow &pGameWindow)
 
 void InputManager::Update()
 {
-  for(int i = 0; i != kMaximumControllerCount; ++i)
+  for(int i = 0; i != kMaximumGamePadCount; ++i)
   {
-    xboxControllers[0].Update();
+    m_gamePads[i].Update();
   }
 }
 
@@ -64,7 +67,6 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
     return;
   }
 
-  //
   if(GetRawInputData(hInput, RID_INPUT, lpb, &dwSize, sizeof(RAWINPUTHEADER)) != dwSize)
   {
     assert(false && "GetRawInputData does not return correct size!");
@@ -204,9 +206,9 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
         if(vKey < 255) // 255 should already have been handled as a fake key
         {
           // tempKey is a bitset<255>, just like keyStates
-          tempKey = 1;
-          tempKey <<= (vKey - 1);
-          keyboardState.keyStates &= ~tempKey; // Sets the vKey'th bit to 0
+          m_tempKey = 1;
+          m_tempKey <<= (vKey - 1);
+          m_keyboardState.m_keyStates &= ~m_tempKey; // Sets the vKey'th bit to 0
         }
         else
         {
@@ -218,9 +220,9 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
         if(vKey < 255) // 255 should already have been handled as a fake key
         {
           // tempKey is a bitset<255>, just like keyStates
-          tempKey = 1;
-          tempKey <<= (vKey - 1);
-          keyboardState.keyStates |= tempKey; // Sets the vKey'th bit to 1
+          m_tempKey = 1;
+          m_tempKey <<= (vKey - 1);
+          m_keyboardState.m_keyStates |= m_tempKey; // Sets the vKey'th bit to 1
         }
         else
         {
@@ -241,13 +243,13 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
       // Check mouse movement parameters
       if(flags == MOUSE_MOVE_RELATIVE)
       {
-        mouseState.changeX = static_cast<int>(lastX);
-        mouseState.changeY = static_cast<int>(lastY);
+        m_mouseState.m_changeX = static_cast<int>(lastX);
+        m_mouseState.m_changeY = static_cast<int>(lastY);
       }
       else if (flags & MOUSE_MOVE_ABSOLUTE)
       {
-        mouseState.absoluteX = static_cast<int>(lastX);
-        mouseState.absoluteY = static_cast<int>(lastY);
+        m_mouseState.m_absoluteX = static_cast<int>(lastX);
+        m_mouseState.m_absoluteY = static_cast<int>(lastY);
         if (flags & MOUSE_VIRTUAL_DESKTOP)
         {
           assert(false && "Your mouse entered a virtual screen!");
@@ -257,56 +259,54 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
       // Check button or scroll wheel status
       if(buttonFlags & RI_MOUSE_WHEEL)
       {
-        mouseState.mouseWheelChange = static_cast<short>(pRawInput->data.mouse.usButtonData);
+        m_mouseState.m_mouseWheelChange = static_cast<short>(pRawInput->data.mouse.usButtonData);
       }
       else
       {
         if (buttonFlags & RI_MOUSE_BUTTON_1_DOWN)
-          mouseState.mouseButtonStates |= (1 << 0); // Sets the 1nd bit to 1
+          m_mouseState.m_mouseButtonStates |= (1 << 0); // Sets the 1nd bit to 1
         if (buttonFlags & RI_MOUSE_BUTTON_1_UP)
-          mouseState.mouseButtonStates &= ~(1 << 0); // Sets the 1nd bit to 0
+          m_mouseState.m_mouseButtonStates &= ~(1 << 0); // Sets the 1nd bit to 0
 
         if (buttonFlags & RI_MOUSE_BUTTON_2_DOWN)
-          mouseState.mouseButtonStates |= (1 << 1); // Sets the 2nd bit to 1
+          m_mouseState.m_mouseButtonStates |= (1 << 1); // Sets the 2nd bit to 1
         if (buttonFlags & RI_MOUSE_BUTTON_2_UP)
-          mouseState.mouseButtonStates &= ~(1 << 1); // Sets the 2nd bit to 0
+          m_mouseState.m_mouseButtonStates &= ~(1 << 1); // Sets the 2nd bit to 0
 
         // Third bit is ignored due to the fact that Microsoft's
         // 3rd VK_-define, VK_CANCEL, is not a mouse-related virtual key
 
         if (buttonFlags & RI_MOUSE_BUTTON_3_DOWN)
-          mouseState.mouseButtonStates |= (1 << 3); // Sets the 4th bit to 1
+          m_mouseState.m_mouseButtonStates |= (1 << 3); // Sets the 4th bit to 1
         if (buttonFlags & RI_MOUSE_BUTTON_3_UP)
-          mouseState.mouseButtonStates &= ~(1 << 3); // Sets the 4th bit to 0
+          m_mouseState.m_mouseButtonStates &= ~(1 << 3); // Sets the 4th bit to 0
 
         if (buttonFlags & RI_MOUSE_BUTTON_4_DOWN)
-          mouseState.mouseButtonStates |= (1 << 4); // Sets the 5th bit to 1
+          m_mouseState.m_mouseButtonStates |= (1 << 4); // Sets the 5th bit to 1
         if (buttonFlags & RI_MOUSE_BUTTON_4_UP)
-          mouseState.mouseButtonStates &= ~(1 << 4); // Sets the 5th bit to 0
+          m_mouseState.m_mouseButtonStates &= ~(1 << 4); // Sets the 5th bit to 0
 
         if (buttonFlags & RI_MOUSE_BUTTON_5_DOWN)
-          mouseState.mouseButtonStates |= (1 << 5); // Sets the 6th bit to 1
+          m_mouseState.m_mouseButtonStates |= (1 << 5); // Sets the 6th bit to 1
         if (buttonFlags & RI_MOUSE_BUTTON_5_UP)
-          mouseState.mouseButtonStates &= ~(1 << 5); // Sets the 6th bit to 0
+          m_mouseState.m_mouseButtonStates &= ~(1 << 5); // Sets the 6th bit to 0
       }
 
       break;
     } // END OF MOUSE INPUT HANDLING
-    case RIM_TYPEHID:
-    {
-      BYTE *data = pRawInput->data.hid.bRawData;
-      unsigned long sizePerReport = pRawInput->data.hid.dwSizeHid;
-      unsigned long reportCount = pRawInput->data.hid.dwCount;
-
-      unsigned int bufferSize = sizePerReport * reportCount;
-
-      break;
-    } // END OF GAMEPAD INPUT HANDLING
   }
 
   delete lpb;
 
   return;
+}
+
+void InputManager::ReevaluateGamePadConnections()
+{
+  for(int i = 0; i != kMaximumGamePadCount; ++i)
+  {
+    m_gamePads[i].ReevaluateConnection();
+  }
 }
 
 } // namespace framework

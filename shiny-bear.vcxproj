@@ -31,6 +31,9 @@
     <ClInclude Include="Source\scene\SceneView.h" />
     <ClInclude Include="Source\util\Color4f.h" />
     <ClInclude Include="Source\util\input\InputManager.h" />
+    <ClInclude Include="Source\util\input\KeyboardState.h" />
+    <ClInclude Include="Source\util\input\MouseState.h" />
+    <ClInclude Include="Source\util\input\GamePadState.h" />
     <ClInclude Include="source\util\ISerializable.h" />
     <ClInclude Include="Source\util\math\Math.h" />
     <ClInclude Include="source\util\SBUtil.h" />
@@ -55,6 +58,9 @@
     <ClCompile Include="Source\scene\SceneNode.cpp" />
     <ClCompile Include="Source\scene\SceneView.cpp" />
     <ClCompile Include="Source\util\input\InputManager.cpp" />
+    <ClCompile Include="Source\util\input\KeyboardState.cpp" />
+    <ClCompile Include="Source\util\input\MouseState.cpp" />
+    <ClCompile Include="Source\util\input\GamePadState.cpp" />
     <ClCompile Include="Source\util\math\Math.cpp" />
     <ClCompile Include="source\util\SBUtil.cpp" />
     <ClCompile Include="Source\world\Cluster.cpp" />
