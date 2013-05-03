@@ -114,9 +114,6 @@
     <ClInclude Include="Source\util\input\InputManager.h">
       <Filter>Source\util\input</Filter>
     </ClInclude>
-    <ClInclude Include="Source\util\input\XboxController.h">
-      <Filter>Source\util\input</Filter>
-    </ClInclude>
     <ClInclude Include="Source\graphics\RenderTarget.h">
       <Filter>Source\graphics</Filter>
     </ClInclude>
@@ -174,9 +171,6 @@
       <Filter>Source\util\math</Filter>
     </ClCompile>
     <ClCompile Include="Source\util\input\InputManager.cpp">
-      <Filter>Source\util\input</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\util\input\XboxController.cpp">
       <Filter>Source\util\input</Filter>
     </ClCompile>
     <ClCompile Include="Source\graphics\RenderTarget.cpp">

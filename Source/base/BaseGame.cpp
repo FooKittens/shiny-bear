@@ -170,7 +170,7 @@ bool BaseGame::Run()
       m_pGraphicsProvider->Present();
     }
 
-    Sleep(11);
+    //Sleep(11);
 
     if(m_isQuitting)
     {

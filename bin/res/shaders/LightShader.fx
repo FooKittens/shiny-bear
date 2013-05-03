@@ -351,7 +351,7 @@ float4 PSCombine(VSCombineOutput input) : SV_TARGET
   uv.xy = uv.xy; // + float2(1.5f / 1920.0f, 1.5f / 1080.0f);
 
 
-  return input.diffuse * float4(0.15f, 0.15f, 0.15f, 1.0f); // + input.diffuse * tex2D(g_diffSampler, uv);
+  return input.diffuse * float4(0.15f, 0.15f, 0.15f, 1.0f) + input.diffuse * tex2D(g_diffSampler, uv);
 }
 
 technique CombineTech
