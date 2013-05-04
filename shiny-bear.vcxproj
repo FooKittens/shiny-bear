@@ -21,6 +21,7 @@
     <ClInclude Include="Source\graphics\LightVolume.h" />
     <ClInclude Include="Source\graphics\Mesh.h" />
     <ClInclude Include="Source\graphics\RenderTarget.h" />
+    <ClInclude Include="Source\graphics\Shader.h" />
     <ClInclude Include="Source\graphics\VertexDeclaration.h" />
     <ClInclude Include="Source\graphics\VertexFormats.h" />
     <ClInclude Include="Source\scene\CameraNode.h" />
@@ -48,8 +49,10 @@
     <ClCompile Include="Source\base\system\GameTimer.cpp" />
     <ClCompile Include="Source\base\system\GameWindow.cpp" />
     <ClCompile Include="Source\base\system\GraphicsProvider.cpp" />
+    <ClCompile Include="Source\graphics\LightVolume.cpp" />
     <ClCompile Include="Source\graphics\Mesh.cpp" />
     <ClCompile Include="Source\graphics\RenderTarget.cpp" />
+    <ClCompile Include="Source\graphics\Shader.cpp" />
     <ClCompile Include="Source\graphics\VertexDeclaration.cpp" />
     <ClCompile Include="Source\scene\CameraNode.cpp" />
     <ClCompile Include="Source\scene\LightNode.cpp" />

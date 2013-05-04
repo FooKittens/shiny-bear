@@ -87,8 +87,8 @@ technique RenderToScreen
 {
   pass pass0
   {
-    vertexshader = compile vs_2_0 VSRenderToScreen();
-    pixelshader = compile ps_2_0 PSRenderToScreen();
+    vertexshader = compile vs_3_0 VSRenderToScreen();
+    pixelshader = compile ps_3_0 PSRenderToScreen();
   }
 }
 
@@ -153,8 +153,8 @@ technique NormalTech
 {
   pass pass0
   {
-    vertexShader = compile vs_2_0 VSNormalSpecularExp();
-    pixelShader = compile ps_2_0 PSNormalSpecularExp();
+    vertexShader = compile vs_3_0 VSNormalSpecularExp();
+    pixelShader = compile ps_3_0 PSNormalSpecularExp();
   }
 }
 
@@ -201,22 +201,28 @@ sampler g_normalSampler = sampler_state
   AddressV = CLAMP;
 };
 
+texture g_depthMap;
+sampler g_depthSampler = sampler_state
+{
+  Texture = <g_depthMap>;
+  MinFilter = POINT;
+  MagFilter = POINT;
+  MipFilter = POINT;
+  AddressU = CLAMP;
+  AddressV = CLAMP;
+};
+
 
 LightVSOut VSLightPassMRT(LightVSIn input)
 {
   LightVSOut output;
   output.position = input.position;
-  output.texcoords = input.texcoords; // HARDCODED HALF PIXEL SIZE...
+  output.texcoords = input.texcoords;
   return output;
 }
 
-struct LightColor
-{
-  float4 diffuse;
-  float4 specular;
-};
 
-MRTOUT DiffuseLight(float3 normal, float exp)
+MRTOUT DiffuseLight(float3 normal, float sexp)
 {
   MRTOUT col;
   float inten = max(0, dot(normalize(normal), normalize(-g_light.direction)));
@@ -251,7 +257,7 @@ MRTOUT SpotLight()
 
 MRTOUT PSLightPassMRT(LightVSOut input)
 {
-  float4 nCol = tex2D(g_normalSampler, input.texcoords);
+  float4 nCol = tex2D(g_normalSampler, input.texcoords + float2(0.5f / 1280.0f, 0.5f / 720.0f));
   float3 normal = float3(UnPackRange(nCol.x), UnPackRange(nCol.y), UnPackRange(nCol.z));
 
 
@@ -274,8 +280,8 @@ technique LightPassMRT
 {
   pass pass0
   {
-    vertexshader = compile vs_2_0 VSLightPassMRT();
-    pixelshader = compile ps_2_0 PSLightPassMRT();
+    vertexshader = compile vs_3_0 VSLightPassMRT();
+    pixelshader = compile ps_3_0 PSLightPassMRT();
 
     AlphaBlendEnable = true;
     SrcBlend = One;
@@ -296,9 +302,9 @@ texture g_specularMap;
 sampler g_diffSampler = sampler_state
 {
   Texture = <g_diffuseMap>;
-  MinFilter = POINT;
-  MagFilter = POINT;
-  MipFilter = POINT;
+  MinFilter = LINEAR;
+  MagFilter = LINEAR;
+  MipFilter = LINEAR;
   //MaxAnisotropy = 16;
 };
 
@@ -348,17 +354,17 @@ float4 PSCombine(VSCombineOutput input) : SV_TARGET
   uv *= 0.5f;
   uv += 0.5f;
   uv.y *= -1.0f;
-  uv.xy = uv.xy + float2(1.5f / 1280.0f, 1.5f / 720.0f);
+  uv.xy = uv.xy + float2(0.5f / 1280.0f, 0.5f / 720.0f);
 
 
-  return input.diffuse * float4(0.45f, 0.45f, 0.45f, 1.0f) + input.diffuse * tex2D(g_diffSampler, uv);
+  return input.diffuse * float4(0.20f, 0.20f, 0.20f, 1.0f) + input.diffuse * tex2D(g_diffSampler, uv);
 }
 
 technique CombineTech
 {
   pass p0
   {
-    vertexshader = compile vs_2_0 VSCombine();
-    pixelshader = compile ps_2_0 PSCombine();
+    vertexshader = compile vs_3_0 VSCombine();
+    pixelshader = compile ps_3_0 PSCombine();
   }
 }

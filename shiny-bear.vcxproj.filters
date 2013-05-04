@@ -120,6 +120,9 @@
     <ClInclude Include="Source\util\input\GamePadState.h">
       <Filter>Source\util\input</Filter>
     </ClInclude>
+    <ClInclude Include="Source\graphics\Shader.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -184,6 +187,12 @@
     </ClCompile>
     <ClCompile Include="Source\util\input\GamePadState.cpp">
       <Filter>Source\util\input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\graphics\LightVolume.cpp">
+      <Filter>Source\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\graphics\Shader.cpp">
+      <Filter>Source\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

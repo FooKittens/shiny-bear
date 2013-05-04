@@ -93,13 +93,11 @@ void SceneView::Render(const RenderList &list)
   // Render N/M Buffer.
   RenderNormalPass();
 
+  // Render lights into diffuse and specular buffers.
   RenderLightPass();
 
-
+  // Blend the combined image of the NM and light buffer.
   RenderCombinedScene();
-
-  // 
-  //DisplayRenderTarget(m_pNormalTarget);
 
   pDevice->BeginScene();
 
@@ -169,6 +167,8 @@ void SceneView::RenderLightPass()
       0,
       sizeof(Light)
     ));
+
+    
 
     for(UINT i = 0; i < numPasses; ++i)
     {
@@ -246,6 +246,7 @@ void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)
   HR(pDevice->SetStreamSource(0, m_pScreenVBuffer, 0, sizeof(ScreenVertexData)));
 
   HR(m_pShader->SetTexture(m_hFxTexture, pTarget->GetTexture()));
+
 
   UINT numPasses;
   HR(m_pShader->Begin(&numPasses, 0));

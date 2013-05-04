@@ -191,7 +191,7 @@ bool TestApp::OnInitialize()
 
  
   m_pScene->GetRoot()->Attach(pLightNode);
-  //m_pScene->GetRoot()->Attach(pLightNode2);
+  m_pScene->GetRoot()->Attach(pLightNode2);
 #pragma endregion
 
 
