@@ -4,6 +4,8 @@
 #include "scene\CameraNode.h"
 #include "base\system\GraphicsProvider.h"
 #include "graphics\Mesh.h"
+#include "graphics\Shader.h"
+#include "graphics\LightVolume.h"
 #include "util\SBUtil.h"
 #include <cassert>
 #include <d3dx9.h>
@@ -21,21 +23,44 @@ const SceneView::ScreenVertexData SceneView::kScreenVertices[kScreenVertCount] =
 };
 
 SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
-  :m_voxelDeclaration(pProvider), m_textureDeclaration(pProvider)
+  :m_voxelDeclaration(pProvider), m_textureDeclaration(pProvider),
+  m_lightDeclaration(pProvider)
 {
   m_pScene = pScene;
   m_pProvider = pProvider;
   m_isRendering = false;
-  m_pShader = nullptr;
   m_pScreenVBuffer = nullptr;
 
-  GetAbsolutePath(L"res\\shaders\\LightShader.fx", &m_pShaderPath);
+  wchar_t *pBuffer;
+  GetAbsolutePath(L"res\\shaders\\LightShader.fx", &pBuffer);
+  m_pLightShader = DBG_NEW Shader(pProvider);
+  m_pLightShader->LoadFromFile(pBuffer);
+  delete[] pBuffer;
 
-  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_X8R8G8B8);
-  m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_X8R8G8B8);
-  m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_X8R8G8B8);
+  GetAbsolutePath(L"res\\shaders\\GBufferShader.fx", &pBuffer);
+  m_pGBufferShader = DBG_NEW Shader(pProvider);
+  m_pGBufferShader->LoadFromFile(pBuffer);
+  delete[] pBuffer;
+
+  GetAbsolutePath(L"res\\shaders\\CombineShader.fx", &pBuffer);
+  m_pCombineShader = DBG_NEW Shader(pProvider);
+  m_pCombineShader->LoadFromFile(pBuffer);
+  delete[] pBuffer;
+
+  m_pQuadVolume = DBG_NEW LightVolume(pProvider);
+  m_pSphereVolume = DBG_NEW LightVolume(pProvider);
+  m_pConeVolume = DBG_NEW LightVolume(pProvider);
+
+  m_pQuadVolume->MakeQuad();
+  m_pSphereVolume->MakeSphere();
+  m_pConeVolume->MakeCone();
+
+  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
+  m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
+  m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
   m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
 
+  
   CreateVertexDecl();
 
   OnDeviceReset();
@@ -43,12 +68,16 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
 
 SceneView::~SceneView()
 {
-  delete[] m_pShaderPath;
   delete m_pNormalTarget;
   delete m_pDiffuseTarget;
   delete m_pSpecularTarget;
   delete m_pDepthTarget;
-  RELEASECOM(m_pShader);
+  delete m_pLightShader;
+  delete m_pGBufferShader;
+  delete m_pCombineShader;
+  delete m_pQuadVolume;
+  delete m_pSphereVolume;
+  delete m_pConeVolume;
   RELEASECOM(m_pScreenVBuffer);
 }
 
@@ -62,7 +91,7 @@ void SceneView::Render(const RenderList &list)
   m_alphaList.clear();
 
   // Filter RenderData into different lists for different passes.
-  for(int i = 0; i < list.size(); ++i)
+  for(UINT i = 0; i < list.size(); ++i)
   {
     if(list[i].type == RenderType::MESH)
     {
@@ -80,11 +109,9 @@ void SceneView::Render(const RenderList &list)
 
   // Set matrices for geometry rendering.
   CameraNode *pCam = m_pScene->GetCamera();
+
+  // TODO : FIX THE NEED FOR THIS!
   pCam->Update(0);
-  m_pShader->SetMatrix(m_hFxView, &pCam->GetViewMatrix());
-  m_pShader->SetMatrix(m_hFxProjection, &pCam->GetProjectionMatrix());
-  m_pShader->SetFloat(m_hFxNearPlane, pCam->GetNearPlane());
-  m_pShader->SetFloat(m_hFxFarPlane, pCam->GetViewDistance());
 
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();  
   
@@ -98,6 +125,8 @@ void SceneView::Render(const RenderList &list)
 
   // Blend the combined image of the NM and light buffer.
   RenderCombinedScene();
+
+  //DisplayRenderTarget(m_pSpecularTarget);
 
   pDevice->BeginScene();
 
@@ -122,8 +151,34 @@ void SceneView::RenderNormalPass()
   // Begin rendering.
   HR(pDevice->BeginScene());
 
-  // Render geometry using normal-specular technique.
-  RenderGeometry(m_hFxNormalTech);
+  m_pGBufferShader->SetActiveTechnique("NormalTech");
+  
+  Mat4x4 wvp;
+  CameraNode *pCam = m_pScene->GetCamera();
+  
+  m_pGBufferShader->SetFloat("g_zfar", pCam->GetViewDistance());
+
+  m_pGBufferShader->Begin();
+  for(UINT i = 0; i < m_meshes.size(); ++i)
+  {
+    // Set world matrix since its needed for normals.
+    m_pGBufferShader->SetMatrix("g_world", m_meshes[i]->world);
+
+    // Save the wvp matrix to save some muls in vertex shader.
+    wvp = m_meshes[i]->world * pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
+    
+    m_pGBufferShader->SetMatrix("g_WVP", wvp);
+
+    // Begin rendering using the single pass.
+    m_pGBufferShader->BeginPass(0);
+       
+    // Render the mesh.
+    m_meshes[i]->data.pMesh->RenderMesh();
+
+    // Stop this pass.
+    m_pGBufferShader->EndPass();
+  }
+  m_pGBufferShader->End();
 
   HR(pDevice->EndScene());
 
@@ -139,52 +194,82 @@ void SceneView::RenderLightPass()
   m_pDiffuseTarget->Activate(0);
   m_pSpecularTarget->Activate(1);
 
-  m_textureDeclaration.Activate();
+  m_lightDeclaration.Activate();
 
-  HR(pDevice->SetStreamSource(0, m_pScreenVBuffer, 0, sizeof(ScreenVertexData)));
+  //HR(pDevice->SetStreamSource(0, m_pScreenVBuffer, 0, sizeof(ScreenVertexData)));
 
   CameraNode *pCam = m_pScene->GetCamera();
-  
-  HR(m_pShader->SetRawValue(m_hFxCamPos,
-    (void*)(&pCam->GetTransform().GetPosition()), 0, sizeof(Vector3)));
 
-  HR(m_pShader->SetTexture(m_hFxNormalMap, m_pNormalTarget->GetTexture()));
+  Vector2 halfPixel(0.5f / (float)m_pProvider->GetDisplayMode().width,
+    0.5f / (float)m_pProvider->GetDisplayMode().height);
+
+  m_pLightShader->SetVector2("g_halfPixel", halfPixel);
+  m_pLightShader->SetMatrix("g_invProjection", pCam->GetProjectionMatrix().Inverse());
+  m_pLightShader->SetVector3("g_cameraPosition", pCam->GetTransform().GetPosition());
+  m_pLightShader->SetTexture("g_normalMap", m_pNormalTarget->GetTexture());
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0, 1.0f, 0));
 
   HR(pDevice->BeginScene());
 
-  HR(m_pShader->SetTechnique(m_hFxLightMRTTech));
-  
-  UINT numPasses;
-  HR(m_pShader->Begin(&numPasses, 0));
-  for(size_t li = 0; li < m_lights.size(); ++li)
+  for(size_t i = 0; i < m_lights.size(); ++i)
   {
-    HR(m_pShader->SetRawValue(
-      m_hFxLight,
-      (void*)m_lights[li]->data.pLight,
-      0,
-      sizeof(Light)
-    ));
-
-    
-
-    for(UINT i = 0; i < numPasses; ++i)
-    {
-      HR(m_pShader->BeginPass(i));
-      HR(pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2));
-      HR(m_pShader->EndPass());
-    }
+    RenderLight(m_lights[i]->data.pLight); 
   }
-  HR(m_pShader->End());
-
   HR(pDevice->EndScene());
 
   m_pSpecularTarget->Deactivate();
   m_pDiffuseTarget->Deactivate();
 }
 
+void SceneView::RenderLight(const Light *pLight)
+{
+  // Set the active technique to the light MRT tech.
+  m_pLightShader->SetActiveTechnique("LightMRTTech");
+
+  // Set shader variable for the light.
+  m_pLightShader->SetRaw("g_light", (void*)pLight, sizeof(Light));
+
+  m_pLightShader->SetMatrix("g_WVP", CalcLightMatrix(pLight));
+
+  switch(pLight->type)
+  {
+  case LightType::LT_DIRECTIONAL:
+    m_pLightShader->SetActiveTechnique("DiffuseLightTech");
+    // Begin rendering with technique.
+    m_pLightShader->Begin();
+    m_pLightShader->BeginPass(0);
+    m_pQuadVolume->Render();
+    break;
+  case LightType::LT_POINT:
+    m_pSphereVolume->Render();
+    break;
+  case LightType::LT_SPOT:
+    m_pConeVolume->Render();
+    break;
+  default:
+    assert(false && "Unknown LightType!");
+  }
+
+  m_pLightShader->EndPass();
+  m_pLightShader->End();
+}
+
+Mat4x4 SceneView::CalcLightMatrix(const Light *pLight)
+{
+  CameraNode *pCam = m_pScene->GetCamera();
+
+  if(pLight->type == LightType::LT_DIRECTIONAL)
+  {
+    return Mat4x4::CreateScale(2.0f);
+  } 
+  else if(pLight->type == LightType::LT_POINT)
+  {
+
+  }
+  return Mat4x4::kIdentity;
+}
 
 void SceneView::RenderCombinedScene()
 {
@@ -193,8 +278,8 @@ void SceneView::RenderCombinedScene()
   // Normal voxel vertexdeclaration.
   m_voxelDeclaration.Activate();
 
-  HR(m_pShader->SetTexture(m_hFxDiffuseMap, m_pDiffuseTarget->GetTexture()));
-  HR(m_pShader->SetTexture(m_hFxSpecularMap, m_pSpecularTarget->GetTexture()));
+  m_pCombineShader->SetTexture("g_diffuseMap", m_pDiffuseTarget->GetTexture());
+  m_pCombineShader->SetTexture("g_specularMap", m_pSpecularTarget->GetTexture());
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
@@ -203,33 +288,25 @@ void SceneView::RenderCombinedScene()
   // Begin rendering.
   HR(pDevice->BeginScene());
 
-  RenderGeometry(m_hFxCombineTech);
+  m_pCombineShader->SetActiveTechnique("CombineTech");
+  CameraNode *pCam = m_pScene->GetCamera();
+  Mat4x4 wvp;  
+  m_pCombineShader->Begin();
+  for(UINT i = 0; i < m_meshes.size(); ++i)
+  {
+    wvp = m_meshes[i]->world * pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
+
+    m_pCombineShader->SetMatrix("g_WVP", wvp);
+    m_pCombineShader->BeginPass(0);
+    m_meshes[i]->data.pMesh->RenderMesh();
+    m_pCombineShader->EndPass();
+  }
+  m_pCombineShader->End();
 
   HR(pDevice->EndScene());
-}
 
-void SceneView::RenderGeometry(D3DXHANDLE hTech)
-{
-  // Enable the normal pass rendering technique.
-  HR(m_pShader->SetTechnique(hTech));
-
-  UINT passCount;
-
-  // Begin rendering using the current technique.
-  HR(m_pShader->Begin(&passCount, 0));
-  for(size_t mi = 0; mi < m_meshes.size(); ++mi)
-  {
-    // Set world matrix.
-    HR(m_pShader->SetMatrix(m_hFxWorld, &m_meshes[mi]->world));
-    for(int i = 0; i < passCount; ++i)
-    {
-      HR(m_pShader->BeginPass(i));
-      m_meshes[mi]->data.pMesh->RenderMesh();
-      HR(m_pShader->EndPass());
-    }
-  }
-  // Stop rendering using the current technique.
-  HR(m_pShader->End());
+  //m_pCombineShader->SetTexture("g_diffuseMap", nullptr);
+  //m_pCombineShader->SetTexture("g_specularMap", nullptr);
 }
 
 void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)
@@ -241,27 +318,22 @@ void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)
   HR(pDevice->BeginScene());
 
   // Draw output.
-  HR(m_pShader->SetTechnique(m_hFxRenderScreenTech));
+  m_pCombineShader->SetActiveTechnique("RenderToScreen");
 
   HR(pDevice->SetStreamSource(0, m_pScreenVBuffer, 0, sizeof(ScreenVertexData)));
+  m_pCombineShader->SetTexture("g_texture", pTarget->GetTexture());
 
-  HR(m_pShader->SetTexture(m_hFxTexture, pTarget->GetTexture()));
-
-
-  UINT numPasses;
-  HR(m_pShader->Begin(&numPasses, 0));
-  HR(m_pShader->BeginPass(0));
+  m_pCombineShader->Begin();
+  m_pCombineShader->BeginPass(0);
   pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
-  HR(m_pShader->EndPass());
-  HR(m_pShader->End());
+  m_pCombineShader->EndPass();
+  m_pCombineShader->End();
 
-  //HR(pDevice->EndScene());
+  HR(pDevice->EndScene());
 }
 
 void SceneView::OnDeviceLost()
 {
-  RELEASECOM(m_pShader);
-
   m_pNormalTarget->OnDeviceLost();
   m_pDiffuseTarget->OnDeviceLost();
   m_pSpecularTarget->OnDeviceLost();
@@ -269,33 +341,11 @@ void SceneView::OnDeviceLost()
 
   m_voxelDeclaration.OnDeviceLost();
   m_textureDeclaration.OnDeviceLost();
+  m_lightDeclaration.OnDeviceLost();
 }
 
 void SceneView::OnDeviceReset()
 {
-  // Reloads the shader.
-  LoadShader();
-
-  // Retrieve handles to our shader variables.
-  m_hFxWorld = m_pShader->GetParameterByName(0, "g_world");
-  m_hFxView = m_pShader->GetParameterByName(0, "g_view");
-  m_hFxProjection = m_pShader->GetParameterByName(0, "g_projection");
-  m_hFxTexture = m_pShader->GetParameterByName(0, "g_texture");
-  m_hFxLight = m_pShader->GetParameterByName(0, "g_light");
-  m_hFxCamPos = m_pShader->GetParameterByName(0, "g_cameraPosition");
-  m_hFxNormalMap = m_pShader->GetParameterByName(0, "g_normalMap");
-  m_hFxFarPlane = m_pShader->GetParameterByName(0, "g_zfar");
-  m_hFxNearPlane = m_pShader->GetParameterByName(0, "g_znear");
-  m_hFxDiffuseMap = m_pShader->GetParameterByName(0, "g_diffuseMap");
-  m_hFxSpecularMap = m_pShader->GetParameterByName(0, "g_specularMap");
-
-  // Retrieve handles to our techniques.
-  m_hFxNormalTech = m_pShader->GetTechniqueByName("NormalTech");
-  m_hFxGeometryTech = m_pShader->GetTechniqueByName("GeometryTech");
-  m_hFxRenderScreenTech = m_pShader->GetTechniqueByName("RenderToScreen");
-  m_hFxLightMRTTech = m_pShader->GetTechniqueByName("LightPassMRT");
-  m_hFxCombineTech = m_pShader->GetTechniqueByName("CombineTech");
-
   // Create Vertexbuffer used to draw rendertargets to screen.
   CreateScreenVBuffer();
 
@@ -306,6 +356,7 @@ void SceneView::OnDeviceReset()
 
   m_voxelDeclaration.OnDeviceReset();
   m_textureDeclaration.OnDeviceReset();
+  m_lightDeclaration.OnDeviceReset();
 }
 
 void SceneView::CreateVertexDecl()
@@ -333,27 +384,10 @@ void SceneView::CreateVertexDecl()
   m_voxelDeclaration.AddElement(
     VertexElement(VertexDataType::VDT_FLOAT4, VertexUsageType::VUT_COLOR, 1)
   );
-}
 
-void SceneView::LoadShader()
-{
-  ID3DXBuffer *pBuffer;
-
-  D3DXCreateEffectFromFileW(
-    m_pProvider->GetDevice(),
-    m_pShaderPath,
-    0,
-    0,
-    D3DXSHADER_DEBUG,
-    0,
-    &m_pShader,
-    &pBuffer
+  m_lightDeclaration.AddElement(
+    VertexElement(VertexDataType::VDT_FLOAT3, VertexUsageType::VUT_POSITION, 0)
   );
-
-  if(pBuffer)
-  {
-    OutputDbgFormat("SHADER ERRORS: %s\n", (char*)pBuffer->GetBufferPointer());
-  }
 }
 
 void SceneView::CreateScreenVBuffer()

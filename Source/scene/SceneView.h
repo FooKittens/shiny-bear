@@ -12,7 +12,11 @@
 #include <d3d9.h>
 
 
-namespace shinybear { class GraphicsProvider; }
+namespace shinybear 
+{ 
+  class GraphicsProvider; class Shader;
+  class LightVolume;
+}
 
 struct ID3DXEffect;
 
@@ -32,17 +36,18 @@ public:
 
 private:
   void CreateVertexDecl();
-  void LoadShader();
   void CreateScreenVBuffer();
-
-  // Renders geoemtry with a specified technique.
-  void RenderGeometry(D3DXHANDLE hTech);
 
   // Renders the n/m pass.
   void RenderNormalPass();
 
   // Accumulates all lighting data into a buffer.
   void RenderLightPass();
+
+  // Used to render a single light.
+  void RenderLight(const Light *pLight);
+
+  Mat4x4 CalcLightMatrix(const Light *pLight);
 
   // Renders the combined scene with the lighting data and geometry.
   void RenderCombinedScene();
@@ -65,29 +70,16 @@ private:
   std::vector<const RenderData*> m_alphaList;
 
   bool m_isRendering;
-  ID3DXEffect *m_pShader;
-  wchar_t *m_pShaderPath;
+  
+  Shader *m_pLightShader;
+  Shader *m_pGBufferShader;
+  Shader *m_pCombineShader;
+
+  LightVolume *m_pQuadVolume;
+  LightVolume *m_pSphereVolume;
+  LightVolume *m_pConeVolume;
 
   IDirect3DVertexBuffer9 *m_pScreenVBuffer;
-
-  // Handles to matrices on the shader.
-  D3DXHANDLE m_hFxWorld;
-  D3DXHANDLE m_hFxView;
-  D3DXHANDLE m_hFxProjection;
-  D3DXHANDLE m_hFxTexture;
-  D3DXHANDLE m_hFxLight;
-  D3DXHANDLE m_hFxCamPos;
-  D3DXHANDLE m_hFxNormalMap;
-  D3DXHANDLE m_hFxFarPlane;
-  D3DXHANDLE m_hFxNearPlane;
-  D3DXHANDLE m_hFxDiffuseMap;
-  D3DXHANDLE m_hFxSpecularMap;
-
-  D3DXHANDLE m_hFxNormalTech;
-  D3DXHANDLE m_hFxGeometryTech;
-  D3DXHANDLE m_hFxCombineTech;
-  D3DXHANDLE m_hFxRenderScreenTech;
-  D3DXHANDLE m_hFxLightMRTTech;
 
   RenderTarget *m_pNormalTarget;
   RenderTarget *m_pDiffuseTarget;
@@ -96,6 +88,8 @@ private:
 
   VertexDeclaration m_voxelDeclaration;
   VertexDeclaration m_textureDeclaration;
+  VertexDeclaration m_lightDeclaration;
+
 };
 
 } // namespace shinybear

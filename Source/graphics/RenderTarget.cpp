@@ -51,6 +51,11 @@ void RenderTarget::Deactivate()
     m_pProvider->GetDevice()->SetRenderTarget(m_currentSlot, m_pBackBuffer);
     RELEASECOM(m_pBackBuffer);
   }
+  else
+  {
+    HR(m_pProvider->GetDevice()->SetRenderTarget(m_currentSlot, nullptr));
+  }
+  
 }
 
 void RenderTarget::OnDeviceLost()

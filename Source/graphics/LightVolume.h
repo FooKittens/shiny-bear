@@ -7,46 +7,47 @@
 struct IDirect3DVertexBuffer9;
 struct IDirect3DIndexBuffer9;
 
+namespace shinybear { class GraphicsProvider; }
+
 namespace shinybear
 {
 
 class LightVolume
 {
 public:
-  static void Initialize();
+  LightVolume(GraphicsProvider *pProvider);
+  ~LightVolume();
 
   void OnDeviceReset();
   void OnDeviceLost();
 
-  // Returns a lightvolume as a unit quad.
-  static const LightVolume *GetRect();
+  // Used for creating different shapes.
+  void MakeQuad();
+  void MakeSphere();
+  void MakeCone();
 
-  // returns a unit sphere lightvolume
-  static const LightVolume *GetSphere();
-
-  // returns a cone with 1 in length and 
-  static const LightVolume *GetCone();
+  void Render();
 
 private:
   struct VertexData
   {
     Vector3 position;
   };
+  enum Type
+  {
+    LV_QUAD = 1,
+    LV_SPHERE = 2,
+    LV_CONE = 3,
+  } m_type;
 
-  LightVolume();
-  ~LightVolume();
 
-  static void CreateRect();
-  static void CreateSphere();
-  static void CreateCone();
-
-  static LightVolume *pRect;
-  static LightVolume *pSphere;
-  static LightVolume *pCone;
+  UINT m_vertexCount;
+  UINT m_indexCount;
 
   IDirect3DVertexBuffer9 *m_pVBuffer;
   IDirect3DIndexBuffer9 *m_pIBuffer;
 
+  GraphicsProvider *m_pProvider;
 };
 
 }

@@ -20,7 +20,7 @@ Shader::~Shader()
 
 void Shader::LoadFromFile(const wchar_t *pFileName)
 {
-  assert(m_pEffect && "Shader already loaded!");
+  assert(!m_pEffect && "Shader already loaded!");
 
   DWORD flags = 0;
 

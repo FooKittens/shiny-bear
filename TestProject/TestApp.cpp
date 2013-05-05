@@ -145,13 +145,13 @@ bool TestApp::OnInitialize()
 
 
   BlockMaterial redMat;
-  redMat.diffuse = 0xFF8800AA;
-  redMat.specular = 0xFFFFFFFF;
+  redMat.diffuse = 0x008800AA;
+  redMat.specular = 0x22FFFFFF;
   
 #pragma region OLDSTUFF
   m_pMeshNode = CreateMeshNode(&redMat);
 
-  redMat.diffuse = 0xFF8800AA;
+  redMat.diffuse = 0x008800AA;
 
   m_pOtherNode = CreateMeshNode(&redMat);
   m_pThirdNode = CreateMeshNode(&redMat);
@@ -180,18 +180,18 @@ bool TestApp::OnInitialize()
 
   light = Light::CreateDirectionalLight(
     D3DXCOLOR(0.55f, 0.55f, 0.55f, 1.0f),
-    Vector3(1.0f, -3.0f, 1.5f));
+    Vector3(1.0f, 0.0f, -1.0f));
 
   light2 = Light::CreateDirectionalLight(
     D3DXCOLOR(0.15f, 0.85f, 0.15f, 1.0f),
-    Vector3(1.0f, -1.0f, 0));
+    Vector3(-1.0f, -4.0f, -1.0));
 
   LightNode *pLightNode = new LightNode(&light);
   LightNode *pLightNode2 = new LightNode(&light2);
 
  
   m_pScene->GetRoot()->Attach(pLightNode);
-  m_pScene->GetRoot()->Attach(pLightNode2);
+  //m_pScene->GetRoot()->Attach(pLightNode2);
 #pragma endregion
 
 

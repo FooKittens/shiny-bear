@@ -4,6 +4,7 @@
 #include <cstdarg>
 #include <cstdio>
 #include <Windows.h>
+#include <crtdbg.h>
 
 #define RELEASECOM(X) if(X) { X->Release(); X = nullptr; }
 
