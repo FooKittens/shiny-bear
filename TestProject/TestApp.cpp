@@ -169,8 +169,8 @@ bool TestApp::OnInitialize()
   m_pMeshNode->Attach(m_pThirdNode);
 
 
-  for(int i = 0; i < 2; ++i)
-    for(int k = 0; k < 2; ++k)
+  for(int i = 0; i < 8; ++i)
+    for(int k = 0; k < 8; ++k)
     {
       Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
       m_pScene->GetRoot()->Attach(cluster);
@@ -180,7 +180,7 @@ bool TestApp::OnInitialize()
 
   light = Light::CreateDirectionalLight(
     D3DXCOLOR(0.55f, 0.55f, 0.55f, 1.0f),
-    Vector3(1.0f, 0.0f, -1.0f));
+    Vector3(0.0f, -1.0f, 0.0f));
 
   light2 = Light::CreateDirectionalLight(
     D3DXCOLOR(0.15f, 0.85f, 0.15f, 1.0f),
@@ -273,7 +273,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
   m_pMeshNode->Translate(x, y, z); 
   m_pMeshNode->Rotate(rotA, 0, 0);
 
-  if(keys.IsKeyDown(Keys::K_ESCAPE))// || gamePad.IsButtonDown(ControllerButtons::BACK))
+  if(keys.IsKeyDown(Keys::K_ESCAPE) || gamePad.IsButtonDown(ControllerButtons::BACK))
   {
     Exit();
   }

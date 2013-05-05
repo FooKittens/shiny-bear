@@ -55,7 +55,7 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
   m_pSphereVolume->MakeSphere();
   m_pConeVolume->MakeCone();
 
-  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
+  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
   m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
   m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
@@ -126,7 +126,7 @@ void SceneView::Render(const RenderList &list)
   // Blend the combined image of the NM and light buffer.
   //RenderCombinedScene();
 
-  DisplayRenderTarget(m_pSpecularTarget);
+  DisplayRenderTarget(m_pDiffuseTarget);
 
   pDevice->BeginScene();
 
@@ -157,6 +157,7 @@ void SceneView::RenderNormalPass()
   CameraNode *pCam = m_pScene->GetCamera();
   
   m_pGBufferShader->SetFloat("g_zfar", pCam->GetViewDistance());
+  m_pGBufferShader->SetMatrix("g_view", pCam->GetViewMatrix());
 
   m_pGBufferShader->Begin();
   for(UINT i = 0; i < m_meshes.size(); ++i)
@@ -207,7 +208,9 @@ void SceneView::RenderLightPass()
   m_pLightShader->SetMatrix("g_invProjection", pCam->GetProjectionMatrix().Inverse());
   m_pLightShader->SetVector3("g_cameraPosition", pCam->GetTransform().GetPosition());
   m_pLightShader->SetTexture("g_normalMap", m_pNormalTarget->GetTexture());
-  //m_pLightShader->SetTexture("g_depthMap", m_pDepthTarget->GetTexture());
+  m_pLightShader->SetTexture("g_depthMap", m_pDepthTarget->GetTexture());
+  m_pLightShader->SetMatrix("g_invView", pCam->GetViewMatrix().Inverse());
+  m_pLightShader->SetMatrix("g_view", pCam->GetViewMatrix());
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0, 1.0f, 0));

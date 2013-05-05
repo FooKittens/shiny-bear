@@ -18,7 +18,7 @@ Cluster::Cluster(GraphicsProvider *pProvider)
 
   BlockMaterial mat;
   mat.diffuse = 0x0088DD77;
-  mat.specular = 0x5500FFFF;
+  mat.specular = 0x0100FFFF;
 
   m_blocks = DBG_NEW Block**[kSizeX];
   for(int x = 0; x < kSizeX; ++x)
@@ -114,7 +114,7 @@ void Cluster::RecreateMesh()
         if(z < kSizeZ - 1 && m_blocks[x][y][z + 1].IsVisible())
           hideFlags |= HF_BACK;
 
-        CreateCube(blockX, blockY, blockZ, m_blocks[x][y][z], pMesh, 0);
+        CreateCube(blockX, blockY, blockZ, m_blocks[x][y][z], pMesh, hideFlags);
       }
     }
   }

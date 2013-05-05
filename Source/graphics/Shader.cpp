@@ -23,7 +23,6 @@ void Shader::LoadFromFile(const wchar_t *pFileName)
   assert(!m_pEffect && "Shader already loaded!");
 
   DWORD flags = 0;
-
 #if defined(DEBUG) || defined(_DEBUG)
   flags |= D3DXSHADER_DEBUG;
 #endif

@@ -25,6 +25,7 @@ cbuffer perFrame
   // Used for specular calculations.
   float3 g_cameraPosition;
   float4x4 g_invProjection;
+  float4x4 g_invView;
 };
 
 
@@ -160,9 +161,9 @@ MRTOUT PSLightPassMRT(LightVSOut input)
 
 float3 UnProjectPosition(float2 uv)
 {
-  float z = UnPackRange(tex2D(g_depthSampler, uv).r);
-  float x = uv.x; // * 2 - 1;
-  float y = (1 - uv.y); // * 2 -1;
+  float z = tex2D(g_depthSampler, uv).r;
+  float x = uv.x * 2 - 1;
+  float y = (1 - uv.y)  * 2 -1;
 
   // Un-Projected position.
   float4 upPos = mul(float4(x, y, z, 1.0f), g_invProjection);
@@ -199,39 +200,38 @@ MRTOUT PSDiffuse(VSDiffuseOut input)
   float4 val = tex2D(g_normalSampler, uv);
   float3 normal = normalize(float3(UnPackRange(val.x), UnPackRange(val.y), UnPackRange(val.z)));
   float specularExp = val.a * 255;
-  if(val.a == 0)
+  //if(val.a == 0)
   {
     mOut.rt0 = float4(0, 0, 0, 0);
     mOut.rt1 = float4(0, 0, 0, 0);
-    return mOut;
+    //return mOut;
   }
 
-
-  float3 position = UnProjectPosition(input.screenPos.xy );
-
-
-
+  float3 position = UnProjectPosition(uv);
   
-  
+  float3 vLight = mul(float4(g_light.direction, 0), g_view).xyz;
+
   // Diffuse calculation.
-  float inten = max(0, dot(normal, normalize(-g_light.direction)));
-  mOut.rt0 = inten * g_light.color;
-  
+  float inten = max(0, dot(normal, -vLight));
+  mOut.rt0 = g_light.color * inten;
+  //mOut.rt0 = float4(normal, 1.0f);
+  //mOut.rt1 = tex2D(g_depthSampler, uv); 
+  //mOut.rt1 = float4(position, 1.0f);
+
   // Specular.
   //float sInten = max
-  if(inten > 0)
+  if(inten > 5.0)
   {
-
     float3 viewVec = normalize(g_cameraPosition - position);
-    float3 r = reflect(normalize(g_light.direction), normal);
-    mOut.rt1 = pow(max(dot(viewVec, r), 0), specularExp) * g_light.color;
+    float3 r = reflect(vLight, normal);
+    mOut.rt1 = pow(max(0, dot(viewVec, r)), specularExp) * g_light.color;
     //mOut.rt1 = float4(specularExp / 255.0f, 0, 0, 1);
-    //mOut.rt1 = float4(position, 1);
+    
+    //mOut.rt1 = float4(1, 1, 1, 1);
     return mOut;
   }  
 
-  mOut.rt0 = float4(0, 0, 0, 1);  
-  //mOut.rt1 = float4(1, 0, 0, 1);
+  //mOut.rt1 = float4(PackRange(normal.x), PackRange(normal.y), PackRange(normal.z), 1);
   return mOut; 
 }
 
