@@ -124,9 +124,9 @@ void SceneView::Render(const RenderList &list)
   RenderLightPass();
 
   // Blend the combined image of the NM and light buffer.
-  RenderCombinedScene();
+  //RenderCombinedScene();
 
-  //DisplayRenderTarget(m_pSpecularTarget);
+  DisplayRenderTarget(m_pSpecularTarget);
 
   pDevice->BeginScene();
 
@@ -207,6 +207,7 @@ void SceneView::RenderLightPass()
   m_pLightShader->SetMatrix("g_invProjection", pCam->GetProjectionMatrix().Inverse());
   m_pLightShader->SetVector3("g_cameraPosition", pCam->GetTransform().GetPosition());
   m_pLightShader->SetTexture("g_normalMap", m_pNormalTarget->GetTexture());
+  //m_pLightShader->SetTexture("g_depthMap", m_pDepthTarget->GetTexture());
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0, 1.0f, 0));
@@ -225,8 +226,8 @@ void SceneView::RenderLightPass()
 
 void SceneView::RenderLight(const Light *pLight)
 {
-  // Set the active technique to the light MRT tech.
-  m_pLightShader->SetActiveTechnique("LightMRTTech");
+  //// Set the active technique to the light MRT tech.
+  //m_pLightShader->SetActiveTechnique("LightMRTTech");
 
   // Set shader variable for the light.
   m_pLightShader->SetRaw("g_light", (void*)pLight, sizeof(Light));

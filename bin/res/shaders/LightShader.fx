@@ -160,9 +160,9 @@ MRTOUT PSLightPassMRT(LightVSOut input)
 
 float3 UnProjectPosition(float2 uv)
 {
-  float z = tex2D(g_depthSampler, uv).r;
-  float x = uv.x * 2 - 1;
-  float y = (1 - uv.y) * 2 -1;
+  float z = UnPackRange(tex2D(g_depthSampler, uv).r);
+  float x = uv.x; // * 2 - 1;
+  float y = (1 - uv.y); // * 2 -1;
 
   // Un-Projected position.
   float4 upPos = mul(float4(x, y, z, 1.0f), g_invProjection);
@@ -190,6 +190,7 @@ VSDiffuseOut VSDiffuse(VSDiffuseIn input)
 
 MRTOUT PSDiffuse(VSDiffuseOut input)
 {
+  MRTOUT mOut;
   float2 uv = input.screenPos.xy * 0.5f + 0.5f;
   uv.y = 1.0f - uv.y;
   uv += g_halfPixel;
@@ -198,29 +199,40 @@ MRTOUT PSDiffuse(VSDiffuseOut input)
   float4 val = tex2D(g_normalSampler, uv);
   float3 normal = normalize(float3(UnPackRange(val.x), UnPackRange(val.y), UnPackRange(val.z)));
   float specularExp = val.a * 255;
+  if(val.a == 0)
+  {
+    mOut.rt0 = float4(0, 0, 0, 0);
+    mOut.rt1 = float4(0, 0, 0, 0);
+    return mOut;
+  }
+
+
   float3 position = UnProjectPosition(input.screenPos.xy );
 
 
 
-  MRTOUT mOut;
+  
   
   // Diffuse calculation.
-  float inten = max(0, dot(normal, -normalize(g_light.direction)));
+  float inten = max(0, dot(normal, normalize(-g_light.direction)));
   mOut.rt0 = inten * g_light.color;
-  mOut.rt1 = float4(0, 0, 0, 0);
-
+  
   // Specular.
   //float sInten = max
   if(inten > 0)
   {
+
     float3 viewVec = normalize(g_cameraPosition - position);
     float3 r = reflect(normalize(g_light.direction), normal);
     mOut.rt1 = pow(max(dot(viewVec, r), 0), specularExp) * g_light.color;
     //mOut.rt1 = float4(specularExp / 255.0f, 0, 0, 1);
-    //mOut.rt1 = float4(1, 1, 1, 1);
-  }
+    //mOut.rt1 = float4(position, 1);
+    return mOut;
+  }  
 
-  return mOut;
+  mOut.rt0 = float4(0, 0, 0, 1);  
+  //mOut.rt1 = float4(1, 0, 0, 1);
+  return mOut; 
 }
 
 technique DiffuseLightTech
@@ -230,6 +242,7 @@ technique DiffuseLightTech
     vertexshader = compile vs_3_0 VSDiffuse();
     pixelshader = compile ps_3_0 PSDiffuse();
     
+    //CullMode = None;
     AlphaBlendEnable = true;
     SrcBlend = One;
     DestBlend = One;

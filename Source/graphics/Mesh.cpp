@@ -29,6 +29,7 @@ Mesh::~Mesh()
 
 void Mesh::UpdateBuffers()
 {
+  IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
 
   RELEASECOM(m_pVBuffer);
   HR(m_pProvider->GetDevice()->CreateVertexBuffer(
@@ -40,7 +41,7 @@ void Mesh::UpdateBuffers()
     NULL
   ));
   
-
+  
   BlockVertex *pVertices;
   HR(m_pVBuffer->Lock(0, 0, reinterpret_cast<void**>(&pVertices), 0));
 

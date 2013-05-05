@@ -67,7 +67,7 @@ PSNormalMRTOUT PSNormalSpecularExp(GeometryVSOut input)
   PSNormalMRTOUT output;
   output.rt0 = float4(PackRange(input.normal.x),
    PackRange(input.normal.y), PackRange(input.normal.z), input.specular.a);
-  output.rt1 = float4(input.depth, input.depth, input.depth, input.depth);
+  output.rt1 = float4(PackRange(input.depth), 0,  0, 0);
   return output;
 }
 

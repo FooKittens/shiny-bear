@@ -14,12 +14,13 @@ Cluster::Cluster(GraphicsProvider *pProvider)
   Mesh *pMesh = DBG_NEW Mesh(pProvider);
   m_pMeshNode = DBG_NEW MeshNode(pMesh);
   Attach(m_pMeshNode);
-  m_blocks = DBG_NEW Block**[kSizeX];
+  
 
   BlockMaterial mat;
   mat.diffuse = 0x0088DD77;
   mat.specular = 0x5500FFFF;
 
+  m_blocks = DBG_NEW Block**[kSizeX];
   for(int x = 0; x < kSizeX; ++x)
   {
     m_blocks[x] = DBG_NEW Block*[kSizeY];
@@ -29,6 +30,7 @@ Cluster::Cluster(GraphicsProvider *pProvider)
       for(int z = 0; z < kSizeZ; ++z)
       {
         m_blocks[x][y][z].SetMaterial(mat);
+        m_blocks[x][y][z].SetVisible(true);
       }
     }
   }
@@ -112,7 +114,7 @@ void Cluster::RecreateMesh()
         if(z < kSizeZ - 1 && m_blocks[x][y][z + 1].IsVisible())
           hideFlags |= HF_BACK;
 
-        CreateCube(blockX, blockY, blockZ, m_blocks[x][y][z], pMesh, hideFlags);
+        CreateCube(blockX, blockY, blockZ, m_blocks[x][y][z], pMesh, 0);
       }
     }
   }

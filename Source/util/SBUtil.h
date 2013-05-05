@@ -8,6 +8,8 @@
 
 #define RELEASECOM(X) if(X) { X->Release(); X = nullptr; }
 
+#define DEBUG
+
 #if defined(DEBUG) | defined(_DEBUG)
 
 // Error checking macro.

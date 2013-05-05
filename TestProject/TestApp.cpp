@@ -169,8 +169,8 @@ bool TestApp::OnInitialize()
   m_pMeshNode->Attach(m_pThirdNode);
 
 
-  for(int i = 0; i < 8; ++i)
-    for(int k = 0; k < 8; ++k)
+  for(int i = 0; i < 2; ++i)
+    for(int k = 0; k < 2; ++k)
     {
       Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
       m_pScene->GetRoot()->Attach(cluster);

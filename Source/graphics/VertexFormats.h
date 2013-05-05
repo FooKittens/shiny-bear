@@ -28,6 +28,8 @@ struct BlockMaterial
   }
 };
 
+#pragma pack(push, 1)
+
 struct BlockVertex
 {
   D3DXVECTOR3 position;
@@ -35,6 +37,8 @@ struct BlockVertex
   D3DXCOLOR diffuse;
   D3DXCOLOR specular;
 };
+
+#pragma pack(pop)
 
 
 } // namepspace shinybear
