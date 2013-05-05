@@ -115,6 +115,9 @@ void SoundManager::InitializeDirectSound(HWND hwnd)
 
 void SoundManager::ShutdownDirectSound()
 {
+  // Shutdown secondary buffer
+  ShutdownWaveFile(&secondaryBuffer1);
+
   // Release the primary sound buffer pointer.
 	if(primaryBuffer)
 	{

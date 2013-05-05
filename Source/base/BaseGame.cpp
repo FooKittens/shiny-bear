@@ -178,6 +178,7 @@ bool BaseGame::Run()
 
     if(m_isQuitting)
     {
+      SoundManager::Shutdown();
       // TODO : Prepare for exit..
 
       m_isRunning = false;
