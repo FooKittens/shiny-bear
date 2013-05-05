@@ -4,6 +4,7 @@
 #include "base\system\GraphicsProvider.h"
 #include "util\SBUtil.h"
 #include "util\input\InputManager.h"
+#include "sound\SoundManager.h"
 #include <fstream>
 
 
@@ -72,6 +73,9 @@ bool BaseGame::Initialize()
 
   // Initialize input manager.
   InputManager::Initialize(*m_pGameWindow);
+
+  // Initialize sound manager
+  SoundManager::Initialize(m_pGameWindow->GetWindowHandle());
 
   // Register for window events.
 
