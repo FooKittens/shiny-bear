@@ -10,7 +10,7 @@ CameraNode::CameraNode(GameWindow *pWindow, SceneNode *pTarget)
   m_targetPosition = Vector3::kZero;
 
   m_pTarget = pTarget;
-  SetFieldOfView(60.0f);
+  SetFieldOfView(70.0f);
   SetAspectRatio(pWindow->GetSize());
   SetViewDistance(100.0f);
   SetNearPlane(1.0f);

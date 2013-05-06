@@ -283,6 +283,7 @@ public:
   Mat4x4 Inverse() const;
   float Determinant() const;
 
+  Mat4x4 Transpose() const;
 
 private:
 
@@ -294,6 +295,13 @@ inline Mat4x4 operator*(const Mat4x4 &lhs, float s)
   Mat4x4 res = lhs;
   res *= s;
   return res;
+}
+
+inline Mat4x4 Mat4x4::Transpose() const
+{
+  Mat4x4 m;
+  D3DXMatrixTranspose(&m, this);
+  return m;
 }
 
 inline Mat4x4 Mat4x4::CreateLookAt(const Vector3 &eye, const Vector3 &target,
@@ -319,7 +327,7 @@ inline float Mat4x4::Determinant() const
 inline Mat4x4 Mat4x4::Inverse() const
 {
   Mat4x4 mat;
-  D3DXMatrixInverse(&mat, nullptr, this);
+  D3DXMatrixInverse(&mat, NULL, this);
   return mat;
 }
 

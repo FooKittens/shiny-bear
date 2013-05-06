@@ -56,8 +56,8 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
   m_pConeVolume->MakeCone();
 
   m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
-  m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
-  m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
+  m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
+  m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
 
   
@@ -124,9 +124,9 @@ void SceneView::Render(const RenderList &list)
   RenderLightPass();
 
   // Blend the combined image of the NM and light buffer.
-  //RenderCombinedScene();
+  RenderCombinedScene();
 
-  DisplayRenderTarget(m_pDiffuseTarget);
+  //DisplayRenderTarget(m_pSpecularTarget);
 
   pDevice->BeginScene();
 
@@ -160,10 +160,13 @@ void SceneView::RenderNormalPass()
   m_pGBufferShader->SetMatrix("g_view", pCam->GetViewMatrix());
 
   m_pGBufferShader->Begin();
+  Mat4x4 wvIT;
   for(UINT i = 0; i < m_meshes.size(); ++i)
   {
+    wvIT = static_cast<Mat4x4>(m_meshes[i]->world * pCam->GetViewMatrix()).Inverse().Transpose();
     // Set world matrix since its needed for normals.
     m_pGBufferShader->SetMatrix("g_world", m_meshes[i]->world);
+    m_pGBufferShader->SetMatrix("g_inverseTranspose", wvIT);
 
     // Save the wvp matrix to save some muls in vertex shader.
     wvp = m_meshes[i]->world * pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
@@ -209,8 +212,7 @@ void SceneView::RenderLightPass()
   m_pLightShader->SetVector3("g_cameraPosition", pCam->GetTransform().GetPosition());
   m_pLightShader->SetTexture("g_normalMap", m_pNormalTarget->GetTexture());
   m_pLightShader->SetTexture("g_depthMap", m_pDepthTarget->GetTexture());
-  m_pLightShader->SetMatrix("g_invView", pCam->GetViewMatrix().Inverse());
-  m_pLightShader->SetMatrix("g_view", pCam->GetViewMatrix());
+  m_pLightShader->SetMatrix("g_view", pCam->GetViewMatrix().Inverse().Transpose());
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0, 1.0f, 0));
@@ -287,7 +289,7 @@ void SceneView::RenderCombinedScene()
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
-    0, 1.0f, 0));
+    0xFF5558AB, 1.0f, 0));
 
   // Begin rendering.
   HR(pDevice->BeginScene());
@@ -308,9 +310,6 @@ void SceneView::RenderCombinedScene()
   m_pCombineShader->End();
 
   HR(pDevice->EndScene());
-
-  //m_pCombineShader->SetTexture("g_diffuseMap", nullptr);
-  //m_pCombineShader->SetTexture("g_specularMap", nullptr);
 }
 
 void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)

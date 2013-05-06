@@ -32,6 +32,11 @@ void LightNode::OnDeviceReset()
 
 void LightNode::Update(double elapsedSeconds)
 {
+  UpdateChildren(elapsedSeconds);
+}
+
+void LightNode::Render(SceneManager *pScene)
+{
   if(m_pLight->type == LightType::LT_SPOT || m_pLight->type == LightType::LT_POINT)
   {
     D3DXVECTOR3 zero(0, 0, 0);
@@ -41,13 +46,13 @@ void LightNode::Update(double elapsedSeconds)
     m_pLight->position.x = t.x;
     m_pLight->position.y = t.y;
     m_pLight->position.z = t.z;
+  } 
+  else if(m_pLight->type == LightType::LT_DIRECTIONAL)
+  {
+    Vector3 pos = Mat4x4(*pScene->GetTransform()).GetPosition();
+    m_pLight->direction = Vector3(0, 0, 0) - pos;
   }
 
-  UpdateChildren(elapsedSeconds);
-}
-
-void LightNode::Render(SceneManager *pScene)
-{
   RenderChildren(pScene);
 
   RenderData rd;

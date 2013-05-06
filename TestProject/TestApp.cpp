@@ -138,6 +138,7 @@ MeshNode *TestApp::CreateMeshNode(BlockMaterial *mat)
 
 Light light;
 Light light2;
+LightNode *pLightNode;
 
 bool TestApp::OnInitialize() 
 {
@@ -146,27 +147,27 @@ bool TestApp::OnInitialize()
 
   BlockMaterial redMat;
   redMat.diffuse = 0x008800AA;
-  redMat.specular = 0x22FFFFFF;
+  redMat.specular = 0x88FFFFFF;
   
 #pragma region OLDSTUFF
   m_pMeshNode = CreateMeshNode(&redMat);
-
-  redMat.diffuse = 0x008800AA;
-
+  redMat.specular = 0x01FFFFFF;
+  redMat.diffuse = 0xFF889911;
   m_pOtherNode = CreateMeshNode(&redMat);
+
   m_pThirdNode = CreateMeshNode(&redMat);
 
   m_pScene->GetRoot()->Attach(m_pMeshNode);
   
   m_pMeshNode->Translate(0, 20.0f, -20.0f);
-  m_pOtherNode->Translate(50.0f, 0.0f, 0.0f);
+  //m_pOtherNode->Translate(50.0f, 0.0f, 0.0f);
   
-  m_pThirdNode->Attach(m_pOtherNode);
+  //m_pThirdNode->Attach(m_pOtherNode);
 
-  m_pThirdNode->Scale(0.1f);
-  m_pOtherNode->Scale(10.0f);
+  m_pThirdNode->Scale(0.5f);
+  m_pOtherNode->Scale(70.0f);
 
-  m_pMeshNode->Attach(m_pThirdNode);
+  m_pScene->GetRoot()->Attach(m_pThirdNode);
 
 
   for(int i = 0; i < 8; ++i)
@@ -180,18 +181,23 @@ bool TestApp::OnInitialize()
 
   light = Light::CreateDirectionalLight(
     D3DXCOLOR(0.55f, 0.55f, 0.55f, 1.0f),
-    Vector3(0.0f, -1.0f, 0.0f));
+    Vector3(0.0f, -1.0f, -1.0f));
 
   light2 = Light::CreateDirectionalLight(
-    D3DXCOLOR(0.15f, 0.85f, 0.15f, 1.0f),
-    Vector3(-1.0f, -4.0f, -1.0));
+    D3DXCOLOR(0.35f, 0.25f, 0.35f, 1.0f),
+    Vector3(0.0f, -5.0f, 0.0));
 
-  LightNode *pLightNode = new LightNode(&light);
+  pLightNode = new LightNode(&light);
   LightNode *pLightNode2 = new LightNode(&light2);
-
+  m_pOtherNode->Translate(0.0f, 400.0f, 0.0f);
+  pLightNode->Translate(0.0f, 0.0f, 0.0f);
  
-  m_pScene->GetRoot()->Attach(pLightNode);
+  m_pOtherNode->Attach(pLightNode);
+
+  pLightNode2->Translate(1, 5.0f, -1.0f);
+  m_pThirdNode->Attach(m_pOtherNode);
   //m_pScene->GetRoot()->Attach(pLightNode2);
+ 
 #pragma endregion
 
 
@@ -218,7 +224,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
   BaseGame::OnUpdate(elapsedSeconds);
   m_pScene->Update(elapsedSeconds);
 
-  m_pThirdNode->Rotate(2.5f * elapsedSeconds, 0, 0);
+  m_pThirdNode->Rotate(0, 0.5f * elapsedSeconds, 0);
   
 
   InputManager::GetControllerState(&gamePad);
@@ -259,6 +265,15 @@ void TestApp::OnUpdate(double elapsedSeconds)
   if(keys.IsKeyDown(Keys::K_S))
   {
     y -= 9.5f * elapsedSeconds;
+  }
+
+  if(keys.IsKeyDown(Keys::K_E))
+  {
+    m_pMeshNode->Rotate(0, 2.5f * elapsedSeconds, 0);
+  }
+  if(keys.IsKeyDown(Keys::K_D))
+  {
+    m_pMeshNode->Rotate(0, -2.5f * elapsedSeconds, 0);
   }
 
   if(gamePad.IsButtonDown(ControllerButtons::DPAD_UP))

@@ -11,6 +11,7 @@ cbuffer perObject
   float4x4 g_view;
   float4x4 g_world;
   float4x4 g_WVP;
+  float4x4 g_inverseTranspose;
 };
 
 struct GeometryVSIn
@@ -24,7 +25,7 @@ struct GeometryVSIn
 struct GeometryVSOut
 {
   float4 position : SV_POSITION;
-  float4 normal : TEXCOORD0;
+  float3 normal : TEXCOORD0;
   float4 diffuse : COLOR0;
   float4 specular : COLOR1;
   float  depth : TEXCOORD1;
@@ -51,14 +52,22 @@ float UnPackRange(float f)
 GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
 {
   GeometryVSOut output;
+
+  // Transform position into screen space.
   output.position = mul(float4(input.position, 1.0f), g_WVP);
-  output.normal = mul(mul(g_world, g_view), float4(input.normal, 0.0f));
   
+  // Transform the normal into view space.
+  // Uses the inverse transpose of the world-view matrix.
+  output.normal = normalize(mul(float4(input.normal, 0.0f), g_inverseTranspose).xyz);
+
+  //output.normal = normalize(mul(float4(input.normal, 0.0f), mul(g_world,  g_view)));
+
+  // Pass on material values.
   output.diffuse = input.diffuse;
   output.specular = input.specular;
 
-  float z = mul(mul(g_world, g_view), float4(input.position, 1)).z;
-  output.depth = z / g_zfar;
+  float z = mul(float4(input.position, 1), mul(g_world, g_view)).z;
+  output.depth = z / (g_zfar - z);
   return output;
 }
 

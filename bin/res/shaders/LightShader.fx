@@ -69,19 +69,16 @@ sampler g_normalSampler = sampler_state
   MinFilter = POINT;
   MagFilter = POINT;
   MipFilter = POINT;
-  AddressU = CLAMP;
-  AddressV = CLAMP;
+
 };
 
 texture g_depthMap;
 sampler g_depthSampler = sampler_state
 {
   Texture = <g_depthMap>;
-  MinFilter = POINT;
-  MagFilter = POINT;
-  MipFilter = POINT;
-  AddressU = CLAMP;
-  AddressV = CLAMP;
+  MinFilter = LINEAR;
+  MagFilter = LINEAR;
+  MipFilter = LINEAR;
 };
 
 // Helper methods for packing normal values.
@@ -93,69 +90,6 @@ float PackRange(float f)
 float UnPackRange(float f)
 {
   return (f - 0.5f) * 2.0f;
-}
-
-
-LightVSOut VSLightPassMRT(LightVSIn input)
-{
-  LightVSOut output;
-  output.position = mul(input.position, g_WVP);
-  output.texcoords = input.texcoords;
-  return output; 
-}
-
-
-MRTOUT DiffuseLight(float3 normal, float sexp)
-{
-  MRTOUT col;
-  float inten = max(0, dot(normalize(normal), normalize(-g_light.direction)));
-  col.rt0 = inten * g_light.color;
-  col.rt1 = float4(0, 0, 0, 0);
-  return col;
-}
-
-MRTOUT AmbientLight()
-{
-  MRTOUT col;
-  col.rt0 = float4(1, 0, 1, 0);;
-  col.rt1 = (float4)0;
-  return col;
-}
-
-MRTOUT PointLight()
-{
-  MRTOUT col;
-  col.rt0 = float4(1, 0, 1, 0);
-  col.rt1 = (float4)0;
-  return col;
-}
-
-MRTOUT SpotLight()
-{
-  MRTOUT col;
-  col.rt0 = float4(1, 1, 1, 1);
-  col.rt1 = (float4)0;
-  return col;
-}
-
-MRTOUT PSLightPassMRT(LightVSOut input)
-{
-  float4 nCol = tex2D(g_normalSampler, input.texcoords + float2(0.5f / 1280.0f, 0.5f / 720.0f));
-  float3 normal = float3(UnPackRange(nCol.x), UnPackRange(nCol.y), UnPackRange(nCol.z));
-
-
-  switch(g_light.type)
-  {
-    case LIGHT_TYPE_AMBIENT: return AmbientLight();
-    case LIGHT_TYPE_DIFFUSE: return DiffuseLight(normal, nCol.a * 255);
-    case LIGHT_TYPE_POINT:   return PointLight();
-    case LIGHT_TYPE_SPOT:    return SpotLight();
-  }
-
-  MRTOUT output;
-  output.rt0 = float4(1, 1, 1, 1);
-  output.rt1 = float4(1, 1, 1, 1);
-  return output;
 }
 
 
@@ -178,58 +112,66 @@ struct VSDiffuseIn
 struct VSDiffuseOut
 {
   float4 position : SV_POSITION;
-  float4 screenPos : TEXCOORD0;
+  //float4 screenPos : TEXCOORD0;
+  float2 texCoords : TEXCOORD0;
+
+  // Used to store the light direction transformed into view space.
+  float3 lightDir : TEXCOORD1;
 };
 
 VSDiffuseOut VSDiffuse(VSDiffuseIn input)
 {
   VSDiffuseOut o;
   o.position = mul(float4(input.position, 1.0f), g_WVP);
-  o.screenPos = o.position;
+  //o.screenPos = o.position;
+  o.lightDir = normalize(mul(float4(g_light.direction, 0), g_view).xyz);
+
+  o.texCoords = o.position.xy * 0.5f + 0.5f;
+  o.texCoords.y = 1.0f - o.texCoords.y;
+  o.texCoords += g_halfPixel;
+
   return o;
 }
 
 MRTOUT PSDiffuse(VSDiffuseOut input)
 {
   MRTOUT mOut;
-  float2 uv = input.screenPos.xy * 0.5f + 0.5f;
-  uv.y = 1.0f - uv.y;
-  uv += g_halfPixel;
+  //float2 uv = input.screenPos.xy * 0.5f + 0.5f;
+  //uv.y = 1.0f - uv.y;
+  //uv += g_halfPixel;
 
 
-  float4 val = tex2D(g_normalSampler, uv);
+  float4 val = tex2D(g_normalSampler, input.texCoords);
+  // Retrieve normal and bring into correct range.
   float3 normal = normalize(float3(UnPackRange(val.x), UnPackRange(val.y), UnPackRange(val.z)));
-  float specularExp = val.a * 255;
-  //if(val.a == 0)
-  {
-    mOut.rt0 = float4(0, 0, 0, 0);
-    mOut.rt1 = float4(0, 0, 0, 0);
-    //return mOut;
-  }
 
-  float3 position = UnProjectPosition(uv);
-  
-  float3 vLight = mul(float4(g_light.direction, 0), g_view).xyz;
+  // Bring specular exponent range into values 0-255.
+  float specularExp = max(val.a * 255, 1.0f);
 
-  // Diffuse calculation.
-  float inten = max(0, dot(normal, -vLight));
+  // Retrieve view-space position from texture coordinates. ( samples depthMap )
+  float3 position = UnProjectPosition(input.texCoords);
+
+  // Calculate diffuse light in view space.
+  float inten = max(0.0f, dot(normal, normalize(-input.lightDir)));
   mOut.rt0 = g_light.color * inten;
-  //mOut.rt0 = float4(normal, 1.0f);
-  //mOut.rt1 = tex2D(g_depthSampler, uv); 
-  //mOut.rt1 = float4(position, 1.0f);
 
-  // Specular.
-  //float sInten = max
-  if(inten > 5.0)
+
+  if(inten > 0.0f)
   {
-    float3 viewVec = normalize(g_cameraPosition - position);
-    float3 r = reflect(vLight, normal);
-    mOut.rt1 = pow(max(0, dot(viewVec, r)), specularExp) * g_light.color;
+    float3 viewVec = normalize(-position);
+    float3 r = reflect(input.lightDir, normal);
+    mOut.rt1 = pow(max(0.0f, dot(viewVec, r)), specularExp) * g_light.color;
     //mOut.rt1 = float4(specularExp / 255.0f, 0, 0, 1);
     
     //mOut.rt1 = float4(1, 1, 1, 1);
     return mOut;
-  }  
+  }
+
+    //mOut.rt0 = float4(1, 0, 0, 1);
+  mOut.rt1 = g_light.color * inten;
+    //mOut.rt1 = mOut.rt0;
+  
+
 
   //mOut.rt1 = float4(PackRange(normal.x), PackRange(normal.y), PackRange(normal.z), 1);
   return mOut; 
@@ -243,21 +185,6 @@ technique DiffuseLightTech
     pixelshader = compile ps_3_0 PSDiffuse();
     
     //CullMode = None;
-    AlphaBlendEnable = true;
-    SrcBlend = One;
-    DestBlend = One;
-    BlendOp = ADD;
-  }
-}
-
-
-technique LightMRTTech
-{
-  pass pass0
-  {
-    vertexshader = compile vs_3_0 VSLightPassMRT();
-    pixelshader = compile ps_3_0 PSLightPassMRT();
-
     AlphaBlendEnable = true;
     SrcBlend = One;
     DestBlend = One;

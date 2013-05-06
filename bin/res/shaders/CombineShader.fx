@@ -70,7 +70,7 @@ float4 PSCombine(VSCombineOutput input) : SV_TARGET
   uv.xy = uv.xy + float2(0.5f / 1280.0f, 0.5f / 720.0f);
 
 
-  return input.diffuse * float4(0.20f, 0.20f, 0.20f, 1.0f) +
+  return input.diffuse * float4(0.25f, 0.25f, 0.25f, 1.0f) +
    saturate(input.diffuse * tex2D(g_diffSampler, uv)) +
     saturate(input.specular * tex2D(g_specSampler, uv));
 }

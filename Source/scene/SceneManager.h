@@ -3,6 +3,7 @@
 
 #include "scene\CameraNode.h"
 #include "graphics\Light.h"
+#include "util\math\Math.h"
 #include <d3dx9.h>
 #include <vector>
 
@@ -29,7 +30,7 @@ struct RenderData
 {
   RenderType::Enum type;
   SceneNode *pNode;
-  D3DXMATRIX world;
+  Mat4x4 world;
   union RD
   {
     Mesh *pMesh;

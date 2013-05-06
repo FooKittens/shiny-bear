@@ -18,7 +18,7 @@ Cluster::Cluster(GraphicsProvider *pProvider)
 
   BlockMaterial mat;
   mat.diffuse = 0x0088DD77;
-  mat.specular = 0x0100FFFF;
+  mat.specular = 0xFF556655;
 
   m_blocks = DBG_NEW Block**[kSizeX];
   for(int x = 0; x < kSizeX; ++x)
