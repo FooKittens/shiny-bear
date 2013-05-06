@@ -123,6 +123,9 @@
     <ClInclude Include="Source\graphics\Shader.h">
       <Filter>Source\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\sound\SoundResource.h">
+      <Filter>Source\sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">

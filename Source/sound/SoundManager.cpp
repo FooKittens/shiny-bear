@@ -29,6 +29,13 @@ void SoundManager::Initialize(HWND hwnd)
 	PlayWaveFile();
 }
 
+void SoundManager::Shutdown()
+{
+  ShutdownWaveFile(&secondaryBuffer1);
+
+  ShutdownDirectSound();
+}
+
 void SoundManager::InitializeDirectSound(HWND hwnd)
 {
   // Not used, because main device will suffice for now
@@ -115,9 +122,6 @@ void SoundManager::InitializeDirectSound(HWND hwnd)
 
 void SoundManager::ShutdownDirectSound()
 {
-  // Shutdown secondary buffer
-  ShutdownWaveFile(&secondaryBuffer1);
-
   // Release the primary sound buffer pointer.
 	if(primaryBuffer)
 	{
@@ -294,16 +298,6 @@ void SoundManager::LoadWaveFile(char *filename, IDirectSoundBuffer8 **secondaryB
 	waveData = 0;
 }
 
-void SoundManager::ShutdownWaveFile(IDirectSoundBuffer8 **secondaryBuffer)
-{
-  // Release the secondary sound buffer.
-	if(*secondaryBuffer)
-	{
-		(*secondaryBuffer)->Release();
-		*secondaryBuffer = 0;
-	}
-}
-
 void SoundManager::PlayWaveFile()
 {
 	HRESULT result;
@@ -327,6 +321,16 @@ void SoundManager::PlayWaveFile()
 	if(FAILED(result))
 	{
 		assert(false && "Unable to play the contents of the secondary sound buffer!");
+	}
+}
+
+void SoundManager::ShutdownWaveFile(IDirectSoundBuffer8 **secondaryBuffer)
+{
+  // Release the secondary sound buffer.
+	if(*secondaryBuffer)
+	{
+		(*secondaryBuffer)->Release();
+		*secondaryBuffer = 0;
 	}
 }
 

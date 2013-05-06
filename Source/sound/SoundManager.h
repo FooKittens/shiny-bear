@@ -35,10 +35,6 @@ public:
   static void Initialize(HWND hwnd);
   static void Shutdown();
 
-  // Enumerates all available devices
-  static BOOL CALLBACK DSEnumProc(LPGUID lpGUID,
-    LPCTSTR lpszDesc, LPCTSTR lpszDrvName, LPVOID lpContext);
-
 private:
   static void InitializeDirectSound(HWND);
 	static void ShutdownDirectSound();
@@ -46,6 +42,10 @@ private:
 	static void LoadWaveFile(char*, IDirectSoundBuffer8**);
   static void PlayWaveFile();
 	static void ShutdownWaveFile(IDirectSoundBuffer8**);
+
+    // Enumerates all available devices
+  static BOOL CALLBACK DSEnumProc(LPGUID lpGUID,
+    LPCTSTR lpszDesc, LPCTSTR lpszDrvName, LPVOID lpContext);
 
   static DSCAPS dscaps;
   static DWORD dwSpeakerConfig;
