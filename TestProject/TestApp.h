@@ -69,6 +69,7 @@ private:
 
   shinybear::KeyboardState m_newKeys;
   shinybear::KeyboardState m_oldKeys;
+  shinybear::MouseState m_newMouse;
   shinybear::GamePadState m_gamePadState;
 
   std::vector<shinybear::MeshNode *> m_meshes;

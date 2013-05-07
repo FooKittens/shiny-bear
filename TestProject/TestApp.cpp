@@ -235,14 +235,18 @@ void TestApp::OnUpdate(double elapsedSeconds)
 
   InputManager::GetControllerState(&m_gamePadState);
   InputManager::GetKeyboardState(&m_newKeys);
+  InputManager::GetMouseState(&m_newMouse);
 
   float rotA = 0.0f;
+  float rotB = 0.0f;
+  float rotC = 0.0f;
   float z = 0.0f;
   float x = 0.0f;
   float y = 0.0f;
 
   //rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
-
+  rotA += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().x;
+  rotB += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().y;
   z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
   z += kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.rightTrigger;
 
@@ -286,7 +290,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
   }
 
   m_pPlayerNode->Translate(x, y, z); 
-  m_pPlayerNode->Rotate(rotA, 0, 0);
+  m_pPlayerNode->Rotate(rotA, rotB, rotC);
 
   if(m_newKeys.IsKeyDown(Keys::K_ESCAPE) || m_gamePadState.IsButtonDown(ControllerButtons::BACK))
   {

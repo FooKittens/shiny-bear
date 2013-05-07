@@ -8,8 +8,7 @@ class SoundResource
 {
 public:
   SoundResource();
-  SoundResource(SoundResource* rhs);
-  SoundResource(char *filename);
+  SoundResource(char *fileName);
   ~SoundResource();
 
 private:

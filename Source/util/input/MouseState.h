@@ -1,6 +1,8 @@
 #ifndef SHINYBEAR_MOUSESTATE_H
 #define SHINYBEAR_MOUSESTATE_H
 
+#include "util\math\Math.h"
+
 #include <bitset>
 #include <Windows.h>
 #include <string>
@@ -32,6 +34,7 @@ public:
 
   //mouse checks
   bool IsButtonDown(const MouseButtons::Enum button) const;
+  Vector2 GetPositionalChange() const;
 
   //statics
   static const std::string GetButtonName(const MouseButtons::Enum button);
