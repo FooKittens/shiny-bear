@@ -126,9 +126,7 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
 int TerrainGenerator::GetHeight(int x, int z)
 {
   double val = (m_perlin.GetValue(x / 16.0, 0, z / 16.0) + 1) * 14;
-  //OutputDbgFormat("Perlin: %.6f", val);
-  return max(val, 1);
-  return abs((sinf(x / 16.0f) * cosf(z / 32.0f))) * 36;
+  return static_cast<int>(max(val, 1));
 }
 
 BlockMaterial TerrainGenerator::GetMaterialHeight(int y)

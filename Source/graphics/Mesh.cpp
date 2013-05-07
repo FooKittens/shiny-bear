@@ -50,7 +50,7 @@ void Mesh::UpdateBuffers()
   BlockVertex *pVertices;
   HR(m_pVBuffer->Lock(0, 0, reinterpret_cast<void**>(&pVertices), 0));
 
-  for(int i = 0; i < m_vertexCount; ++i)
+  for(UINT i = 0; i < m_vertexCount; ++i)
   {
     pVertices[i] = m_vertices[i];
   }
@@ -71,7 +71,7 @@ void Mesh::UpdateBuffers()
   UINT *pIndices;
   HR(m_pIBuffer->Lock(0, 0, reinterpret_cast<void**>(&pIndices), 0));
 
-  for(int i = 0; i < m_indexCount; ++i)
+  for(UINT i = 0; i < m_indexCount; ++i)
   {
     pIndices[i] = m_indices[i];
   }

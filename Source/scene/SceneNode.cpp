@@ -14,7 +14,7 @@ SceneNode::SceneNode()
 
 SceneNode::~SceneNode()
 {
-  for(int i = 0; i < m_children.size(); ++i)
+  for(size_t i = 0; i < m_children.size(); ++i)
   {
     m_children[i]->SetParent(nullptr);
     delete m_children[i];
@@ -75,7 +75,7 @@ void SceneNode::PostRender(SceneManager *pScene)
 
 void SceneNode::UpdateChildren(double elapsedSeconds)
 {
-  for(int i = 0; i < m_children.size(); ++i)
+  for(size_t i = 0; i < m_children.size(); ++i)
   {
     m_children[i]->Update(elapsedSeconds);
   }
@@ -83,7 +83,7 @@ void SceneNode::UpdateChildren(double elapsedSeconds)
 
 void SceneNode::RenderChildren(SceneManager *pScene)
 {
-  for(int i = 0; i < m_children.size(); ++i)
+  for(size_t i = 0; i < m_children.size(); ++i)
   {
     m_children[i]->PreRender(pScene);
     if(m_children[i]->IsVisible())
@@ -96,7 +96,7 @@ void SceneNode::RenderChildren(SceneManager *pScene)
 
 void SceneNode::RemoveChildren()
 {
-  for(int i = 0; i < m_children.size(); ++i)
+  for(size_t i = 0; i < m_children.size(); ++i)
   {
     m_children[i]->SetParent(nullptr);
     delete m_children[i];
@@ -108,7 +108,7 @@ void SceneNode::RemoveChildren()
 
 void SceneNode::OnDeviceLost()
 {
-  for(int i = 0; i < m_children.size(); ++i)
+  for(size_t i = 0; i < m_children.size(); ++i)
   {
     m_children[i]->OnDeviceLost();
   }
@@ -116,7 +116,7 @@ void SceneNode::OnDeviceLost()
 
 void SceneNode::OnDeviceReset()
 {
-  for(int i = 0; i < m_children.size(); ++i)
+  for(size_t i = 0; i < m_children.size(); ++i)
   {
     m_children[i]->OnDeviceReset();
   }

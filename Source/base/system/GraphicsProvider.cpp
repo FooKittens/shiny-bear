@@ -83,7 +83,7 @@ const MultiSampleMode& GraphicsProvider::GetMultiSampleMode()
 
 bool GraphicsProvider::CheckDisplayMode(const DisplayMode &mode)
 {
-  for(int i = 0; i < m_numValidDisplayModes; ++i)
+  for(size_t i = 0; i < m_numValidDisplayModes; ++i)
   {
     if(mode.height == m_pValidDisplayModes[i].height &&
        mode.width == m_pValidDisplayModes[i].width &&

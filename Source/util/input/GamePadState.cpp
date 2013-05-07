@@ -131,6 +131,7 @@ const std::string GamePadState::GetButtonName(const ControllerButtons::Enum butt
   case ControllerButtons::GAMEPAD_B: return "B";
   case ControllerButtons::GAMEPAD_X: return "X";
   case ControllerButtons::GAMEPAD_Y: return "Y";
+  default: return "UNKNOWN BUTTON";
   }
 }
 

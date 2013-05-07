@@ -187,7 +187,7 @@ void BaseGame::OnUpdate(double elapsedSeconds)
 { 
   ++m_currentFrame;
 
-  m_fpsTimer += m_pGameTimer->GetElapsedTime();
+  m_fpsTimer += (float)m_pGameTimer->GetElapsedTime();
 
   if(m_fpsTimer >= 1.0f)
   {
@@ -200,7 +200,7 @@ void BaseGame::OnUpdate(double elapsedSeconds)
 void BaseGame::RenderDiagnostics(ID3DXFont *pFont)
 {
   char buffer[512];
-  sprintf(buffer, "FPS: %.2f", GetCurrentFps());
+  sprintf_s(buffer, "FPS: %.2f", GetCurrentFps());
   RECT drawRect = { 20, 20, 200, 150 };
   pFont->DrawTextA(NULL, buffer, strlen(buffer),
     &drawRect, 0 , 0xFFFFFFFF);
@@ -284,7 +284,7 @@ void BaseGame::OnDeviceReset()
   fontdesc.Quality = DEFAULT_QUALITY;
   fontdesc.Weight = FW_NORMAL;
   fontdesc.Width = 0;
-  strcpy(fontdesc.FaceName, "Arial");
+  strcpy_s(fontdesc.FaceName, "Arial");
   HR(D3DXCreateFontIndirect(m_pGraphicsProvider->GetDevice(), &fontdesc, &m_pDiagFont));
 }
 

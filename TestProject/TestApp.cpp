@@ -228,48 +228,48 @@ void TestApp::OnUpdate(double elapsedSeconds)
   float x = 0.0f;
   float y = 0.0f;
 
-  rotA = kPlayerAngSpeed * elapsedSeconds * m_gamePadState.rightThumbstick.x;
+  rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
 
-  z += kPlayerSpeed * elapsedSeconds * m_gamePadState.leftTrigger;
-  z -= kPlayerSpeed * elapsedSeconds * m_gamePadState.rightTrigger;
+  z += kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
+  z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.rightTrigger;
 
   m_gamePadState.Vibrate(m_gamePadState.leftTrigger,
     m_gamePadState.rightTrigger);
 
   if(m_newKeys.IsKeyDown(Keys::K_UP))
   {
-    z = -kPlayerSpeed * elapsedSeconds;
+    z = -kPlayerSpeed * (float)elapsedSeconds;
   }
   if(m_newKeys.IsKeyDown(Keys::K_DOWN))
   {
-    z = kPlayerSpeed * elapsedSeconds;
+    z = kPlayerSpeed * (float)elapsedSeconds;
   }
 
   if(m_newKeys.IsKeyDown(Keys::K_LEFT))
   {
-    rotA = -kPlayerAngSpeed * elapsedSeconds;
+    rotA = -kPlayerAngSpeed * (float)elapsedSeconds;
   }
   if(m_newKeys.IsKeyDown(Keys::K_RIGHT))
   {
-    rotA = kPlayerAngSpeed * elapsedSeconds;
+    rotA = kPlayerAngSpeed * (float)elapsedSeconds;
   }
 
   if(m_newKeys.IsKeyDown(Keys::K_W))
   {
-    y = kPlayerSpeed * elapsedSeconds;
+    y = kPlayerSpeed * (float)elapsedSeconds;
   }
   if(m_newKeys.IsKeyDown(Keys::K_S))
   {
-    y = -kPlayerSpeed * elapsedSeconds;
+    y = -kPlayerSpeed * (float)elapsedSeconds;
   }
 
   if(m_gamePadState.IsButtonDown(ControllerButtons::DPAD_UP))
   {
-    y = kPlayerSpeed * elapsedSeconds;
+    y = kPlayerSpeed * (float)elapsedSeconds;
   }
   if(m_gamePadState.IsButtonDown(ControllerButtons::DPAD_DOWN))
   {
-    y = -kPlayerSpeed * elapsedSeconds;
+    y = -kPlayerSpeed * (float)elapsedSeconds;
   }
 
   m_pPlayerNode->Translate(x, y, z); 
