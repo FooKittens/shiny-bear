@@ -5,6 +5,8 @@
 #include "graphics\Mesh.h"
 #include "util\SBUtil.h"
 
+#include <d3dx9.h>
+
 namespace shinybear
 {
 
@@ -17,7 +19,8 @@ Cluster::Cluster(GraphicsProvider *pProvider)
   
 
   BlockMaterial mat;
-  mat.diffuse = 0x0088DD77;
+  mat.diffuse = RGB(rand() % 255, rand() % 255, rand() % 255);
+  //mat.diffuse = 0x0088DD77;
   mat.specular = 0xFF556655;
 
   m_blocks = DBG_NEW Block**[kSizeX];
@@ -36,18 +39,18 @@ Cluster::Cluster(GraphicsProvider *pProvider)
   }
 
 
-  for(int x = 0; x < kSizeX; ++x)
-      for(int z = 0; z < kSizeZ; ++z)
-      {
-        float fx = (x - kSizeX / 2.0f) / 32.0f;
-        float fz = (z - kSizeY * 6.0f) / 64.0f;
+  //for(int x = 0; x < kSizeX; ++x)
+  //    for(int z = 0; z < kSizeZ; ++z)
+  //    {
+  //      float fx = (x - kSizeX / 2.0f) / 32.0f;
+  //      float fz = (z - kSizeY * 6.0f) / 64.0f;
 
-        int h = max(2, (sin(fx * 2.0f) * cos(fz * 2.0f) + sin(fz * 4.0f) * cos(fx * fz)) * kSizeY / 3.0f); 
-        for(int i = kSizeY - 1; i >= h; --i)
-        {
-          m_blocks[x][i][z].SetVisible(false);
-        }
-      }
+  //      int h = max(2, (sin(fx * 2.0f) * cos(fz * 2.0f) + sin(fz * 4.0f) * cos(fx * fz)) * kSizeY / 3.0f); 
+  //      for(int i = kSizeY - 1; i >= h; --i)
+  //      {
+  //        m_blocks[x][i][z].SetVisible(false);
+  //      }
+  //    }
 }
 
 Cluster::~Cluster()

@@ -32,6 +32,11 @@ void Mesh::UpdateBuffers()
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
 
   RELEASECOM(m_pVBuffer);
+  RELEASECOM(m_pIBuffer);
+
+  if(m_vertexCount == 0 || m_indexCount == 0)
+    return;
+  
   HR(m_pProvider->GetDevice()->CreateVertexBuffer(
     sizeof(BlockVertex) * m_vertexCount,
     D3DUSAGE_WRITEONLY,
@@ -52,7 +57,7 @@ void Mesh::UpdateBuffers()
 
   HR(m_pVBuffer->Unlock());
 
-  RELEASECOM(m_pIBuffer);
+  
   HR(m_pProvider->GetDevice()->CreateIndexBuffer(
     sizeof(UINT) * m_indexCount,
     D3DUSAGE_WRITEONLY,
@@ -104,7 +109,7 @@ void Mesh::RenderMesh()
   }
   else
   {
-    assert(false && "No vertex buffers in mesh!");
+    //assert(false && "No vertex buffers in mesh!");
   }
 }
 

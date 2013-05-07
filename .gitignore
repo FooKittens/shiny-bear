@@ -33,3 +33,5 @@
 *.manifest
 *.psess
 *.vsp
+
+/bin/*.rar

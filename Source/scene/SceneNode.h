@@ -40,6 +40,8 @@ public:
   const SceneNode *GetParent() const;
   virtual const Mat4x4 &GetTransform() const;
 
+  virtual void RemoveChildren();
+
 protected:
   virtual void UpdateChildren(double elapsedSeconds);
   virtual void RenderChildren(SceneManager *pScene);

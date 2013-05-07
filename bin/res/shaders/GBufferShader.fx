@@ -67,7 +67,7 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
   output.specular = input.specular;
 
   float z = mul(float4(input.position, 1), mul(g_world, g_view)).z;
-  output.depth = z / (g_zfar - z);
+  output.depth = z / (g_zfar);
   return output;
 }
 
@@ -75,12 +75,8 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
 PSNormalMRTOUT PSNormalSpecularExp(GeometryVSOut input)
 {
   PSNormalMRTOUT output;
-  output.rt0 = float4(
-    PackRange(input.normal.x),
-    PackRange(input.normal.y),
-    PackRange(input.normal.z), 
-    input.specular.a);
-
+  output.rt0.rgb = 0.5f * (normalize(input.normal) + 1.0f);
+  output.rt0.a = input.specular.a;
   output.rt1 = input.depth;
   return output;
 }

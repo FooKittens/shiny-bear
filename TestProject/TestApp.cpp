@@ -15,13 +15,21 @@
 #include <world\Cluster.h>
 #include <util\SBUtil.h>
 
+#include "TerrainGenerator.h"
+
 using namespace shinybear;
 
-TestApp::TestApp() 
+TestApp::TestApp()
+  :m_gamePadState(GamePadIndex::ONE)
 {
-  m_pScene = nullptr;
-  m_pMeshNode = nullptr;
-  m_pOtherNode = nullptr;
+  m_pScene            = nullptr;
+  m_pPlayerNode       = nullptr;
+  m_pSunCubeNode      = nullptr;
+  m_pSunAxisNode      = nullptr;
+  m_pAmbientLightNode = nullptr;
+  m_pSunLightNode     = nullptr;
+  m_pRandomLightNode  = nullptr;
+  m_pGenerator        = nullptr;
 }
 
 TestApp::~TestApp()
@@ -33,6 +41,7 @@ TestApp::~TestApp()
 
   //m_meshes.clear();
 
+  delete m_pGenerator;
   delete m_pScene;
 }
 
@@ -136,162 +145,148 @@ MeshNode *TestApp::CreateMeshNode(BlockMaterial *mat)
   return pNode;
 }
 
-Light light;
-Light light2;
-LightNode *pLightNode;
-
 bool TestApp::OnInitialize() 
 {
   m_pScene = DBG_NEW SceneManager(GetGraphicsProvider());
 
+  m_pGenerator = DBG_NEW TerrainGenerator(GetGraphicsProvider(),
+    m_pScene->GetRoot());
 
-  BlockMaterial redMat;
-  redMat.diffuse = 0x008800AA;
-  redMat.specular = 0x88FFFFFF;
+  // Initialize some materials.
+  m_grassMaterial.diffuse   = 0x00036804;
+  m_grassMaterial.specular  = 0x03FFFFFF;
+  m_metalMaterial.diffuse   = 0x00423838;
+  m_metalMaterial.specular  = 0x43FFFFFF;
+  m_shinyMaterial.diffuse   = 0x00AAAAAA;
+  m_shinyMaterial.specular  = 0xFFFFFFFF;
   
-#pragma region OLDSTUFF
-  m_pMeshNode = CreateMeshNode(&redMat);
-  redMat.specular = 0x01FFFFFF;
-  redMat.diffuse = 0xFF889911;
-  m_pOtherNode = CreateMeshNode(&redMat);
+  CreateLights();
+  CreateCubes();
 
-  m_pThirdNode = CreateMeshNode(&redMat);
+  // Attach ambient light to the scene.
+  m_pScene->GetRoot()->Attach(m_pAmbientLightNode);
 
-  m_pScene->GetRoot()->Attach(m_pMeshNode);
-  
-  m_pMeshNode->Translate(0, 20.0f, -20.0f);
-  //m_pOtherNode->Translate(50.0f, 0.0f, 0.0f);
-  
-  //m_pThirdNode->Attach(m_pOtherNode);
-
-  m_pThirdNode->Scale(0.5f);
-  m_pOtherNode->Scale(70.0f);
-
-  m_pScene->GetRoot()->Attach(m_pThirdNode);
-
-
-  for(int i = 0; i < 8; ++i)
-    for(int k = 0; k < 8; ++k)
-    {
-      Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
-      m_pScene->GetRoot()->Attach(cluster);
-      cluster->Translate((i - 4) * 16, 0, (k - 4) * 16);
-      //cluster->Rotate(0, 3.141592f / 2.0f, 0);
-    }
-
-  light = Light::CreateDirectionalLight(
-    D3DXCOLOR(0.55f, 0.55f, 0.55f, 1.0f),
-    Vector3(0.0f, -1.0f, -1.0f));
-
-  light2 = Light::CreateDirectionalLight(
-    D3DXCOLOR(0.35f, 0.25f, 0.35f, 1.0f),
-    Vector3(0.0f, -5.0f, 0.0));
-
-  pLightNode = new LightNode(&light);
-  LightNode *pLightNode2 = new LightNode(&light2);
-  m_pOtherNode->Translate(0.0f, 400.0f, 0.0f);
-  pLightNode->Translate(0.0f, 0.0f, 0.0f);
+  // Translate the sun straight up vertically to give it a good axis.
+  m_pSunCubeNode->Translate(-3.0f, 10.0f, 5.0f);
  
-  m_pOtherNode->Attach(pLightNode);
+  // Attach sun light to the suns cube.
+  m_pSunCubeNode->Attach(m_pSunLightNode);
 
-  pLightNode2->Translate(1, 5.0f, -1.0f);
-  m_pThirdNode->Attach(m_pOtherNode);
-  //m_pScene->GetRoot()->Attach(pLightNode2);
- 
-#pragma endregion
+  // Attach the sun and its cube to the axis around which they will spin.
+  m_pSunAxisNode->Attach(m_pSunCubeNode);
 
-
-  CameraNode *pCam = new CameraNode(GetWindow(), m_pMeshNode);
-  //CameraNode *pCam = new CameraNode(GetWindow(), m_pScene->GetRoot());
-
+  // Create a camera that follows the player.
+  CameraNode *pCam = new CameraNode(GetWindow(), m_pPlayerNode);
   m_pScene->SetCamera(pCam);
 
+  // Attach the player to the root node.
+  m_pScene->GetRoot()->Attach(m_pPlayerNode);
+
+  // Attach the sun axis along with its cube and sun light.
+  m_pScene->GetRoot()->Attach(m_pSunAxisNode);
+
+  // Generate an 8x8 world.
+  m_pGenerator->Generate(8, 8);
+
+  // Initialization successful.
   return true;
 }
 
-float rotA = 0.0f;
-float rotB = 0.0f;
+void TestApp::CreateLights()
+{
+  // Create an ambient light for the scene.
+  m_ambientLight = Light::CreateAmbientLight(D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f));
+  m_pAmbientLightNode = DBG_NEW LightNode(&m_ambientLight);
 
-GamePadState gamePad(GamePadIndex::ONE);
-KeyboardState keys;
+  m_sunLight = Light::CreateDirectionalLight(D3DXCOLOR(0.45f, 0.45f, 0.45f, 1.0f),
+    Vector3(0, -1, 0));
+  m_pSunLightNode = DBG_NEW LightNode(&m_sunLight);
+}
 
-float x = 0.0f, y = 0.0f, z = 0.0f;
-float xT = 0.0f;
-float xDir = 1.0f;
+void TestApp::CreateCubes()
+{
+  m_pPlayerNode = CreateMeshNode(&m_metalMaterial);
+  m_pSunCubeNode = CreateMeshNode(&m_metalMaterial);
+  m_pSunAxisNode = CreateMeshNode(&m_metalMaterial);
+
+  //for(int i = 0; i < 8; ++i)
+  //  for(int k = 0; k < 8; ++k)
+  //  {
+  //    Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
+  //    m_pScene->GetRoot()->Attach(cluster);
+  //    cluster->Translate((i - 4) * 16, 0, (k - 4) * 16);
+  //  }
+}
+
+const float kPlayerSpeed = 9.5f;
+const float kPlayerAngSpeed = 2.5f;
 
 void TestApp::OnUpdate(double elapsedSeconds) 
 {
   BaseGame::OnUpdate(elapsedSeconds);
   m_pScene->Update(elapsedSeconds);
 
-  m_pThirdNode->Rotate(0, 0.5f * elapsedSeconds, 0);
-  
+  InputManager::GetControllerState(&m_gamePadState);
+  InputManager::GetKeyboardState(&m_newKeys);
 
-  InputManager::GetControllerState(&gamePad);
-  InputManager::GetKeyboardState(&keys);
+  float rotA = 0.0f;
+  float z = 0.0f;
+  float x = 0.0f;
+  float y = 0.0f;
 
-  rotA = 0.0f;
-  z = 0.0f;
-  x = 0.0f;
-  y = 0.0f;
+  rotA = kPlayerAngSpeed * elapsedSeconds * m_gamePadState.rightThumbstick.x;
 
-  rotA = 1.5f * elapsedSeconds * gamePad.rightThumbstick.x;
+  z += kPlayerSpeed * elapsedSeconds * m_gamePadState.leftTrigger;
+  z -= kPlayerSpeed * elapsedSeconds * m_gamePadState.rightTrigger;
 
-  z += 5.5f * elapsedSeconds * gamePad.leftTrigger;
-  z -= 5.5f * elapsedSeconds * gamePad.rightTrigger;
-  gamePad.Vibrate(gamePad.leftTrigger, gamePad.rightTrigger);
-  if(keys.IsKeyDown(Keys::K_UP))
+  m_gamePadState.Vibrate(m_gamePadState.leftTrigger,
+    m_gamePadState.rightTrigger);
+
+  if(m_newKeys.IsKeyDown(Keys::K_UP))
   {
-    z -= 9.5f * elapsedSeconds;
+    z = -kPlayerSpeed * elapsedSeconds;
   }
-  if(keys.IsKeyDown(Keys::K_DOWN))
+  if(m_newKeys.IsKeyDown(Keys::K_DOWN))
   {
-    z += 9.5f * elapsedSeconds;
-  }
-
-  if(keys.IsKeyDown(Keys::K_LEFT))
-  {
-    rotA -= 1.5f * elapsedSeconds;
-  }
-  if(keys.IsKeyDown(Keys::K_RIGHT))
-  {
-    rotA += 1.5f * elapsedSeconds;
+    z = kPlayerSpeed * elapsedSeconds;
   }
 
-  if(keys.IsKeyDown(Keys::K_W))
+  if(m_newKeys.IsKeyDown(Keys::K_LEFT))
   {
-    y += 9.5f * elapsedSeconds;
+    rotA = -kPlayerAngSpeed * elapsedSeconds;
   }
-  if(keys.IsKeyDown(Keys::K_S))
+  if(m_newKeys.IsKeyDown(Keys::K_RIGHT))
   {
-    y -= 9.5f * elapsedSeconds;
-  }
-
-  if(keys.IsKeyDown(Keys::K_E))
-  {
-    m_pMeshNode->Rotate(0, 2.5f * elapsedSeconds, 0);
-  }
-  if(keys.IsKeyDown(Keys::K_D))
-  {
-    m_pMeshNode->Rotate(0, -2.5f * elapsedSeconds, 0);
+    rotA = kPlayerAngSpeed * elapsedSeconds;
   }
 
-  if(gamePad.IsButtonDown(ControllerButtons::DPAD_UP))
+  if(m_newKeys.IsKeyDown(Keys::K_W))
   {
-    y = 9.5f * elapsedSeconds;
+    y = kPlayerSpeed * elapsedSeconds;
   }
-  if(gamePad.IsButtonDown(ControllerButtons::DPAD_DOWN))
+  if(m_newKeys.IsKeyDown(Keys::K_S))
   {
-    y = -9.5f * elapsedSeconds;
+    y = -kPlayerSpeed * elapsedSeconds;
   }
 
-  m_pMeshNode->Translate(x, y, z); 
-  m_pMeshNode->Rotate(rotA, 0, 0);
+  if(m_gamePadState.IsButtonDown(ControllerButtons::DPAD_UP))
+  {
+    y = kPlayerSpeed * elapsedSeconds;
+  }
+  if(m_gamePadState.IsButtonDown(ControllerButtons::DPAD_DOWN))
+  {
+    y = -kPlayerSpeed * elapsedSeconds;
+  }
 
-  if(keys.IsKeyDown(Keys::K_ESCAPE) || gamePad.IsButtonDown(ControllerButtons::BACK))
+  m_pPlayerNode->Translate(x, y, z); 
+  m_pPlayerNode->Rotate(rotA, 0, 0);
+
+  if(m_newKeys.IsKeyDown(Keys::K_ESCAPE) || m_gamePadState.IsButtonDown(ControllerButtons::BACK))
   {
     Exit();
   }
+
+  m_oldKeys = m_newKeys;
 }
 
 void TestApp::OnRender()

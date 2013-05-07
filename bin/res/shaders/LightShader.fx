@@ -76,9 +76,9 @@ texture g_depthMap;
 sampler g_depthSampler = sampler_state
 {
   Texture = <g_depthMap>;
-  MinFilter = LINEAR;
-  MagFilter = LINEAR;
-  MipFilter = LINEAR;
+  MinFilter = POINT;
+  MagFilter = POINT;
+  MipFilter = POINT;
 };
 
 // Helper methods for packing normal values.
@@ -112,8 +112,8 @@ struct VSDiffuseIn
 struct VSDiffuseOut
 {
   float4 position : SV_POSITION;
-  //float4 screenPos : TEXCOORD0;
-  float2 texCoords : TEXCOORD0;
+  float4 screenPos : TEXCOORD0;
+  //float2 texCoords : TEXCOORD0;
 
   // Used to store the light direction transformed into view space.
   float3 lightDir : TEXCOORD1;
@@ -123,57 +123,54 @@ VSDiffuseOut VSDiffuse(VSDiffuseIn input)
 {
   VSDiffuseOut o;
   o.position = mul(float4(input.position, 1.0f), g_WVP);
-  //o.screenPos = o.position;
+  o.screenPos = o.position;
   o.lightDir = normalize(mul(float4(g_light.direction, 0), g_view).xyz);
 
-  o.texCoords = o.position.xy * 0.5f + 0.5f;
-  o.texCoords.y = 1.0f - o.texCoords.y;
-  o.texCoords += g_halfPixel;
+  //o.texCoords = o.position.xy * 0.5f + 0.5f;
+  //o.texCoords.y = 1.0f - o.texCoords.y;
+  //o.texCoords += g_halfPixel;
 
   return o;
 }
 
 MRTOUT PSDiffuse(VSDiffuseOut input)
 {
-  MRTOUT mOut;
-  //float2 uv = input.screenPos.xy * 0.5f + 0.5f;
-  //uv.y = 1.0f - uv.y;
-  //uv += g_halfPixel;
+  MRTOUT mOut = (MRTOUT)0;
+  float2 uv = input.screenPos.xy * 0.5f + 0.5f;
+  uv.y = 1.0f - uv.y;
+  uv += g_halfPixel;
 
 
-  float4 val = tex2D(g_normalSampler, input.texCoords);
+  float4 val = tex2D(g_normalSampler, uv);
+
+  if(val.a <= 0)
+  {
+    return mOut;
+  }
+
   // Retrieve normal and bring into correct range.
-  float3 normal = normalize(float3(UnPackRange(val.x), UnPackRange(val.y), UnPackRange(val.z)));
+  float3 normal = normalize(2.0f * val.xyz - 1.0f);
 
   // Bring specular exponent range into values 0-255.
   float specularExp = max(val.a * 255, 1.0f);
 
   // Retrieve view-space position from texture coordinates. ( samples depthMap )
-  float3 position = UnProjectPosition(input.texCoords);
+  float3 position = UnProjectPosition(uv);
 
   // Calculate diffuse light in view space.
-  float inten = max(0.0f, dot(normal, normalize(-input.lightDir)));
-  mOut.rt0 = g_light.color * inten;
-
-
-  if(inten > 0.0f)
+  float diffuseIntensity = max(0.0f, dot(normal, normalize(-input.lightDir)));
+  
+  float specularIntensity = 0;
+  if(diffuseIntensity > 0)
   {
     float3 viewVec = normalize(-position);
     float3 r = reflect(input.lightDir, normal);
-    mOut.rt1 = pow(max(0.0f, dot(viewVec, r)), specularExp) * g_light.color;
-    //mOut.rt1 = float4(specularExp / 255.0f, 0, 0, 1);
-    
-    //mOut.rt1 = float4(1, 1, 1, 1);
-    return mOut;
+    specularIntensity = pow(max(0.0f, dot(viewVec, r)), specularExp);
   }
-
-    //mOut.rt0 = float4(1, 0, 0, 1);
-  mOut.rt1 = g_light.color * inten;
-    //mOut.rt1 = mOut.rt0;
   
-
-
-  //mOut.rt1 = float4(PackRange(normal.x), PackRange(normal.y), PackRange(normal.z), 1);
+  mOut.rt0 = g_light.color * diffuseIntensity;
+  mOut.rt1 = g_light.color * specularIntensity;
+  
   return mOut; 
 }
 
@@ -185,6 +182,31 @@ technique DiffuseLightTech
     pixelshader = compile ps_3_0 PSDiffuse();
     
     //CullMode = None;
+    AlphaBlendEnable = true;
+    SrcBlend = One;
+    DestBlend = One;
+    BlendOp = ADD;
+  }
+}
+
+
+float4 VSAmbient(float3 pos : POSITION0) : SV_POSITION
+{
+  return mul(float4(pos, 1.0f), g_WVP);
+}
+
+float4 PSAmbient(float4 pos : SV_POSITION) : SV_TARGET
+{
+  return g_light.color;
+}
+
+technique AmbientLightTech
+{
+  pass p0
+  {
+    vertexshader = compile vs_3_0 VSAmbient();
+    pixelshader = compile ps_3_0 PSAmbient();
+    
     AlphaBlendEnable = true;
     SrcBlend = One;
     DestBlend = One;

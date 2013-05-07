@@ -51,15 +51,6 @@ void SceneNode::Detach(SceneNode *pNode)
 
 void SceneNode::Update(double elapsedSeconds)
 {
-  //if(m_pParent)
-  //{
-  //  m_world = m_pParent->GetTransform() * m_local;
-  //}
-  //else
-  //{
-  //  
-  //}
-
   UpdateChildren(elapsedSeconds);
 }
 
@@ -101,6 +92,18 @@ void SceneNode::RenderChildren(SceneManager *pScene)
     }
     m_children[i]->PostRender(pScene);
   }
+}
+
+void SceneNode::RemoveChildren()
+{
+  for(int i = 0; i < m_children.size(); ++i)
+  {
+    m_children[i]->SetParent(nullptr);
+    delete m_children[i];
+  }
+
+  m_children.clear();
+  m_children.shrink_to_fit();
 }
 
 void SceneNode::OnDeviceLost()

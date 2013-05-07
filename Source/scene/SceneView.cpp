@@ -7,6 +7,7 @@
 #include "graphics\Shader.h"
 #include "graphics\LightVolume.h"
 #include "util\SBUtil.h"
+#include "util\input\InputManager.h"
 #include <cassert>
 #include <d3dx9.h>
 
@@ -81,6 +82,10 @@ SceneView::~SceneView()
   RELEASECOM(m_pScreenVBuffer);
 }
 
+bool showSpec = false;
+KeyboardState keys;
+KeyboardState pKeys;
+
 void SceneView::Render(const RenderList &list)
 {
   assert(!m_isRendering && "Sceneview already rendering!");
@@ -123,11 +128,23 @@ void SceneView::Render(const RenderList &list)
   // Render lights into diffuse and specular buffers.
   RenderLightPass();
 
+  InputManager::GetKeyboardState(&keys);
+  if(keys.IsKeyDown(Keys::K_SPACEBAR) && !pKeys.IsKeyDown(Keys::K_SPACEBAR))
+  {
+    showSpec = !showSpec;
+  }
+
+  pKeys = keys;
+
   // Blend the combined image of the NM and light buffer.
-  RenderCombinedScene();
-
-  //DisplayRenderTarget(m_pSpecularTarget);
-
+  if(!showSpec)
+  {
+    RenderCombinedScene();
+  }
+  else
+  {
+    DisplayRenderTarget(m_pSpecularTarget);
+  }
   pDevice->BeginScene();
 
   m_isRendering = false;
@@ -241,6 +258,12 @@ void SceneView::RenderLight(const Light *pLight)
 
   switch(pLight->type)
   {
+  case LightType::LT_AMBIENT:
+    m_pLightShader->SetActiveTechnique("AmbientLightTech");
+    m_pLightShader->Begin();
+    m_pLightShader->BeginPass(0);
+    m_pQuadVolume->Render();    
+    break;
   case LightType::LT_DIRECTIONAL:
     m_pLightShader->SetActiveTechnique("DiffuseLightTech");
     // Begin rendering with technique.
@@ -266,7 +289,8 @@ Mat4x4 SceneView::CalcLightMatrix(const Light *pLight)
 {
   CameraNode *pCam = m_pScene->GetCamera();
 
-  if(pLight->type == LightType::LT_DIRECTIONAL)
+  if(pLight->type == LightType::LT_AMBIENT ||
+     pLight->type == LightType::LT_DIRECTIONAL)
   {
     return Mat4x4::CreateScale(2.0f);
   } 

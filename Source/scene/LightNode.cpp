@@ -50,7 +50,7 @@ void LightNode::Render(SceneManager *pScene)
   else if(m_pLight->type == LightType::LT_DIRECTIONAL)
   {
     Vector3 pos = Mat4x4(*pScene->GetTransform()).GetPosition();
-    m_pLight->direction = Vector3(0, 0, 0) - pos;
+    m_pLight->direction = -pos;
   }
 
   RenderChildren(pScene);

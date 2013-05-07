@@ -24,7 +24,7 @@ public:
   ~Cluster();
 
   void SetBlock(const Block &newBlock, int x, int y, int z);
-  const Block &GetBlock(int x, int y, int z);
+  Block *GetBlock(int x, int y, int z);
 
   void Render(SceneManager *pScene);
 
@@ -54,9 +54,9 @@ inline void Cluster::SetBlock(const Block &newBlock, int x, int y, int z)
   m_recreateMesh = true;
 }
 
-inline const Block &Cluster::GetBlock(int x, int y, int z)
+inline Block *Cluster::GetBlock(int x, int y, int z)
 {
-  return m_blocks[x][y][z];
+  return &m_blocks[x][y][z];
 }
 
 } // namespace shinybear
