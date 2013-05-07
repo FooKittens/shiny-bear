@@ -24,7 +24,7 @@ TerrainGenerator::TerrainGenerator(GraphicsProvider *pProvider, SceneNode *pRoot
   m_perlin.SetSeed(1337);
 
   m_grassMat.diffuse = 0x00037704;
-  m_grassMat.specular = 0x0777AA78;
+  m_grassMat.specular = 0x07125512;
   
   // Obsidian "test"
   // m_grassMat.diffuse = 0x00100714;
@@ -33,11 +33,11 @@ TerrainGenerator::TerrainGenerator(GraphicsProvider *pProvider, SceneNode *pRoot
   m_stoneMat.diffuse = 0x00555555;
   m_stoneMat.specular = 0x02333333;
 
-  m_dirtMat.diffuse = 0x00453530;
-  m_dirtMat.specular = 0x02444444;
+  m_dirtMat.diffuse = 0x00534038;
+  m_dirtMat.specular = 0x05222222;
 
   m_snowMat.diffuse = 0x00AAAAAA;
-  m_snowMat.specular = 0x88FFFFFF;
+  m_snowMat.specular = 0x16FFFFFF;
 }
 
 TerrainGenerator::~TerrainGenerator()

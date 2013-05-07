@@ -19,6 +19,7 @@
 
 using namespace shinybear;
 
+
 TestApp::TestApp()
   :m_gamePadState(GamePadIndex::ONE)
 {
@@ -148,18 +149,18 @@ MeshNode *TestApp::CreateMeshNode(BlockMaterial *mat)
 bool TestApp::OnInitialize() 
 {
   m_pScene = DBG_NEW SceneManager(GetGraphicsProvider());
+  m_pGenerator = DBG_NEW TerrainGenerator(GetGraphicsProvider(), m_pScene->GetRoot());
 
-  m_pGenerator = DBG_NEW TerrainGenerator(GetGraphicsProvider(),
-    m_pScene->GetRoot());
-
-  // Initialize some materials.
+  // Set up material parameters.
+  #pragma region MaterialConfig
   m_grassMaterial.diffuse   = 0x00036804;
   m_grassMaterial.specular  = 0x03FFFFFF;
   m_metalMaterial.diffuse   = 0x00423838;
   m_metalMaterial.specular  = 0x43FFFFFF;
   m_shinyMaterial.diffuse   = 0x00AAAAAA;
   m_shinyMaterial.specular  = 0xFFFFFFFF;
-  
+  #pragma endregion
+
   CreateLights();
   CreateCubes();
 
@@ -186,7 +187,7 @@ bool TestApp::OnInitialize()
   m_pScene->GetRoot()->Attach(m_pSunAxisNode);
 
   // Generate an 8x8 world.
-  m_pGenerator->Generate(8, 8);
+  m_pGenerator->Generate(6, 6);
 
   // Initialization successful.
   return true;
@@ -198,7 +199,8 @@ void TestApp::CreateLights()
   m_ambientLight = Light::CreateAmbientLight(D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f));
   m_pAmbientLightNode = DBG_NEW LightNode(&m_ambientLight);
 
-  m_sunLight = Light::CreateDirectionalLight(D3DXCOLOR(0.45f, 0.45f, 0.45f, 1.0f),
+  // Create light to act as "sun"
+  m_sunLight = Light::CreateDirectionalLight(D3DXCOLOR(0.65f, 0.65f, 0.65f, 1.0f),
     Vector3(0, -1, 0));
   m_pSunLightNode = DBG_NEW LightNode(&m_sunLight);
 }
@@ -208,14 +210,6 @@ void TestApp::CreateCubes()
   m_pPlayerNode = CreateMeshNode(&m_metalMaterial);
   m_pSunCubeNode = CreateMeshNode(&m_metalMaterial);
   m_pSunAxisNode = CreateMeshNode(&m_metalMaterial);
-
-  //for(int i = 0; i < 8; ++i)
-  //  for(int k = 0; k < 8; ++k)
-  //  {
-  //    Cluster *cluster = DBG_NEW Cluster(GetGraphicsProvider());
-  //    m_pScene->GetRoot()->Attach(cluster);
-  //    cluster->Translate((i - 4) * 16, 0, (k - 4) * 16);
-  //  }
 }
 
 const float kPlayerSpeed = 9.5f;
