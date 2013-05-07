@@ -34,6 +34,7 @@ private:
   static void HandleInput(const HRAWINPUT &);
 
   static MouseState m_mouseState;
+  static bool m_overrideMouseChange;
   static KeyboardState m_keyboardState;
   static const int kMaximumGamePadCount = 4;
   static GamePadState m_gamePads[kMaximumGamePadCount];

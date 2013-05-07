@@ -13,6 +13,7 @@ namespace shinybear
 {
   // Initialization of static variables
   MouseState InputManager::m_mouseState = MouseState();
+  bool InputManager::m_overrideMouseChange = true;
   KeyboardState InputManager::m_keyboardState = KeyboardState();
   std::bitset<255> InputManager::m_tempKey(1);
   GamePadState InputManager::m_gamePads[kMaximumGamePadCount] =
@@ -49,6 +50,14 @@ void InputManager::Initialize(const GameWindow &pGameWindow)
 
 void InputManager::Update()
 {
+  // Reset mouse change if mouse did not receive raw input this frame
+  if(m_overrideMouseChange)
+  {
+    m_mouseState.m_changeX = 0;
+    m_mouseState.m_changeY = 0;
+  }
+  m_overrideMouseChange = true;
+
   for(int i = 0; i != kMaximumGamePadCount; ++i)
   {
     m_gamePads[i].Update();
@@ -245,6 +254,7 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
       {
         m_mouseState.m_changeX = static_cast<int>(lastX);
         m_mouseState.m_changeY = static_cast<int>(lastY);
+        m_overrideMouseChange = false;
       }
       else if (flags & MOUSE_MOVE_ABSOLUTE)
       {

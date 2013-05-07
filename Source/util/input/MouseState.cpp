@@ -18,6 +18,11 @@ bool MouseState::IsButtonDown(const MouseButtons::Enum button) const
   return !!(m_mouseButtonStates[button - 1] & 1);
 }
 
+Vector2 MouseState::GetPositionalChange() const
+{
+  return Vector2(m_changeX, m_changeY);
+}
+
 const std::string MouseState::GetButtonName(const MouseButtons::Enum button)
 {
   switch(button)
