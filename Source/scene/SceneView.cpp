@@ -128,23 +128,11 @@ void SceneView::Render(const RenderList &list)
   // Render lights into diffuse and specular buffers.
   RenderLightPass();
 
-  InputManager::GetKeyboardState(&keys);
-  if(keys.IsKeyDown(Keys::K_SPACEBAR) && !pKeys.IsKeyDown(Keys::K_SPACEBAR))
-  {
-    showSpec = !showSpec;
-  }
-
-  pKeys = keys;
-
   // Blend the combined image of the NM and light buffer.
-  if(!showSpec)
-  {
-    RenderCombinedScene();
-  }
-  else
-  {
-    DisplayRenderTarget(m_pSpecularTarget);
-  }
+  RenderCombinedScene();
+    
+  // DisplayRenderTarget(m_pSpecularTarget);
+  
   pDevice->BeginScene();
 
   m_isRendering = false;
@@ -217,8 +205,6 @@ void SceneView::RenderLightPass()
 
   m_lightDeclaration.Activate();
 
-  //HR(pDevice->SetStreamSource(0, m_pScreenVBuffer, 0, sizeof(ScreenVertexData)));
-
   CameraNode *pCam = m_pScene->GetCamera();
 
   Vector2 halfPixel(0.5f / (float)m_pProvider->GetDisplayMode().width,
@@ -248,9 +234,6 @@ void SceneView::RenderLightPass()
 
 void SceneView::RenderLight(const Light *pLight)
 {
-  //// Set the active technique to the light MRT tech.
-  //m_pLightShader->SetActiveTechnique("LightMRTTech");
-
   // Set shader variable for the light.
   m_pLightShader->SetRaw("g_light", (void*)pLight, sizeof(Light));
 
@@ -369,6 +352,10 @@ void SceneView::OnDeviceLost()
   m_voxelDeclaration.OnDeviceLost();
   m_textureDeclaration.OnDeviceLost();
   m_lightDeclaration.OnDeviceLost();
+
+  m_pQuadVolume->OnDeviceLost();
+  m_pSphereVolume->OnDeviceLost();
+  m_pConeVolume->OnDeviceLost();
 }
 
 void SceneView::OnDeviceReset()
@@ -384,6 +371,10 @@ void SceneView::OnDeviceReset()
   m_voxelDeclaration.OnDeviceReset();
   m_textureDeclaration.OnDeviceReset();
   m_lightDeclaration.OnDeviceReset();
+
+  m_pQuadVolume->OnDeviceReset();
+  //m_pSphereVolume->OnDeviceReset();
+  //m_pConeVolume->OnDeviceReset();
 }
 
 void SceneView::CreateVertexDecl()

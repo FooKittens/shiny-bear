@@ -187,7 +187,7 @@ bool TestApp::OnInitialize()
   m_pScene->GetRoot()->Attach(m_pSunAxisNode);
 
   // Generate an 8x8 world.
-  m_pGenerator->Generate(6, 6);
+  m_pGenerator->Generate(4, 4);
 
   // Initialization successful.
   return true;

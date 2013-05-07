@@ -77,6 +77,11 @@ void Mesh::UpdateBuffers()
   }
   
   HR(m_pIBuffer->Unlock());
+
+  //m_vertices.clear();
+  //m_vertices.shrink_to_fit();
+  //m_indices.clear();
+  //m_indices.shrink_to_fit();
 }
 
 UINT Mesh::AddVertex(const D3DXVECTOR3 &pos, const BlockMaterial &mat,
