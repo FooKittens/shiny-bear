@@ -28,6 +28,9 @@
     <Filter Include="Source\util\input">
       <UniqueIdentifier>{259b87c8-766f-4c0f-a98c-c859fd1b9fad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\sound">
+      <UniqueIdentifier>{8b87f6e5-435e-445b-8f5d-754961f11312}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -126,6 +129,9 @@
     <ClInclude Include="Source\sound\SoundResource.h">
       <Filter>Source\sound</Filter>
     </ClInclude>
+    <ClInclude Include="Source\sound\SoundManager.h">
+      <Filter>Source\sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -196,6 +202,9 @@
     </ClCompile>
     <ClCompile Include="Source\graphics\Shader.cpp">
       <Filter>Source\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sound\SoundManager.cpp">
+      <Filter>Source\sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
