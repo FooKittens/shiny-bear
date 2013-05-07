@@ -129,9 +129,9 @@ void SceneView::Render(const RenderList &list)
   RenderLightPass();
 
   // Blend the combined image of the NM and light buffer.
-  RenderCombinedScene();
+  //RenderCombinedScene();
     
-  // DisplayRenderTarget(m_pSpecularTarget);
+  DisplayRenderTarget(m_pDiffuseTarget);
   
   pDevice->BeginScene();
 
@@ -200,6 +200,8 @@ void SceneView::RenderLightPass()
 {
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
 
+  pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+
   m_pDiffuseTarget->Activate(0);
   m_pSpecularTarget->Activate(1);
 
@@ -230,6 +232,8 @@ void SceneView::RenderLightPass()
 
   m_pSpecularTarget->Deactivate();
   m_pDiffuseTarget->Deactivate();
+
+  pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 }
 
 void SceneView::RenderLight(const Light *pLight)
@@ -255,6 +259,9 @@ void SceneView::RenderLight(const Light *pLight)
     m_pQuadVolume->Render();
     break;
   case LightType::LT_POINT:
+    m_pLightShader->SetActiveTechnique("PointLightTech");
+    m_pLightShader->Begin();
+    m_pLightShader->BeginPass(0);
     m_pSphereVolume->Render();
     break;
   case LightType::LT_SPOT:
@@ -279,7 +286,8 @@ Mat4x4 SceneView::CalcLightMatrix(const Light *pLight)
   } 
   else if(pLight->type == LightType::LT_POINT)
   {
-
+    return Mat4x4::CreateScale(4.0f) * Mat4x4::CreateTranslation(pLight->position) * 
+      pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
   }
   return Mat4x4::kIdentity;
 }
@@ -356,6 +364,10 @@ void SceneView::OnDeviceLost()
   m_pQuadVolume->OnDeviceLost();
   m_pSphereVolume->OnDeviceLost();
   m_pConeVolume->OnDeviceLost();
+
+  m_pGBufferShader->OnDeviceLost();
+  m_pLightShader->OnDeviceLost();
+  m_pCombineShader->OnDeviceLost();
 }
 
 void SceneView::OnDeviceReset()
@@ -373,8 +385,12 @@ void SceneView::OnDeviceReset()
   m_lightDeclaration.OnDeviceReset();
 
   m_pQuadVolume->OnDeviceReset();
-  //m_pSphereVolume->OnDeviceReset();
+  m_pSphereVolume->OnDeviceReset();
   //m_pConeVolume->OnDeviceReset();
+
+  m_pGBufferShader->OnDeviceReset();
+  m_pLightShader->OnDeviceReset();
+  m_pCombineShader->OnDeviceReset();
 }
 
 void SceneView::CreateVertexDecl()

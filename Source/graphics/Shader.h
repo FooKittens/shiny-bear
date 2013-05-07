@@ -41,6 +41,9 @@ public:
   void BeginPass(UINT index);
   void EndPass();
 
+  void OnDeviceLost();
+  void OnDeviceReset();
+
 protected:
 
 private:

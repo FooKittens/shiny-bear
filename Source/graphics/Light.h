@@ -52,6 +52,16 @@ struct Light
     return lt;
   }
 
+  static Light CreatePointLight(const D3DXCOLOR &color,
+    const Vector3 &position, float radius)
+  {
+    Light lt;
+    lt.type = LightType::LT_POINT;
+    lt.color = color;
+    lt.position = position;
+    return lt;
+  }
+
 private:
 
 };

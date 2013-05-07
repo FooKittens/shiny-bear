@@ -207,7 +207,4 @@
       <Filter>Source\sound</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="bin\res\shaders\LightShader.fx" />
-  </ItemGroup>
 </Project>

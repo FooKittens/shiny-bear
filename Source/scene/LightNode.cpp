@@ -39,13 +39,7 @@ void LightNode::Render(SceneManager *pScene)
 {
   if(m_pLight->type == LightType::LT_SPOT || m_pLight->type == LightType::LT_POINT)
   {
-    D3DXVECTOR3 zero(0, 0, 0);
-    D3DXVECTOR4 t;
-    D3DXVec3Transform(&t, &zero, &GetTransform());
-
-    m_pLight->position.x = t.x;
-    m_pLight->position.y = t.y;
-    m_pLight->position.z = t.z;
+    m_pLight->position = GetTransform().GetPosition();
   } 
   else if(m_pLight->type == LightType::LT_DIRECTIONAL)
   {
@@ -53,13 +47,13 @@ void LightNode::Render(SceneManager *pScene)
     m_pLight->direction = -pos;
   }
 
-  RenderChildren(pScene);
-
   RenderData rd;
   rd.data.pLight = m_pLight;
   rd.type = RenderType::LIGHT;
   rd.world = *(pScene->GetTransform());
   pScene->PushRenderData(rd);
+
+  RenderChildren(pScene);
 }
 
 } // namespace shinybear

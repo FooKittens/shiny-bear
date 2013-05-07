@@ -71,9 +71,6 @@
     <ClCompile Include="source\util\SBUtil.cpp" />
     <ClCompile Include="Source\world\Cluster.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="bin\res\shaders\LightShader.fx" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A800B216-D6C5-4B48-A2FE-5960FDEEE66D}</ProjectGuid>
     <RootNamespace>shinybear</RootNamespace>

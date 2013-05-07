@@ -183,11 +183,17 @@ bool TestApp::OnInitialize()
   // Attach the player to the root node.
   m_pScene->GetRoot()->Attach(m_pPlayerNode);
 
+  // Attach player light node to the player.
+  //m_pPlayerNode->Attach(m_pPlayerLightNode);
+
+  // Test.
+  m_pScene->GetRoot()->Attach(m_pPlayerLightNode);
+
   // Attach the sun axis along with its cube and sun light.
   m_pScene->GetRoot()->Attach(m_pSunAxisNode);
 
   // Generate an 8x8 world.
-  m_pGenerator->Generate(4, 4);
+  //m_pGenerator->Generate(4, 4);
 
   // Initialization successful.
   return true;
@@ -203,6 +209,11 @@ void TestApp::CreateLights()
   m_sunLight = Light::CreateDirectionalLight(D3DXCOLOR(0.65f, 0.65f, 0.65f, 1.0f),
     Vector3(0, -1, 0));
   m_pSunLightNode = DBG_NEW LightNode(&m_sunLight);
+
+  m_playerLight = Light::CreatePointLight(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),
+    Vector3(0, 0, 0), 15.0f);
+
+  m_pPlayerLightNode = DBG_NEW LightNode(&m_playerLight);
 }
 
 void TestApp::CreateCubes()

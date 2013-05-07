@@ -102,7 +102,98 @@ void LightVolume::MakeQuad()
 
 void LightVolume::MakeSphere()
 {
+  RELEASECOM(m_pVBuffer);
+  RELEASECOM(m_pIBuffer);
 
+  UINT kVertexCount = 8;
+  UINT kIndexCount = 36;
+
+  VertexData vertices[] = 
+  {
+    Vector3(-0.5f, +0.5f, +0.5f),
+    Vector3(+0.5f, +0.5f, +0.5f),
+    Vector3(+0.5f, -0.5f, +0.5f),
+    Vector3(-0.5f, -0.5f, +0.5f),
+
+    Vector3(+0.5f, +0.5f, -0.5f),
+    Vector3(-0.5f, +0.5f, -0.5f),
+    Vector3(-0.5f, -0.5f, -0.5f),
+    Vector3(+0.5f, -0.5f, -0.5f)
+  };
+
+  UINT indexData[] = 
+  {
+    // Front
+    0, 1, 2,
+    2, 3, 0,
+
+    // Back
+    4, 5, 6,
+    6, 7, 4,
+
+    // Top
+    5, 4, 1,
+    1, 0, 5,
+
+    // Bottom
+    3, 2, 7,
+    7, 6, 3,
+
+    // Left
+    5, 0, 3,
+    3, 6, 5,
+
+    // Right,
+    1, 4, 7,
+    7, 2, 1
+  };
+
+  IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
+
+  m_vertexCount = 8;
+
+  HR(pDevice->CreateVertexBuffer(
+    sizeof(VertexData) * m_vertexCount,
+    D3DUSAGE_WRITEONLY,
+    0,
+    D3DPOOL_MANAGED,
+    &m_pVBuffer,
+    NULL
+  ));
+
+  VertexData *pVerts;
+  HR(m_pVBuffer->Lock(0, 0, (void**)(&pVerts), 0));
+
+  for(int i = 0; i < m_vertexCount; ++i)
+  {
+    pVerts[i] = vertices[i];
+  }
+
+  HR(m_pVBuffer->Unlock());
+
+  m_indexCount = 36;
+
+  HR(pDevice->CreateIndexBuffer(
+    sizeof(UINT) * m_indexCount,
+    D3DUSAGE_WRITEONLY,
+    D3DFMT_INDEX32,
+    D3DPOOL_MANAGED,
+    &m_pIBuffer,
+    NULL
+  ));
+
+  UINT *pIndices;
+  HR(m_pIBuffer->Lock(0, 0, (void**)(&pIndices), 0));
+
+  for(int i = 0; i < m_indexCount; ++i)
+  {
+    pIndices[i] = indexData[i];
+  }
+
+  HR(m_pIBuffer->Unlock());
+
+  
+  m_type = LV_SPHERE;
 }
 
 void LightVolume::MakeCone()

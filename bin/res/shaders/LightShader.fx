@@ -215,3 +215,49 @@ technique AmbientLightTech
 }
 
 
+struct VSPointIn
+{
+  float3 position : POSITION0;
+};
+
+struct VSPointOut
+{
+  float4 position : SV_POSITION;
+};
+
+
+VSPointOut VSPoint(VSPointIn input)
+{
+  VSPointOut pOut;
+  pOut.position = mul(float4(input.position, 1.0f), g_WVP);
+  return pOut;
+}
+
+MRTOUT PSPoint(VSPointOut input)
+{
+  MRTOUT mOut = (MRTOUT)0;
+
+  mOut.rt0 = float4(1, 0, 1, 1);
+  mOut.rt1 = float4(1, 0, 0, 1);
+  return mOut;
+}
+
+technique PointLightTech
+{
+  pass p0
+  {
+    vertexshader = compile vs_3_0 VSPoint();
+    pixelshader = compile ps_3_0 PSPoint();
+    
+    //CullMode = None;
+    AlphaBlendEnable = true;
+    SrcBlend = One;
+    DestBlend = One;
+    BlendOp = ADD;
+  }
+
+}
+
+
+
+
