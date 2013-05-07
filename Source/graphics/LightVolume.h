@@ -3,6 +3,7 @@
 
 #include "util\math\Math.h"
 #include <d3dx9.h>
+#include <vector>
 
 struct IDirect3DVertexBuffer9;
 struct IDirect3DIndexBuffer9;
@@ -11,6 +12,14 @@ namespace shinybear { class GraphicsProvider; }
 
 namespace shinybear
 {
+
+// Used when making sphere meshes.
+struct Triangle
+{
+  Triangle(UINT v0, UINT v1, UINT v2)
+    :v0(v0), v1(v1), v2(v2) { }
+  UINT v0, v1, v2;
+};
 
 class LightVolume
 {
@@ -40,6 +49,11 @@ private:
     LV_CONE = 3,
   } m_type;
 
+  // used to split icohedradon edges for spheres.
+  UINT SplitEdge(std::vector<Vector3> &verts, const Vector3 &v0, const Vector3 &v1);
+
+  void CreateSphereData(UINT levels, std::vector<Vector3> &verts,
+    std::vector<Triangle> &tris);
 
   UINT m_vertexCount;
   UINT m_indexCount;

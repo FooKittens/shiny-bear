@@ -248,12 +248,12 @@ technique PointLightTech
   {
     vertexshader = compile vs_3_0 VSPoint();
     pixelshader = compile ps_3_0 PSPoint();
-    
-    //CullMode = None;
+ 
     AlphaBlendEnable = true;
     SrcBlend = One;
     DestBlend = One;
     BlendOp = ADD;
+    FillMode = WIREFRAME;
   }
 
 }

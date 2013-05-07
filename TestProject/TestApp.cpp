@@ -184,16 +184,18 @@ bool TestApp::OnInitialize()
   m_pScene->GetRoot()->Attach(m_pPlayerNode);
 
   // Attach player light node to the player.
-  //m_pPlayerNode->Attach(m_pPlayerLightNode);
+  m_pPlayerNode->Attach(m_pPlayerLightNode);
 
   // Test.
-  m_pScene->GetRoot()->Attach(m_pPlayerLightNode);
+  //m_pScene->GetRoot()->Attach(m_pPlayerLightNode);
 
   // Attach the sun axis along with its cube and sun light.
   m_pScene->GetRoot()->Attach(m_pSunAxisNode);
 
   // Generate an 8x8 world.
-  //m_pGenerator->Generate(4, 4);
+  m_pGenerator->Generate(4, 1);
+
+  m_pPlayerNode->Translate(0, 0, -20);
 
   // Initialization successful.
   return true;
@@ -239,21 +241,21 @@ void TestApp::OnUpdate(double elapsedSeconds)
   float x = 0.0f;
   float y = 0.0f;
 
-  rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
+  //rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
 
-  z += kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
-  z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.rightTrigger;
+  z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
+  z += kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.rightTrigger;
 
   m_gamePadState.Vibrate(m_gamePadState.leftTrigger,
     m_gamePadState.rightTrigger);
 
   if(m_newKeys.IsKeyDown(Keys::K_UP))
   {
-    z = -kPlayerSpeed * (float)elapsedSeconds;
+    z = kPlayerSpeed * (float)elapsedSeconds;
   }
   if(m_newKeys.IsKeyDown(Keys::K_DOWN))
   {
-    z = kPlayerSpeed * (float)elapsedSeconds;
+    z = -kPlayerSpeed * (float)elapsedSeconds;
   }
 
   if(m_newKeys.IsKeyDown(Keys::K_LEFT))
