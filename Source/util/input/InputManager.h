@@ -33,31 +33,32 @@ private:
   static void ReEvaluateGamePadConnections();
   static void HandleInput(const HRAWINPUT &);
 
-  static MouseState m_mouseState;
-  static bool m_overrideMouseChange;
-  static KeyboardState m_keyboardState;
+  static MouseState mouseState;
+  static bool overrideMouseChange;
+  static KeyboardState keyboardState;
   static const int kMaximumGamePadCount = 4;
-  static GamePadState m_gamePads[kMaximumGamePadCount];
-  static std::bitset<255> m_tempKey;
+  static GamePadState gamePads[kMaximumGamePadCount];
+  static std::bitset<255> tempKey;
+  static bool isInitialized;
 };
 
 // Inlines
 inline void InputManager::GetKeyboardState(KeyboardState * const pState)
 {
   assert(pState);
-  *pState = m_keyboardState;
+  *pState = keyboardState;
 }
 
 inline void InputManager::GetMouseState(MouseState * const pState)
 {
   assert(pState);
-  *pState = m_mouseState;
+  *pState = mouseState;
 }
 
 inline void InputManager::GetControllerState(GamePadState * const pState)
 {
   assert(pState);
-  *pState = m_gamePads[pState->m_index];
+  *pState = gamePads[pState->index];
 }
 
 } // namespace shinybear
