@@ -1,7 +1,10 @@
 #include "sound\SoundManager.h"
+#include "sound\WaveFile.h"
+#include "util\SBUtil.h"
 #include <dsound.h>
 #include <string>
 #include <cassert>
+#include <fstream>
 
 namespace shinybear
 {
@@ -26,7 +29,9 @@ void SoundManager::Initialize(HWND hwnd)
 	  InitializeDirectSound(hwnd);
  
 	  // Load a wave audio file onto a secondary buffer.
-	  LoadWaveFile("../res/sounds/Wololo.wav", &secondaryBuffer1);
+    wchar_t *pBuffer;
+    GetAbsolutePath(L"res\\shaders\\LightShader.fx", &pBuffer);
+	  LoadWaveFile(pBuffer, &secondaryBuffer1);
  
 	  // Play the wave file now that it has been loaded.
 	  PlayWaveFile();
@@ -37,8 +42,7 @@ void SoundManager::Initialize(HWND hwnd)
 
 void SoundManager::Shutdown()
 {
-  ShutdownWaveFile(&secondaryBuffer1);
-
+  // Automatically releases all secondary buffers as well
   ShutdownDirectSound();
 }
 
@@ -143,12 +147,9 @@ void SoundManager::ShutdownDirectSound()
 	}
 }
 
-void SoundManager::LoadWaveFile(char *filename, IDirectSoundBuffer8 **secondaryBuffer)
+void SoundManager::LoadWaveFile(wchar_t *filename, IDirectSoundBuffer8 **secondaryBuffer)
 {
-  int error;
-	FILE* filePtr;
-	unsigned int count;
-	WaveHeaderType waveFileHeader;
+	WaveHeader waveFileHeader;
 	WAVEFORMATEX waveFormat;
 	DSBUFFERDESC bufferDesc;
 	HRESULT result;
@@ -156,13 +157,18 @@ void SoundManager::LoadWaveFile(char *filename, IDirectSoundBuffer8 **secondaryB
 	unsigned char* waveData;
 	unsigned char *bufferPtr;
 	unsigned long bufferSize;
+  std::wifstream stream;
 
   // Open the wave file in binary.
-	error = fopen_s(&filePtr, filename, "rb");
-	if(error != 0)
-	{
-		assert(false && "Could not open the specified wave file!");
-	}
+  stream.open(filename, std::ios::in || std::ios::binary);
+  if(!stream.is_open())
+  {
+    assert(false && "Could not open the specified wave file!");
+  }
+  BYTE data[4096];
+  stream.readsome((wchar_t*)data, 4096 / 2);
+
+  
   
 	// Read in the wave file header.
 	count = fread(&waveFileHeader, sizeof(waveFileHeader), 1, filePtr);
@@ -259,7 +265,7 @@ void SoundManager::LoadWaveFile(char *filename, IDirectSoundBuffer8 **secondaryB
 	tempBuffer = 0;
 
   // Move to the beginning of the wave data which starts at the end of the data chunk header.
-	fseek(filePtr, sizeof(WaveHeaderType), SEEK_SET);
+	fseek(filePtr, sizeof(WaveHeader), SEEK_SET);
   
 	// Create a temporary buffer to hold the wave file data.
 	waveData = new unsigned char[waveFileHeader.dataSize];
