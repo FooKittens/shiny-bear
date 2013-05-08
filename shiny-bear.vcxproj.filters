@@ -132,6 +132,9 @@
     <ClInclude Include="Source\sound\SoundManager.h">
       <Filter>Source\sound</Filter>
     </ClInclude>
+    <ClInclude Include="Source\sound\WaveFile.h">
+      <Filter>Source\sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -204,6 +207,9 @@
       <Filter>Source\graphics</Filter>
     </ClCompile>
     <ClCompile Include="Source\sound\SoundManager.cpp">
+      <Filter>Source\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sound\WaveFile.cpp">
       <Filter>Source\sound</Filter>
     </ClCompile>
   </ItemGroup>

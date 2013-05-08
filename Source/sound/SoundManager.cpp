@@ -158,6 +158,8 @@ void SoundManager::LoadWaveFile(wchar_t *filename, IDirectSoundBuffer8 **seconda
 	unsigned char *bufferPtr;
 	unsigned long bufferSize;
   std::wifstream stream;
+  FILE *filePtr;
+  int error;
 
   // Open the wave file in binary.
   stream.open(filename, std::ios::in || std::ios::binary);
@@ -168,7 +170,7 @@ void SoundManager::LoadWaveFile(wchar_t *filename, IDirectSoundBuffer8 **seconda
   BYTE data[4096];
   stream.readsome((wchar_t*)data, 4096 / 2);
 
-  
+  unsigned int count;
   
 	// Read in the wave file header.
 	count = fread(&waveFileHeader, sizeof(waveFileHeader), 1, filePtr);
