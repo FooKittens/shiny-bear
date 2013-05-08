@@ -129,9 +129,9 @@ void SceneView::Render(const RenderList &list)
   RenderLightPass();
 
   // Blend the combined image of the NM and light buffer.
-  RenderCombinedScene();
+  //RenderCombinedScene();
     
-  //DisplayRenderTarget(m_pMaterialTarget);
+  DisplayRenderTarget(m_pNormalTarget);
   
   pDevice->BeginScene();
 
@@ -169,10 +169,10 @@ void SceneView::RenderNormalPass()
   Mat4x4 wvIT;
   for(UINT i = 0; i < m_meshes.size(); ++i)
   {
-    wvIT = static_cast<Mat4x4>(m_meshes[i]->world * pCam->GetViewMatrix()).Inverse().Transpose();
+    wvIT = static_cast<Mat4x4>(m_meshes[i]->world * pCam->GetViewMatrix());
     // Set world matrix since its needed for normals.
     m_pGBufferShader->SetMatrix("g_world", m_meshes[i]->world);
-    m_pGBufferShader->SetMatrix("g_inverseTranspose", wvIT);
+    m_pGBufferShader->SetMatrix("g_inverseTranspose", wvIT.Inverse().Transpose());
 
     // Save the wvp matrix to save some muls in vertex shader.
     wvp = m_meshes[i]->world * pCam->GetViewMatrix() * pCam->GetProjectionMatrix();

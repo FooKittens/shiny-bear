@@ -113,7 +113,7 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
         }
         else
         {
-          pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
+          //pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
         }
       }
     }
@@ -129,7 +129,7 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
 
 int TerrainGenerator::GetHeight(int x, int z)
 {
-  double val = (m_perlin.GetValue(x / 32.0f, 0, z / 32.0f) + 1) * 12.0f;
+  double val = (m_perlin.GetValue(x / 32.0f, 0, z / 32.0f) + 1) * 1.0f;
 
   return static_cast<int>(max(val, 1));
 }
