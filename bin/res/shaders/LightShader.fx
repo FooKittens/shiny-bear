@@ -292,7 +292,7 @@ MRTOUT PSPoint(VSPointOut input)
     }
   }
 
-  //mOut.rt0 = float4(position, 1);
+  //mOut.rt0 = float4(1, 1, 0, 1);
 
   return mOut;
 }

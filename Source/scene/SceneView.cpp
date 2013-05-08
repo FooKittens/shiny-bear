@@ -287,7 +287,7 @@ Mat4x4 SceneView::CalcLightMatrix(const Light *pLight)
   } 
   else if(pLight->type == LightType::LT_POINT)
   {
-    return Mat4x4::CreateScale(100.0f) * Mat4x4::CreateTranslation(pLight->position) * 
+    return Mat4x4::CreateScale(19.0f) * Mat4x4::CreateTranslation(pLight->position) * 
       pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
   }
   return Mat4x4::kIdentity;

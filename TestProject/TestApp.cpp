@@ -212,24 +212,24 @@ void TestApp::CreateLights()
   m_pSunLightNode = DBG_NEW LightNode(m_sunLight);
 
   m_playerLight = Light::CreatePointLight(D3DXCOLOR(0.45f, 0.45f, 0.45f, 1.0f),
-    Vector3(0, 0, 0), Vector3(0.35f, 0.025f, 0.01f));
+    Vector3(0, 0, 0), Vector3(0.0f, 0.5f, .35f));
 
   m_pPlayerLightNode = DBG_NEW LightNode(m_playerLight);
 }
 
 void TestApp::CreateRandomLights()
 {
-  for(int i = 0; i < 50; ++i)
+  for(int i = 0; i < 4; ++i)
   {
-    RandomMover *pMover = DBG_NEW RandomMover(Vector3(0, 2.0f, 0), 75.0f);
-    float r = (rand() % 200 + 55) / 255.0f;
-    float g = (rand() % 200 + 55) / 255.0f;
-    float b = (rand() % 200 + 55) / 255.0f;
+    RandomMover *pMover = DBG_NEW RandomMover(Vector3(-20, 14.0f, -62), 13.0f);
+    float r = (rand() % 100 + 155) / 255.0f;
+    float g = (rand() % 100 + 155) / 255.0f;
+    float b = (rand() % 100 + 155) / 255.0f;
 
     Light light = Light::CreatePointLight(
       D3DXCOLOR(r, g, b, 1.0f), // Color
       Vector3(0,0,0), // position - Not used atm.
-      Vector3(0.35f, 0.025f, 0.01f) // Attuneation.
+      Vector3(0.0f, 0.0f, 1.0f) // Attuneation.
     );
 
     LightNode *pLightNode = DBG_NEW LightNode(light);
