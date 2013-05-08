@@ -182,7 +182,7 @@ bool TestApp::OnInitialize()
 
 
   // Attach player light node to the player.
-  m_pPlayerNode->Attach(m_pPlayerLightNode);
+  //m_pPlayerNode->Attach(m_pPlayerLightNode);
 
   // Test.
   //m_pScene->GetRoot()->Attach(m_pPlayerLightNode);

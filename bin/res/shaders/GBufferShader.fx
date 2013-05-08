@@ -67,7 +67,7 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
   output.specular = input.specular;
 
   float z = mul(float4(input.position, 1), mul(g_world, g_view)).z;
-  output.depth = z;
+  output.depth = z / g_zfar;
   return output;
 }
 

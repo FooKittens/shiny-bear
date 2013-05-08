@@ -288,7 +288,7 @@ MRTOUT PSPoint(VSPointOut input)
     float specularIntensity = pow(max(0.0f, dot(viewVec, r)), specularExp);
     if(specularIntensity > 0)
     {
-      mOut.rt1 = specularIntensity * g_light.color * att;
+      //mOut.rt1 = specularIntensity * g_light.color * att;
     }
   }
 
