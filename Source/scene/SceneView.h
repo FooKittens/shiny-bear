@@ -85,6 +85,7 @@ private:
   RenderTarget *m_pDiffuseTarget;
   RenderTarget *m_pSpecularTarget;
   RenderTarget *m_pDepthTarget;
+  RenderTarget *m_pMaterialTarget;
 
   VertexDeclaration m_voxelDeclaration;
   VertexDeclaration m_textureDeclaration;

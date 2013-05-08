@@ -35,6 +35,7 @@ struct PSNormalMRTOUT
 {
   float4 rt0 : COLOR0;
   float4 rt1 : COLOR1;
+  float4 rt2 : COLOR2;
 };
 
 // Helper methods for packing normal values.
@@ -79,6 +80,7 @@ PSNormalMRTOUT PSNormalSpecularExp(GeometryVSOut input)
   output.rt0.rgb = 0.5f * (normalize(input.normal) + 1.0f);
   output.rt0.a = input.specular.a;
   output.rt1 = input.depth.x / input.depth.y;
+  output.rt2 = input.diffuse;
   return output;
 }
 
