@@ -26,6 +26,7 @@ void MeshNode::Render(SceneManager *pScene)
   rd.data.pMesh = m_pMesh;
   rd.type = RenderType::MESH;
   rd.world = *(pScene->GetTransform());
+  rd.pNode = this;
   pScene->PushRenderData(rd);
 
   

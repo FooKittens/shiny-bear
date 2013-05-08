@@ -56,7 +56,7 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
   m_pSphereVolume->MakeSphere();
   m_pConeVolume->MakeCone();
 
-  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
+  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
   m_pLightTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
   m_pMaterialTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
@@ -126,7 +126,7 @@ void SceneView::Render(const RenderList &list)
   RenderNormalPass();
 
   // Render lights into diffuse and specular buffers.
-  RenderLightPass();
+  //RenderLightPass();
 
   // Blend the combined image of the NM and light buffer.
   //RenderCombinedScene();
@@ -144,15 +144,20 @@ void SceneView::RenderNormalPass()
   
   // Activate the render target for normals, in slot 0.
   m_pNormalTarget->Activate(0);
+  
+  // Clear render target.
+  HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
+    0, 1.0f, 0));
+
+  m_pNormalTarget->Deactivate();
+  
+  m_pNormalTarget->Activate(0);
   m_pDepthTarget->Activate(1);
   m_pMaterialTarget->Activate(2);
     
   // Normal voxel vertexdeclaration.
   m_voxelDeclaration.Activate();
 
-  // Clear render target.
-  HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
-    0, 1.0f, 0));
 
   // Begin rendering.
   HR(pDevice->BeginScene());
@@ -169,7 +174,7 @@ void SceneView::RenderNormalPass()
   Mat4x4 wvIT;
   for(UINT i = 0; i < m_meshes.size(); ++i)
   {
-    wvIT = static_cast<Mat4x4>(m_meshes[i]->world * pCam->GetViewMatrix());
+    wvIT = static_cast<Mat4x4>(m_meshes[i]->pNode->GetTransform() * pCam->GetViewMatrix());
     // Set world matrix since its needed for normals.
     m_pGBufferShader->SetMatrix("g_world", m_meshes[i]->world);
     m_pGBufferShader->SetMatrix("g_inverseTranspose", wvIT.Inverse().Transpose());
