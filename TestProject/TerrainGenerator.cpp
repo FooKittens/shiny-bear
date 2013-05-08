@@ -38,7 +38,7 @@ TerrainGenerator::TerrainGenerator(GraphicsProvider *pProvider, SceneNode *pRoot
 
   // For light test
   //m_dirtMat.diffuse = 0x00888888;
-  //m_dirtMat.specular = 0x22555555;
+  //m_dirtMat.specular = 0x01555555;
 
   m_snowMat.diffuse = 0x00AAAAAA;
   m_snowMat.specular = 0x16888888;
@@ -113,7 +113,7 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
         }
         else
         {
-          pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
+          //pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
         }
       }
     }
@@ -129,7 +129,8 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
 
 int TerrainGenerator::GetHeight(int x, int z)
 {
-  double val = (m_perlin.GetValue(x / 16.0, 0, z / 16.0) + 1) * 14;
+  double val = (m_perlin.GetValue(x / 32.0f, 0, z / 32.0f) + 1) * 1.0f;
+
   return static_cast<int>(max(val, 1));
 }
 

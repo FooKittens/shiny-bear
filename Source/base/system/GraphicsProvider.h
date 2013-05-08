@@ -35,7 +35,7 @@ public:
   void ApplyChanges();
 
   // TODO REMOVE - This is just used for testing, DirectX functionality should be hidden.
-  IDirect3DDevice9 *GetDevice() { return m_pDevice; }
+  IDirect3DDevice9 *GetDevice() const;
 
   DisplayMode* GetValidDisplayModes(UINT *numModes);
   MultiSampleMode* GetValidMultiSampleModes(UINT *numModes);
@@ -93,6 +93,11 @@ private:
 
 
 // Inlines
+inline IDirect3DDevice9 * GraphicsProvider::GetDevice() const
+{
+  return m_pDevice;
+}
+
 inline bool GraphicsProvider::IsFullscreen()
 {
   return m_currentDisplayMode.fullscreen;

@@ -131,7 +131,7 @@ void SceneView::Render(const RenderList &list)
   // Blend the combined image of the NM and light buffer.
   RenderCombinedScene();
     
-  //DisplayRenderTarget(m_pDepthTarget);
+  DisplayRenderTarget(m_pDepthTarget);
   
   pDevice->BeginScene();
 
@@ -244,6 +244,8 @@ void SceneView::RenderLight(const Light *pLight)
 
   m_pLightShader->SetMatrix("g_WVP", CalcLightMatrix(pLight));
 
+  CameraNode *pCam = m_pScene->GetCamera();
+
   switch(pLight->type)
   {
   case LightType::LT_AMBIENT:
@@ -261,9 +263,14 @@ void SceneView::RenderLight(const Light *pLight)
     break;
   case LightType::LT_POINT:
     m_pLightShader->SetActiveTechnique("PointLightTech");
+    if(pCam->GetViewMatrix().Transform(pLight->position).Length() < pLight->range)
+    {
+      m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+    }
     m_pLightShader->Begin();
     m_pLightShader->BeginPass(0);
     m_pSphereVolume->Render();
+    m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
     break;
   case LightType::LT_SPOT:
     m_pConeVolume->Render();
@@ -287,10 +294,16 @@ Mat4x4 SceneView::CalcLightMatrix(const Light *pLight)
   } 
   else if(pLight->type == LightType::LT_POINT)
   {
-    return Mat4x4::CreateScale(19.0f) * Mat4x4::CreateTranslation(pLight->position) * 
+    return Mat4x4::CreateScale(pLight->range) * Mat4x4::CreateTranslation(pLight->position) * 
       pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
   }
   return Mat4x4::kIdentity;
+}
+
+int DoStuff()
+{
+  int x = 0;
+  return ++x;
 }
 
 void SceneView::RenderCombinedScene()
@@ -305,7 +318,7 @@ void SceneView::RenderCombinedScene()
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
-    0xFF5558AB, 1.0f, 0));
+    0x0, 1.0f, 0));
 
   // Begin rendering.
   HR(pDevice->BeginScene());
@@ -326,6 +339,12 @@ void SceneView::RenderCombinedScene()
   m_pCombineShader->End();
 
   HR(pDevice->EndScene());
+
+  //int x = 0;
+  //while(x < 200000)
+  //{
+  //  x += DoStuff();
+  //}
 }
 
 void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)

@@ -304,7 +304,7 @@ technique PointLightTech
     vertexshader = compile vs_3_0 VSPoint();
     pixelshader = compile ps_3_0 PSPoint();
  
-    CullMode = NONE;
+    //CullMode = NONE;
     AlphaBlendEnable = true;
     SrcBlend = One;
     DestBlend = One;
