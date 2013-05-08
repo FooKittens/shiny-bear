@@ -82,8 +82,7 @@ private:
   IDirect3DVertexBuffer9 *m_pScreenVBuffer;
 
   RenderTarget *m_pNormalTarget;
-  RenderTarget *m_pDiffuseTarget;
-  RenderTarget *m_pSpecularTarget;
+  RenderTarget *m_pLightTarget;  
   RenderTarget *m_pDepthTarget;
   RenderTarget *m_pMaterialTarget;
 

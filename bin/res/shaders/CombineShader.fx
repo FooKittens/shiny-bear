@@ -5,8 +5,7 @@
 
 cbuffer perFrame
 {
-  texture g_diffuseMap;
-  texture g_specularMap;  
+  texture g_lightMap;
 };
 
 cbuffer perObject
@@ -14,17 +13,9 @@ cbuffer perObject
   float4x4 g_WVP;
 };
 
-sampler g_diffSampler = sampler_state
+sampler g_lightSampler = sampler_state
 {
-  Texture = <g_diffuseMap>;
-  MinFilter = LINEAR;
-  MagFilter = LINEAR;
-  MipFilter = LINEAR;
-};
-
-sampler g_specSampler = sampler_state
-{
-  Texture = <g_specularMap>;
+  Texture = <g_lightMap>;
   MinFilter = LINEAR;
   MagFilter = LINEAR;
   MipFilter = LINEAR;
@@ -71,8 +62,10 @@ float4 PSCombine(VSCombineOutput input) : SV_TARGET
 
   float4 mat = tex2D(g_materialSampler, uv);
 
-  return saturate(float4(mat.rgb, 1.0f) * tex2D(g_diffSampler, uv)) +
-         saturate(float4(mat.rgb, 1.0f) * tex2D(g_specSampler, uv));
+  float4 col = tex2D(g_lightSampler, uv);
+
+  return saturate(float4(mat.rgb * col.rgb, 1.0f) ) +
+         saturate(float4(mat.rgb * col.rgb * col.a, 1.0f));
 }
 
 technique CombineTech

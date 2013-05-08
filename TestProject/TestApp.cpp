@@ -191,7 +191,7 @@ bool TestApp::OnInitialize()
   m_pScene->GetRoot()->Attach(m_pPlayerNode);
 
   // Generate an 8x8 world.
-  m_pGenerator->Generate(16, 16);
+  m_pGenerator->Generate(4, 4);
 
   // Creates a set amount of random lights flying about the scene.
   CreateRandomLights();

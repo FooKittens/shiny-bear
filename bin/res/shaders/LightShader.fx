@@ -127,26 +127,22 @@ VSDiffuseOut VSDiffuse(VSDiffuseIn input)
   o.screenPos = o.position;
   o.lightDir = normalize(mul(float4(g_light.direction, 0), g_invView).xyz);
 
-  //o.texCoords = o.position.xy * 0.5f + 0.5f;
-  //o.texCoords.y = 1.0f - o.texCoords.y;
-  //o.texCoords += g_halfPixel;
-
   return o;
 }
 
-MRTOUT PSDiffuse(VSDiffuseOut input)
+float4 PSDiffuse(VSDiffuseOut input) : SV_TARGET
 {
-  MRTOUT mOut = (MRTOUT)0;
   float2 uv = input.screenPos.xy * 0.5f + 0.5f;
   uv.y = 1.0f - uv.y;
   uv += g_halfPixel;
 
+  float4 litColor = 0;
 
   float4 val = tex2D(g_normalSampler, uv);
 
   if(val.a <= 0)
   {
-    return mOut;
+    return litColor;
   }
 
   // Retrieve normal and bring into correct range.
@@ -167,14 +163,10 @@ MRTOUT PSDiffuse(VSDiffuseOut input)
     float3 viewVec = normalize(-position);
     float3 r = reflect(input.lightDir, normal);
     specularIntensity = pow(max(0.0f, dot(viewVec, r)), specularExp);
+    litColor = float4(g_light.color.rgb * diffuseIntensity, specularIntensity);
   }
-  
-  mOut.rt0 = g_light.color * diffuseIntensity;
-  mOut.rt1 = g_light.color * specularIntensity;
-  
-  //mOut.rt0 = float4(position, 1.0f);
 
-  return mOut; 
+  return litColor;
 }
 
 technique DiffuseLightTech
@@ -245,10 +237,9 @@ VSPointOut VSPoint(VSPointIn input)
   return pOut;
 }
 
-MRTOUT PSPoint(VSPointOut input)
+float4 PSPoint(VSPointOut input) : SV_TARGET
 {
-  MRTOUT mOut = (MRTOUT)0;
-
+  float4 litColor = 0;
   float2 uv = (input.screenPos.xy / input.screenPos.z) * 0.5f + 0.5f;
   uv.y = 1.0f - uv.y;
   uv += g_halfPixel;
@@ -275,26 +266,18 @@ MRTOUT PSPoint(VSPointOut input)
   lightDir = normalize(lightDir);
 
   float diffuseIntensity = max(0.0f, dot(normalize(lightDir), normal));
+  float specularIntensity = 0.0f;
 
   if(diffuseIntensity > 0)
   {
     float att = 1.0f / (g_light.a.r + g_light.a.g * lightDist + g_light.a.b * pow(lightDist, 2));
-
-    mOut.rt0 = diffuseIntensity * att * g_light.color;
-    //mOut.rt0 = float4(1, 0, 0, 1);
-
     float3 viewVec = normalize(-position);
     float3 r = reflect(-lightDir, normal);
-    float specularIntensity = pow(max(0.0f, dot(viewVec, r)), specularExp);
-    if(specularIntensity > 0)
-    {
-      mOut.rt1 = specularIntensity * g_light.color * att;
-    }
+    specularIntensity = pow(max(0.0f, dot(viewVec, r)), specularExp);
+    litColor = float4(diffuseIntensity * att * g_light.color.rgb, specularIntensity * att);
   }
 
-  //mOut.rt0 = float4(1, 1, 0, 1);
-
-  return mOut;
+  return litColor;
 }
 
 technique PointLightTech

@@ -57,8 +57,7 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
   m_pConeVolume->MakeCone();
 
   m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
-  m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
-  m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
+  m_pLightTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
   m_pMaterialTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
 
@@ -71,8 +70,7 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
 SceneView::~SceneView()
 {
   delete m_pNormalTarget;
-  delete m_pDiffuseTarget;
-  delete m_pSpecularTarget;
+  delete m_pLightTarget;
   delete m_pDepthTarget;
   delete m_pMaterialTarget;
   delete m_pLightShader;
@@ -206,8 +204,7 @@ void SceneView::RenderLightPass()
 
   pDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 
-  m_pDiffuseTarget->Activate(0);
-  m_pSpecularTarget->Activate(1);
+  m_pLightTarget->Activate(0);
 
   m_lightDeclaration.Activate();
 
@@ -235,8 +232,7 @@ void SceneView::RenderLightPass()
   }
   HR(pDevice->EndScene());
 
-  m_pSpecularTarget->Deactivate();
-  m_pDiffuseTarget->Deactivate();
+  m_pLightTarget->Deactivate();
 
   pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 }
@@ -311,8 +307,7 @@ void SceneView::RenderCombinedScene()
   // Normal voxel vertexdeclaration.
   m_textureDeclaration.Activate();
 
-  m_pCombineShader->SetTexture("g_diffuseMap", m_pDiffuseTarget->GetTexture());
-  m_pCombineShader->SetTexture("g_specularMap", m_pSpecularTarget->GetTexture());
+  m_pCombineShader->SetTexture("g_lightMap", m_pLightTarget->GetTexture());
   m_pCombineShader->SetTexture("g_materialMap", m_pMaterialTarget->GetTexture());
 
   // Clear render target.
@@ -359,8 +354,7 @@ void SceneView::DisplayRenderTarget(const RenderTarget *pTarget)
 void SceneView::OnDeviceLost()
 {
   m_pNormalTarget->OnDeviceLost();
-  m_pDiffuseTarget->OnDeviceLost();
-  m_pSpecularTarget->OnDeviceLost();
+  m_pLightTarget->OnDeviceLost();
   m_pDepthTarget->OnDeviceLost();
   m_pMaterialTarget->OnDeviceLost();
 
@@ -383,8 +377,7 @@ void SceneView::OnDeviceReset()
   CreateScreenVBuffer();
 
   m_pNormalTarget->OnDeviceReset();
-  m_pDiffuseTarget->OnDeviceReset();
-  m_pSpecularTarget->OnDeviceReset();
+  m_pLightTarget->OnDeviceReset();
   m_pDepthTarget->OnDeviceReset();
   m_pMaterialTarget->OnDeviceReset();
 
