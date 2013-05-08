@@ -58,7 +58,7 @@ inline void InputManager::GetMouseState(MouseState * const pState)
 inline void InputManager::GetControllerState(GamePadState * const pState)
 {
   assert(pState);
-  *pState = gamePads[pState->index];
+  *pState = gamePads[pState->m_index];
 }
 
 } // namespace shinybear

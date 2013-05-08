@@ -129,9 +129,9 @@ void SceneView::Render(const RenderList &list)
   RenderLightPass();
 
   // Blend the combined image of the NM and light buffer.
-  //RenderCombinedScene();
+  RenderCombinedScene();
     
-  DisplayRenderTarget(m_pDiffuseTarget);
+  //DisplayRenderTarget(m_pDepthTarget);
   
   pDevice->BeginScene();
 
@@ -217,7 +217,8 @@ void SceneView::RenderLightPass()
   m_pLightShader->SetVector3("g_cameraPosition", pCam->GetTransform().GetPosition());
   m_pLightShader->SetTexture("g_normalMap", m_pNormalTarget->GetTexture());
   m_pLightShader->SetTexture("g_depthMap", m_pDepthTarget->GetTexture());
-  m_pLightShader->SetMatrix("g_view", pCam->GetViewMatrix().Inverse().Transpose());
+  m_pLightShader->SetMatrix("g_invView", pCam->GetViewMatrix().Inverse().Transpose());
+  m_pLightShader->SetMatrix("g_view", pCam->GetViewMatrix());
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0, 1.0f, 0));
@@ -286,7 +287,7 @@ Mat4x4 SceneView::CalcLightMatrix(const Light *pLight)
   } 
   else if(pLight->type == LightType::LT_POINT)
   {
-    return Mat4x4::CreateScale(3.0f) * Mat4x4::CreateTranslation(pLight->position) * 
+    return Mat4x4::CreateScale(100.0f) * Mat4x4::CreateTranslation(pLight->position) * 
       pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
   }
   return Mat4x4::kIdentity;

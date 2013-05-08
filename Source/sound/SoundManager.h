@@ -12,22 +12,22 @@
 namespace shinybear
 {
 
-  struct WaveHeaderType
-	{
-		char chunkId[4];
-		unsigned long chunkSize;
-		char format[4];
-		char subChunkId[4];
-		unsigned long subChunkSize;
-		unsigned short audioFormat;
-		unsigned short numChannels;
-		unsigned long sampleRate;
-		unsigned long bytesPerSecond;
-		unsigned short blockAlign;
-		unsigned short bitsPerSample;
-		char dataChunkId[4];
-		unsigned long dataSize;
-	};
+struct WaveHeaderType
+{
+	char chunkId[4];
+	unsigned long chunkSize;
+	char format[4];
+	char subChunkId[4];
+	unsigned long subChunkSize;
+	unsigned short audioFormat;
+	unsigned short numChannels;
+	unsigned long sampleRate;
+	unsigned long bytesPerSecond;
+	unsigned short blockAlign;
+	unsigned short bitsPerSample;
+	char dataChunkId[4];
+	unsigned long dataSize;
+};
 
 class SoundManager
 {
@@ -52,7 +52,7 @@ private:
   static IDirectSound8* directSound;
 	static IDirectSoundBuffer* primaryBuffer;
 	static IDirectSoundBuffer8* secondaryBuffer1; // Will need more
-
+  static bool isInitialized;
 };
 } // namespace shinybear
 

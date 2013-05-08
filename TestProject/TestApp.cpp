@@ -165,7 +165,7 @@ bool TestApp::OnInitialize()
   CreateCubes();
 
   // Attach ambient light to the scene.
-  m_pScene->GetRoot()->Attach(m_pAmbientLightNode);
+  //m_pScene->GetRoot()->Attach(m_pAmbientLightNode);
 
   // Translate the sun straight up vertically to give it a good axis.
   m_pSunCubeNode->Translate(-3.0f, 10.0f, 5.0f);
@@ -180,8 +180,6 @@ bool TestApp::OnInitialize()
   CameraNode *pCam = new CameraNode(GetWindow(), m_pPlayerNode);
   m_pScene->SetCamera(pCam);
 
-  // Attach the player to the root node.
-  m_pScene->GetRoot()->Attach(m_pPlayerNode);
 
   // Attach player light node to the player.
   m_pPlayerNode->Attach(m_pPlayerLightNode);
@@ -191,6 +189,9 @@ bool TestApp::OnInitialize()
 
   // Attach the sun axis along with its cube and sun light.
   m_pScene->GetRoot()->Attach(m_pSunAxisNode);
+
+  // Attach the player to the root node.
+  m_pScene->GetRoot()->Attach(m_pPlayerNode);
 
   // Generate an 8x8 world.
   m_pGenerator->Generate(4, 1);
@@ -212,8 +213,8 @@ void TestApp::CreateLights()
     Vector3(0, -1, 0));
   m_pSunLightNode = DBG_NEW LightNode(&m_sunLight);
 
-  m_playerLight = Light::CreatePointLight(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f),
-    Vector3(0, 0, 0), 15.0f);
+  m_playerLight = Light::CreatePointLight(D3DXCOLOR(0.45f, 0.45f, 0.45f, 1.0f),
+    Vector3(0, 0, 0), Vector3(0.055f, 0.025f, 0.001f));
 
   m_pPlayerLightNode = DBG_NEW LightNode(&m_playerLight);
 }
@@ -245,8 +246,8 @@ void TestApp::OnUpdate(double elapsedSeconds)
   float y = 0.0f;
 
   //rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
-  rotA += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().x;
-  rotB += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().y;
+  //rotA += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().x;
+  //rotB += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().y;
   z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
   z += kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.rightTrigger;
 
