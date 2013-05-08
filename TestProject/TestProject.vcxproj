@@ -78,6 +78,7 @@
     <ClCompile Include="TestApp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="RandomMover.h" />
     <ClInclude Include="TerrainGenerator.h" />
     <ClInclude Include="TestApp.h" />
   </ItemGroup>

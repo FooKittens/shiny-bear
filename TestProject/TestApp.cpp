@@ -16,6 +16,7 @@
 #include <util\SBUtil.h>
 
 #include "TerrainGenerator.h"
+#include "RandomMover.h"
 
 using namespace shinybear;
 
@@ -165,7 +166,7 @@ bool TestApp::OnInitialize()
   CreateCubes();
 
   // Attach ambient light to the scene.
-  //m_pScene->GetRoot()->Attach(m_pAmbientLightNode);
+  m_pScene->GetRoot()->Attach(m_pAmbientLightNode);
 
   // Translate the sun straight up vertically to give it a good axis.
   m_pSunCubeNode->Translate(-3.0f, 10.0f, 5.0f);
@@ -180,12 +181,8 @@ bool TestApp::OnInitialize()
   CameraNode *pCam = new CameraNode(GetWindow(), m_pPlayerNode);
   m_pScene->SetCamera(pCam);
 
-
   // Attach player light node to the player.
-  //m_pPlayerNode->Attach(m_pPlayerLightNode);
-
-  // Test.
-  //m_pScene->GetRoot()->Attach(m_pPlayerLightNode);
+  m_pPlayerNode->Attach(m_pPlayerLightNode);
 
   // Attach the sun axis along with its cube and sun light.
   m_pScene->GetRoot()->Attach(m_pSunAxisNode);
@@ -194,9 +191,10 @@ bool TestApp::OnInitialize()
   m_pScene->GetRoot()->Attach(m_pPlayerNode);
 
   // Generate an 8x8 world.
-  m_pGenerator->Generate(4, 1);
+  m_pGenerator->Generate(8, 8);
 
-  m_pPlayerNode->Translate(0, 0, -20);
+  // Creates a set amount of random lights flying about the scene.
+  CreateRandomLights();
 
   // Initialization successful.
   return true;
@@ -206,17 +204,38 @@ void TestApp::CreateLights()
 {
   // Create an ambient light for the scene.
   m_ambientLight = Light::CreateAmbientLight(D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f));
-  m_pAmbientLightNode = DBG_NEW LightNode(&m_ambientLight);
+  m_pAmbientLightNode = DBG_NEW LightNode(m_ambientLight);
 
   // Create light to act as "sun"
   m_sunLight = Light::CreateDirectionalLight(D3DXCOLOR(0.65f, 0.65f, 0.65f, 1.0f),
     Vector3(0, -1, 0));
-  m_pSunLightNode = DBG_NEW LightNode(&m_sunLight);
+  m_pSunLightNode = DBG_NEW LightNode(m_sunLight);
 
   m_playerLight = Light::CreatePointLight(D3DXCOLOR(0.45f, 0.45f, 0.45f, 1.0f),
-    Vector3(0, 0, 0), Vector3(0.055f, 0.025f, 0.001f));
+    Vector3(0, 0, 0), Vector3(0.35f, 0.025f, 0.01f));
 
-  m_pPlayerLightNode = DBG_NEW LightNode(&m_playerLight);
+  m_pPlayerLightNode = DBG_NEW LightNode(m_playerLight);
+}
+
+void TestApp::CreateRandomLights()
+{
+  for(int i = 0; i < 50; ++i)
+  {
+    RandomMover *pMover = DBG_NEW RandomMover(Vector3(0, 2.0f, 0), 75.0f);
+    float r = (rand() % 200 + 55) / 255.0f;
+    float g = (rand() % 200 + 55) / 255.0f;
+    float b = (rand() % 200 + 55) / 255.0f;
+
+    Light light = Light::CreatePointLight(
+      D3DXCOLOR(r, g, b, 1.0f), // Color
+      Vector3(0,0,0), // position - Not used atm.
+      Vector3(0.35f, 0.025f, 0.01f) // Attuneation.
+    );
+
+    LightNode *pLightNode = DBG_NEW LightNode(light);
+    pMover->Attach(pLightNode);
+    m_pScene->GetRoot()->Attach(pMover);
+  }
 }
 
 void TestApp::CreateCubes()

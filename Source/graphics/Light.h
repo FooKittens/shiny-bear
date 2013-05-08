@@ -3,6 +3,8 @@
 
 #include "util\math\Math.h"
 
+#include <memory>
+
 namespace shinybear
 {
 
@@ -66,7 +68,6 @@ struct Light
 private:
 
 };
-
 
 
 

@@ -33,8 +33,12 @@ TerrainGenerator::TerrainGenerator(GraphicsProvider *pProvider, SceneNode *pRoot
   m_stoneMat.diffuse = 0x00555555;
   m_stoneMat.specular = 0x02333333;
 
-  m_dirtMat.diffuse = 0x00534038;
-  m_dirtMat.specular = 0x05222222;
+  //m_dirtMat.diffuse = 0x00534038;
+  //m_dirtMat.specular = 0x05222222;
+
+  // For light test
+  m_dirtMat.diffuse = 0x00666666;
+  m_dirtMat.specular = 0x22555555;
 
   m_snowMat.diffuse = 0x00AAAAAA;
   m_snowMat.specular = 0x16FFFFFF;
@@ -125,7 +129,7 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
 
 int TerrainGenerator::GetHeight(int x, int z)
 {
-  double val = (m_perlin.GetValue(x / 16.0, 0, z / 16.0) + 1) * 14;
+  double val = (m_perlin.GetValue(x / 16.0, 0, z / 16.0) + 1) * 2;
   return static_cast<int>(max(val, 1));
 }
 

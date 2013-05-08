@@ -2,6 +2,7 @@
 #define SHINYBEAR_LIGHTNODE_H
 
 #include "scene\SceneNode.h"
+#include "graphics\Light.h"
 
 namespace shinybear { struct Light; }
 
@@ -11,7 +12,7 @@ namespace shinybear
 class LightNode : public SceneNode
 {
 public:
-  LightNode(Light *pLight);
+  LightNode(Light Light);
   ~LightNode();
 
   void Update(double);
@@ -23,7 +24,7 @@ public:
 protected:
 
 private:
-  Light *m_pLight;
+  Light m_light;
 };
 
 } // namespace shinybear

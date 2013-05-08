@@ -96,7 +96,7 @@ float UnPackRange(float f)
 
 float3 UnProjectPosition(float2 uv)
 {
-  float z = tex2D(g_depthSampler, uv).r * 1000.0f;
+  float z = tex2D(g_depthSampler, uv).r;
   float x = uv.x * 2 - 1;
   float y = (1 - uv.y)  * 2 -1;
 
@@ -284,11 +284,11 @@ MRTOUT PSPoint(VSPointOut input)
     //mOut.rt0 = float4(1, 0, 0, 1);
 
     float3 viewVec = normalize(-position);
-    float3 r = reflect(lightDir, normal);
+    float3 r = reflect(-lightDir, normal);
     float specularIntensity = pow(max(0.0f, dot(viewVec, r)), specularExp);
     if(specularIntensity > 0)
     {
-      //mOut.rt1 = specularIntensity * g_light.color * att;
+      mOut.rt1 = specularIntensity * g_light.color * att;
     }
   }
 
