@@ -12,8 +12,6 @@
 #include <vector>
 
 
-
-
 namespace shinybear
 {
   class SceneManager; class SceneView;
@@ -42,6 +40,7 @@ private:
 
   void CreateCubes();
   void CreateLights();
+  void CreateRandomLights();
 
   // Terrain generator for creating clusters.
   TerrainGenerator *m_pGenerator;

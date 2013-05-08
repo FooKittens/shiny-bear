@@ -3,6 +3,8 @@
 
 #include "util\math\Math.h"
 
+#include <memory>
+
 namespace shinybear
 {
 
@@ -23,13 +25,13 @@ struct Light
   float filler_1;
   LightType::Enum type;
   
-   float filler_2;
-   float filler_3;
-   float filler;
+  float filler_2;
+  float filler_3;
+  float filler;
   Vector3 direction;
   float filler2;
   D3DXCOLOR color;
-  //float filler3;
+  Vector3 attenuation;
     
   // Should only be created through factory methods.
   Light() { }
@@ -52,10 +54,20 @@ struct Light
     return lt;
   }
 
+  static Light CreatePointLight(const D3DXCOLOR &color,
+    const Vector3 &position, const Vector3 &attenuation)
+  {
+    Light lt;
+    lt.type = LightType::LT_POINT;
+    lt.color = color;
+    lt.position = position;
+    lt.attenuation = attenuation;
+    return lt;
+  }
+
 private:
 
 };
-
 
 
 

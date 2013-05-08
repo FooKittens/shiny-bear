@@ -34,7 +34,7 @@ void SoundManager::Initialize(HWND hwnd)
 	  LoadWaveFile(pBuffer, &secondaryBuffer1);
  
 	  // Play the wave file now that it has been loaded.
-	  PlayWaveFile();
+	  //PlayWaveFile();
 
     isInitialized = true;
   }

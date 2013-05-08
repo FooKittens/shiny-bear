@@ -47,4 +47,14 @@ void Shader::LoadFromFile(const wchar_t *pFileName)
   }
 }
 
+void Shader::OnDeviceLost()
+{
+  HR(m_pEffect->OnLostDevice());
+}
+
+void Shader::OnDeviceReset()
+{
+  HR(m_pEffect->OnResetDevice());
+}
+
 } // namespace shader

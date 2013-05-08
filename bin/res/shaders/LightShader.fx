@@ -58,6 +58,7 @@ struct Light
   uint type;
   float3 direction;
   float4 color;
+  float3 a;
 };
 
 Light g_light;
@@ -124,7 +125,7 @@ VSDiffuseOut VSDiffuse(VSDiffuseIn input)
   VSDiffuseOut o;
   o.position = mul(float4(input.position, 1.0f), g_WVP);
   o.screenPos = o.position;
-  o.lightDir = normalize(mul(float4(g_light.direction, 0), g_view).xyz);
+  o.lightDir = normalize(mul(float4(g_light.direction, 0), g_invView).xyz);
 
   //o.texCoords = o.position.xy * 0.5f + 0.5f;
   //o.texCoords.y = 1.0f - o.texCoords.y;
@@ -171,6 +172,8 @@ MRTOUT PSDiffuse(VSDiffuseOut input)
   mOut.rt0 = g_light.color * diffuseIntensity;
   mOut.rt1 = g_light.color * specularIntensity;
   
+  //mOut.rt0 = float4(position, 1.0f);
+
   return mOut; 
 }
 
@@ -181,7 +184,7 @@ technique DiffuseLightTech
     vertexshader = compile vs_3_0 VSDiffuse();
     pixelshader = compile ps_3_0 PSDiffuse();
     
-    //CullMode = None;
+    CullMode = None;
     AlphaBlendEnable = true;
     SrcBlend = One;
     DestBlend = One;
@@ -207,11 +210,110 @@ technique AmbientLightTech
     vertexshader = compile vs_3_0 VSAmbient();
     pixelshader = compile ps_3_0 PSAmbient();
     
+    CULLMODE = NONE;
     AlphaBlendEnable = true;
     SrcBlend = One;
     DestBlend = One;
     BlendOp = ADD;
   }
 }
+
+
+struct VSPointIn
+{
+  float3 position : POSITION0;
+};
+
+struct VSPointOut
+{
+  float4 position : SV_POSITION;
+  float3 screenPos : TEXCOORD0;
+  float3 lightPos : TEXCOORD1;
+};
+
+
+VSPointOut VSPoint(VSPointIn input)
+{
+  VSPointOut pOut;
+  pOut.position = mul(float4(input.position, 1.0f), g_WVP);
+
+  pOut.screenPos.xy = pOut.position.xy;
+  pOut.screenPos.z = pOut.position.w;
+
+  pOut.lightPos = mul(float4(g_light.position, 1.0f), g_view).xyz;
+
+  return pOut;
+}
+
+MRTOUT PSPoint(VSPointOut input)
+{
+  MRTOUT mOut = (MRTOUT)0;
+
+  float2 uv = (input.screenPos.xy / input.screenPos.z) * 0.5f + 0.5f;
+  uv.y = 1.0f - uv.y;
+  uv += g_halfPixel;
+
+  float4 val = tex2D(g_normalSampler, uv);
+
+  if(val.a <= 0)
+  {
+    //return mOut;
+  }
+
+  // Retrieve normal and bring into correct range.
+  float3 normal = normalize(2.0f * val.xyz - 1.0f);
+
+  // Bring specular exponent range into values 0-255.
+  float specularExp = max(val.a * 255, 1.0f);
+
+  // Retrieve view-space position from texture coordinates. ( samples depthMap )
+  float3 position = UnProjectPosition(uv);
+
+  float3 lightDir = (input.lightPos - position) / length(input.lightPos - position);
+  float lightDist = distance(input.lightPos, position);
+
+  lightDir = normalize(lightDir);
+
+  float diffuseIntensity = max(0.0f, dot(normalize(lightDir), normal));
+
+  if(diffuseIntensity > 0)
+  {
+    float att = 1.0f / (g_light.a.r + g_light.a.g * lightDist + g_light.a.b * pow(lightDist, 2));
+
+    mOut.rt0 = diffuseIntensity * att * g_light.color;
+    //mOut.rt0 = float4(1, 0, 0, 1);
+
+    float3 viewVec = normalize(-position);
+    float3 r = reflect(-lightDir, normal);
+    float specularIntensity = pow(max(0.0f, dot(viewVec, r)), specularExp);
+    if(specularIntensity > 0)
+    {
+      mOut.rt1 = specularIntensity * g_light.color * att;
+    }
+  }
+
+  //mOut.rt0 = float4(position, 1);
+
+  return mOut;
+}
+
+technique PointLightTech
+{
+  pass p0
+  {
+    vertexshader = compile vs_3_0 VSPoint();
+    pixelshader = compile ps_3_0 PSPoint();
+ 
+    CullMode = NONE;
+    AlphaBlendEnable = true;
+    SrcBlend = One;
+    DestBlend = One;
+    BlendOp = ADD;
+    //FillMode = WIREFRAME;
+  }
+
+}
+
+
 
 
