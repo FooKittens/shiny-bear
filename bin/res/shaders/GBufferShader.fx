@@ -28,13 +28,14 @@ struct GeometryVSOut
   float3 normal : TEXCOORD0;
   float4 diffuse : COLOR0;
   float4 specular : COLOR1;
-  float  depth : TEXCOORD1;
+  float2 depth : TEXCOORD1;
 };
 
 struct PSNormalMRTOUT
 {
   float4 rt0 : COLOR0;
   float4 rt1 : COLOR1;
+  float4 rt2 : COLOR2;
 };
 
 // Helper methods for packing normal values.
@@ -67,7 +68,8 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
   output.specular = input.specular;
 
   float z = mul(float4(input.position, 1), mul(g_world, g_view)).z;
-  output.depth = output.position.z / output.position.w;
+  output.depth.x = output.position.z;
+  output.depth.y = output.position.w;
   return output;
 }
 
@@ -77,7 +79,8 @@ PSNormalMRTOUT PSNormalSpecularExp(GeometryVSOut input)
   PSNormalMRTOUT output;
   output.rt0.rgb = 0.5f * (normalize(input.normal) + 1.0f);
   output.rt0.a = input.specular.a;
-  output.rt1 = input.depth;
+  output.rt1 = input.depth.x / input.depth.y;
+  output.rt2 = input.diffuse;
   return output;
 }
 

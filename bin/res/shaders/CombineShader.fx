@@ -30,33 +30,33 @@ sampler g_specSampler = sampler_state
   MipFilter = LINEAR;
 };
 
+texture g_materialMap;
+sampler g_materialSampler = sampler_state
+{
+  Texture = <g_materialMap>;
+  MinFilter = POINT;
+  MagFilter = POINT;
+  MipFilter = POINT;
+};
+
 
 struct VSCombineInput
 {
   float3 position : POSITION0;
-  float3 normal : NORMAL0;
-  float4 diffuse : COLOR0;
-  float4 specular : COLOR1;
 };
 
 struct VSCombineOutput
 {
   float4 position : SV_POSITION;
-  float4 diffuse : COLOR0;
-  float4 specular : COLOR1;
   float4 pp : TEXCOORD0;
+
 };
 
 VSCombineOutput VSCombine(VSCombineInput input)
 {
   VSCombineOutput output;
-  output.position = mul(float4(input.position, 1.0f), g_WVP);
-  output.diffuse = input.diffuse;
-  output.specular = input.specular;
-  output.pp = (output.position);
-  //output.texcoords = output.position.xy / output.position.w;
-  //output.texcoords.x += 0.5f;
-  //output.texcoords.y += 0.5f;
+  output.position = float4(input.position, 1.0f);
+  output.pp = output.position;
   return output;
 }
 
@@ -69,9 +69,10 @@ float4 PSCombine(VSCombineOutput input) : SV_TARGET
   uv.y *= -1.0f;
   uv.xy = uv.xy + float2(0.5f / 1280.0f, 0.5f / 720.0f);
 
+  float4 mat = tex2D(g_materialSampler, uv);
 
-  return saturate(input.diffuse * tex2D(g_diffSampler, uv)) +
-         saturate(input.specular * tex2D(g_specSampler, uv));
+  return saturate(float4(mat.rgb, 1.0f) * tex2D(g_diffSampler, uv)) +
+         saturate(float4(mat.rgb, 1.0f) * tex2D(g_specSampler, uv));
 }
 
 technique CombineTech

@@ -23,25 +23,25 @@ TerrainGenerator::TerrainGenerator(GraphicsProvider *pProvider, SceneNode *pRoot
   m_perlin.SetPersistence(0.1);
   m_perlin.SetSeed(1337);
 
-  m_grassMat.diffuse = 0x00037704;
-  m_grassMat.specular = 0x07125512;
+  m_grassMat.diffuse = 0x00117711;
+  m_grassMat.specular = 0x07FFFFFF;
   
   // Obsidian "test"
   // m_grassMat.diffuse = 0x00100714;
   // m_grassMat.specular = 0x22AAAAAA;
 
   m_stoneMat.diffuse = 0x00555555;
-  m_stoneMat.specular = 0x02333333;
+  m_stoneMat.specular = 0x02FFFFFF;
 
-  //m_dirtMat.diffuse = 0x00534038;
-  //m_dirtMat.specular = 0x05222222;
+  m_dirtMat.diffuse = 0x00534038;
+  m_dirtMat.specular = 0x05222222;
 
   // For light test
-  m_dirtMat.diffuse = 0x00666666;
-  m_dirtMat.specular = 0x22555555;
+  //m_dirtMat.diffuse = 0x00888888;
+  //m_dirtMat.specular = 0x01555555;
 
   m_snowMat.diffuse = 0x00AAAAAA;
-  m_snowMat.specular = 0x16FFFFFF;
+  m_snowMat.specular = 0x16888888;
 }
 
 TerrainGenerator::~TerrainGenerator()
@@ -113,7 +113,7 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
         }
         else
         {
-          pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
+          //pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
         }
       }
     }
@@ -129,13 +129,14 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
 
 int TerrainGenerator::GetHeight(int x, int z)
 {
-  double val = (m_perlin.GetValue(x / 16.0, 0, z / 16.0) + 1) * 2;
+  double val = (m_perlin.GetValue(x / 32.0f, 0, z / 32.0f) + 1) * 50.0f;
+
   return static_cast<int>(max(val, 1));
 }
 
 BlockMaterial TerrainGenerator::GetMaterialHeight(int y)
 {
-  if(y < 4 || (y > 12 && y < 18))
+  if(y < 5 || (y > 12 && y < 18))
   {
     return m_dirtMat;
   }

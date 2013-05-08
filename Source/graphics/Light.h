@@ -29,7 +29,7 @@ struct Light
   float filler_3;
   float filler;
   Vector3 direction;
-  float filler2;
+  float range;
   D3DXCOLOR color;
   Vector3 attenuation;
     
@@ -55,13 +55,14 @@ struct Light
   }
 
   static Light CreatePointLight(const D3DXCOLOR &color,
-    const Vector3 &position, const Vector3 &attenuation)
+    const Vector3 &position, float dimFactor, float range)
   {
     Light lt;
     lt.type = LightType::LT_POINT;
     lt.color = color;
     lt.position = position;
-    lt.attenuation = attenuation;
+    lt.attenuation = Vector3(dimFactor, 4.5f / range, 75.0f / (range * range));
+    lt.range = range;
     return lt;
   }
 

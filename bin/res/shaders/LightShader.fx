@@ -292,7 +292,7 @@ MRTOUT PSPoint(VSPointOut input)
     }
   }
 
-  //mOut.rt0 = float4(position, 1);
+  //mOut.rt0 = float4(1, 1, 0, 1);
 
   return mOut;
 }
@@ -304,7 +304,7 @@ technique PointLightTech
     vertexshader = compile vs_3_0 VSPoint();
     pixelshader = compile ps_3_0 PSPoint();
  
-    CullMode = NONE;
+    //CullMode = NONE;
     AlphaBlendEnable = true;
     SrcBlend = One;
     DestBlend = One;

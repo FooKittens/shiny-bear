@@ -60,6 +60,7 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
   m_pDiffuseTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pSpecularTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
+  m_pMaterialTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
 
   
   CreateVertexDecl();
@@ -73,6 +74,7 @@ SceneView::~SceneView()
   delete m_pDiffuseTarget;
   delete m_pSpecularTarget;
   delete m_pDepthTarget;
+  delete m_pMaterialTarget;
   delete m_pLightShader;
   delete m_pGBufferShader;
   delete m_pCombineShader;
@@ -131,7 +133,7 @@ void SceneView::Render(const RenderList &list)
   // Blend the combined image of the NM and light buffer.
   RenderCombinedScene();
     
-  //DisplayRenderTarget(m_pDepthTarget);
+  //DisplayRenderTarget(m_pMaterialTarget);
   
   pDevice->BeginScene();
 
@@ -145,6 +147,7 @@ void SceneView::RenderNormalPass()
   // Activate the render target for normals, in slot 0.
   m_pNormalTarget->Activate(0);
   m_pDepthTarget->Activate(1);
+  m_pMaterialTarget->Activate(2);
     
   // Normal voxel vertexdeclaration.
   m_voxelDeclaration.Activate();
@@ -191,6 +194,7 @@ void SceneView::RenderNormalPass()
 
   HR(pDevice->EndScene());
 
+  m_pMaterialTarget->Deactivate();
   m_pDepthTarget->Deactivate();
   // Deactivate rendertarget, which sets the current target to the backbuffer.
   m_pNormalTarget->Deactivate();
@@ -244,6 +248,8 @@ void SceneView::RenderLight(const Light *pLight)
 
   m_pLightShader->SetMatrix("g_WVP", CalcLightMatrix(pLight));
 
+  CameraNode *pCam = m_pScene->GetCamera();
+
   switch(pLight->type)
   {
   case LightType::LT_AMBIENT:
@@ -261,9 +267,14 @@ void SceneView::RenderLight(const Light *pLight)
     break;
   case LightType::LT_POINT:
     m_pLightShader->SetActiveTechnique("PointLightTech");
+    if(pCam->GetViewMatrix().Transform(pLight->position).Length() < pLight->range)
+    {
+      m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+    }
     m_pLightShader->Begin();
     m_pLightShader->BeginPass(0);
     m_pSphereVolume->Render();
+    m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
     break;
   case LightType::LT_SPOT:
     m_pConeVolume->Render();
@@ -287,7 +298,7 @@ Mat4x4 SceneView::CalcLightMatrix(const Light *pLight)
   } 
   else if(pLight->type == LightType::LT_POINT)
   {
-    return Mat4x4::CreateScale(100.0f) * Mat4x4::CreateTranslation(pLight->position) * 
+    return Mat4x4::CreateScale(pLight->range) * Mat4x4::CreateTranslation(pLight->position) * 
       pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
   }
   return Mat4x4::kIdentity;
@@ -298,31 +309,25 @@ void SceneView::RenderCombinedScene()
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
 
   // Normal voxel vertexdeclaration.
-  m_voxelDeclaration.Activate();
+  m_textureDeclaration.Activate();
 
   m_pCombineShader->SetTexture("g_diffuseMap", m_pDiffuseTarget->GetTexture());
   m_pCombineShader->SetTexture("g_specularMap", m_pSpecularTarget->GetTexture());
+  m_pCombineShader->SetTexture("g_materialMap", m_pMaterialTarget->GetTexture());
 
   // Clear render target.
   HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
-    0xFF5558AB, 1.0f, 0));
+    0x0, 1.0f, 0));
 
   // Begin rendering.
   HR(pDevice->BeginScene());
 
-  m_pCombineShader->SetActiveTechnique("CombineTech");
-  CameraNode *pCam = m_pScene->GetCamera();
-  Mat4x4 wvp;  
+  m_pCombineShader->SetActiveTechnique("CombineTech");  
+  HR(pDevice->SetStreamSource(0, m_pScreenVBuffer, 0, sizeof(ScreenVertexData)));
   m_pCombineShader->Begin();
-  for(UINT i = 0; i < m_meshes.size(); ++i)
-  {
-    wvp = m_meshes[i]->world * pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
-
-    m_pCombineShader->SetMatrix("g_WVP", wvp);
-    m_pCombineShader->BeginPass(0);
-    m_meshes[i]->data.pMesh->RenderMesh();
-    m_pCombineShader->EndPass();
-  }
+  m_pCombineShader->BeginPass(0);
+  pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+  m_pCombineShader->EndPass();
   m_pCombineShader->End();
 
   HR(pDevice->EndScene());
@@ -357,6 +362,7 @@ void SceneView::OnDeviceLost()
   m_pDiffuseTarget->OnDeviceLost();
   m_pSpecularTarget->OnDeviceLost();
   m_pDepthTarget->OnDeviceLost();
+  m_pMaterialTarget->OnDeviceLost();
 
   m_voxelDeclaration.OnDeviceLost();
   m_textureDeclaration.OnDeviceLost();
@@ -380,6 +386,7 @@ void SceneView::OnDeviceReset()
   m_pDiffuseTarget->OnDeviceReset();
   m_pSpecularTarget->OnDeviceReset();
   m_pDepthTarget->OnDeviceReset();
+  m_pMaterialTarget->OnDeviceReset();
 
   m_voxelDeclaration.OnDeviceReset();
   m_textureDeclaration.OnDeviceReset();

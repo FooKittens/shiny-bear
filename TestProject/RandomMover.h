@@ -37,10 +37,11 @@ public:
 private:
   void SelectNewTarget()
   {
-    m_target = shinybear::Vector3(rand() % 1000 - 500, m_height, rand() % 1000 - 500);
-    m_target.Normalize();
+    m_target = shinybear::Vector3(rand() % 1000 - 500, 0, rand() % 1000 - 500);
+    m_target.Normalize();    
     m_target *= m_radius;
     m_target += m_center;
+    m_target.y = m_center.y;
     m_speed = ((rand() % 91) + 10) / 10.0f;
   }
 
