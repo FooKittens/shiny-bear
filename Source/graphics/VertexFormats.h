@@ -34,8 +34,7 @@ struct BlockVertex
 {
   D3DXVECTOR3 position;
   D3DXVECTOR3 normal;
-  D3DXCOLOR diffuse;
-  D3DXCOLOR specular;
+  D3DXCOLOR color;
 };
 
 #pragma pack(pop)

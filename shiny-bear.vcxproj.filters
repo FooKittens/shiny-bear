@@ -72,9 +72,6 @@
     <ClInclude Include="Source\world\Cluster.h">
       <Filter>Source\world</Filter>
     </ClInclude>
-    <ClInclude Include="Source\world\ClusterManager.h">
-      <Filter>Source\world</Filter>
-    </ClInclude>
     <ClInclude Include="Source\scene\SceneNode.h">
       <Filter>Source\scene</Filter>
     </ClInclude>
@@ -131,6 +128,9 @@
     </ClInclude>
     <ClInclude Include="Source\sound\SoundManager.h">
       <Filter>Source\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\world\WorldManager.h">
+      <Filter>Source\world</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +205,9 @@
     </ClCompile>
     <ClCompile Include="Source\sound\SoundManager.cpp">
       <Filter>Source\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="source\world\WorldManager.cpp">
+      <Filter>Source\world</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

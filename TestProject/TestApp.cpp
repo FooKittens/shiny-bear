@@ -71,7 +71,7 @@ void CreateCube(float x, float y, float z, const Block &block,
   const D3DXVECTOR3 p7 = D3DXVECTOR3(x + 0.5f, y - 0.5f, z + 0.5f);
 
   shinybear::UINT v0, v1, v2, v3;
-  BlockMaterial mat = block.GetMaterial();
+  BlockColor mat = block.GetMaterial();
 
   v0 = pMesh->AddVertex(p0, mat, kFrontNormal);
   v1 = pMesh->AddVertex(p1, mat, kFrontNormal);
@@ -133,10 +133,10 @@ void CreateCube(float x, float y, float z, const Block &block,
   
 }
 
-MeshNode *TestApp::CreateMeshNode(BlockMaterial *mat)
+MeshNode *TestApp::CreateMeshNode(BlockColor mat)
 {
   static Block block;
-  block.SetMaterial(*mat);
+  block.SetMaterial(mat);
 
   Mesh *pMesh = DBG_NEW Mesh(GetGraphicsProvider());
   MeshNode *pNode = DBG_NEW MeshNode(pMesh);
@@ -154,12 +154,9 @@ bool TestApp::OnInitialize()
 
   // Set up material parameters.
   #pragma region MaterialConfig
-  m_grassMaterial.diffuse   = 0x00036804;
-  m_grassMaterial.specular  = 0x03FFFFFF;
-  m_metalMaterial.diffuse   = 0x00423838;
-  m_metalMaterial.specular  = 0x43FFFFFF;
-  m_shinyMaterial.diffuse   = 0x00AAAAAA;
-  m_shinyMaterial.specular  = 0xFFFFFFFF;
+  m_grassMaterial = 0x03036804;
+  m_metalMaterial = 0x43423838;
+  m_shinyMaterial = 0xFFAAAAAA;
   #pragma endregion
 
   CreateLights();
@@ -183,7 +180,7 @@ bool TestApp::OnInitialize()
   m_pScene->SetCamera(m_pCamera);
 
   // Attach player light node to the player.
-  m_pPlayerNode->Attach(m_pPlayerLightNode);
+  //m_pPlayerNode->Attach(m_pPlayerLightNode);
 
   // Attach the sun axis along with its cube and sun light.
   m_pScene->GetRoot()->Attach(m_pSunAxisNode);
@@ -192,10 +189,10 @@ bool TestApp::OnInitialize()
   m_pScene->GetRoot()->Attach(m_pPlayerNode);
 
   // Generate an 8x8 world.
-  m_pGenerator->Generate(8, 8);
+  m_pGenerator->Generate(4, 4);
 
   // Creates a set amount of random lights flying about the scene.
-  CreateRandomLights();
+  //CreateRandomLights();
 
   // Initialization successful.
   return true;
@@ -243,9 +240,9 @@ void TestApp::CreateRandomLights()
 
 void TestApp::CreateCubes()
 {
-  m_pPlayerNode = CreateMeshNode(&m_metalMaterial);
-  m_pSunCubeNode = CreateMeshNode(&m_metalMaterial);
-  m_pSunAxisNode = CreateMeshNode(&m_metalMaterial);
+  m_pPlayerNode = CreateMeshNode(m_metalMaterial);
+  m_pSunCubeNode = CreateMeshNode(m_metalMaterial);
+  m_pSunAxisNode = CreateMeshNode(m_metalMaterial);
 
   //m_pPlayerNode->Rotate(D3DX_PI / 2.0f, 0, 0);
 }
@@ -270,8 +267,8 @@ void TestApp::OnUpdate(double elapsedSeconds)
   float y = 0.0f;
 
   rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
-  //rotA += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().x;
-  //rotB += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().y;
+  rotA += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().x;
+  rotB += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().y;
   z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
   z += kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.rightTrigger;
 

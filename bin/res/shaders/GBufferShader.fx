@@ -18,16 +18,14 @@ struct GeometryVSIn
 {
   float3 position : POSITION0;
   float3 normal : NORMAL0;
-  float4 diffuse : COLOR0;
-  float4 specular : COLOR1;
+  float4 color : COLOR0;
 };
 
 struct GeometryVSOut
 {
   float4 position : SV_POSITION;
   float3 normal : TEXCOORD0;
-  float4 diffuse : COLOR0;
-  float4 specular : COLOR1;
+  float4 color : COLOR0;
   float2 depth : TEXCOORD1;
 };
 
@@ -65,8 +63,7 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
   //output.normal = normalize(mul(float4(input.normal, 0.0f), mul(g_world,  g_view)));
 
   // Pass on material values.
-  output.diffuse = input.diffuse;
-  output.specular = input.specular;
+  output.color = input.color;
 
   float z = mul(float4(input.position, 1), mul(g_world, g_view)).z;
   output.depth.x = output.position.z;
@@ -80,9 +77,9 @@ PSNormalMRTOUT PSNormalSpecularExp(GeometryVSOut input)
   float3 normal = normalize(mul(input.normal, g_inverseTranspose).xyz);
 
   PSNormalMRTOUT output;
-  output.rt0 = float4(0.5f * (normalize(normal) + 1.0f), 1.0f);
+  output.rt0 = float4(0.5f * (normalize(normal) + 1.0f), input.color.a);
   output.rt1 = input.depth.x / input.depth.y;
-  output.rt2 = input.diffuse;
+  output.rt2 = float4(input.color.rgb, 1.0f);
   return output;
 }
 
@@ -93,9 +90,6 @@ technique NormalTech
   {
     vertexShader = compile vs_3_0 VSNormalSpecularExp();
     pixelShader = compile ps_3_0 PSNormalSpecularExp();
-  
-    //AlphaBlendEnable = true;
-    //CullMode = NONE;
   }
 
   

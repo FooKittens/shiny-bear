@@ -4,6 +4,7 @@
 #include "util\input\MouseState.h"
 #include "util\input\KeyboardState.h"
 #include "util\input\GamePadState.h"
+#include "util\SBUtil.h"
 
 #include <Windows.h>
 #include <cassert>
@@ -84,6 +85,7 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
     assert(false && "GetRawInputData does not return correct size!");
   }
 
+  static int count = 0;
   RAWINPUT *pRawInput = (RAWINPUT*)lpb;
 
   switch(pRawInput->header.dwType)
@@ -246,7 +248,6 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
     } // END OF KEYBOARD INPUT HANDLING
     case RIM_TYPEMOUSE:
     {
-
       unsigned short flags = pRawInput->data.mouse.usFlags;
       unsigned short buttonFlags = pRawInput->data.mouse.usButtonFlags;
       long lastX = pRawInput->data.mouse.lLastX;
@@ -255,12 +256,14 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
       // Check mouse movement parameters
       if(flags == MOUSE_MOVE_RELATIVE)
       {
+        OutputDbgFormat("Mouse Relative: %i", count++);
         mouseState.m_changeX = static_cast<int>(lastX);
         mouseState.m_changeY = static_cast<int>(lastY);
         overrideMouseChange = false;
       }
       else if (flags & MOUSE_MOVE_ABSOLUTE)
       {
+        OutputDbgFormat("Mouse Abs: %i", count++);
         mouseState.m_absoluteX = static_cast<int>(lastX);
         mouseState.m_absoluteY = static_cast<int>(lastY);
         if (flags & MOUSE_VIRTUAL_DESKTOP)

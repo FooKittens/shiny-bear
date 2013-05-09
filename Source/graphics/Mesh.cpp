@@ -84,13 +84,13 @@ void Mesh::UpdateBuffers()
   m_indices.shrink_to_fit();
 }
 
-UINT Mesh::AddVertex(const D3DXVECTOR3 &pos, const BlockMaterial &mat,
+UINT Mesh::AddVertex(const D3DXVECTOR3 &pos, BlockColor mat,
   const D3DXVECTOR3 &normal)
 {
   BlockVertex vert;
   vert.normal = normal;
   vert.position = pos;
-  mat.GetColors(&vert.diffuse, &vert.specular);
+  vert.color = D3DXCOLOR(mat);
   m_vertices.push_back(vert);
   return m_currentIndex++;
 }

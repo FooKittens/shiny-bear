@@ -12,22 +12,22 @@ struct Block
 {
   Block(BlockType bType)
   {
-    blockType = bType;
+    m_blockType = bType;
   }
-  Block() { blockType = 0; }
+  Block() { m_blockType = 0; }
 
   bool IsVisible() const { return m_isVisible; }
   void SetVisible(bool val) { m_isVisible = val; }
 
-  BlockType GetType() const { return blockType; }
-  void SetType(BlockType type) { blockType = type; }
+  BlockType GetType() const { return m_blockType; }
+  void SetType(BlockType type) { m_blockType = type; }
 
-  BlockMaterial GetMaterial() const { return blockMaterial; }
-  void SetMaterial(const BlockMaterial &mat) { blockMaterial = mat; }
+  BlockColor GetMaterial() const { return m_color; }
+  void SetMaterial(BlockColor col) { m_color = col; }
 
 private:
-  BlockType blockType;
-  BlockMaterial blockMaterial;
+  BlockType m_blockType;
+  BlockColor m_color;
   bool m_isVisible;
 };
 

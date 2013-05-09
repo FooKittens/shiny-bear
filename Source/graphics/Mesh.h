@@ -22,7 +22,7 @@ public:
   void BeginMesh();
   void EndMesh();
 
-  UINT AddVertex(const D3DXVECTOR3 &position, const BlockMaterial &mat,
+  UINT AddVertex(const D3DXVECTOR3 &position, BlockColor mat,
     const D3DXVECTOR3 &normal);
   void AddTriangle(UINT v1, UINT v2, UINT v3);
 

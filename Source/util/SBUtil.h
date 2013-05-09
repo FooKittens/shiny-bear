@@ -21,7 +21,7 @@
 #define DBG_NEW new
 #endif
 
- 
+#define ARGB(A, R, G, B) ((A << 24)|(R << 16)|(G << 8)|(B << 0))
 
 // Macro to make sure deleted pointers are set to 0
 #define SAFEDELETE(X) delete X; X = 0

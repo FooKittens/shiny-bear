@@ -21,7 +21,7 @@ public:
 private:
   int GetHeight(int x, int z);
 
-  shinybear::BlockMaterial GetMaterialHeight(int y);
+  shinybear::BlockColor GetMaterialHeight(int y);
 
   // Configures a cluster with a certain height.
   // If the height is above the cluster it will 
@@ -34,10 +34,10 @@ private:
   shinybear::GraphicsProvider *m_pProvider;
   noise::module::Perlin m_perlin;
   
-  shinybear::BlockMaterial m_grassMat;
-  shinybear::BlockMaterial m_stoneMat;
-  shinybear::BlockMaterial m_dirtMat;
-  shinybear::BlockMaterial m_snowMat;
+  shinybear::BlockColor m_grassMat;
+  shinybear::BlockColor m_stoneMat;
+  shinybear::BlockColor m_dirtMat;
+  shinybear::BlockColor m_snowMat;
 };
 
 #endif // TERRAINGENERATOR_H

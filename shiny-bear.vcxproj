@@ -42,7 +42,7 @@
     <ClInclude Include="source\util\SBUtil.h" />
     <ClInclude Include="Source\util\Typedefs.h" />
     <ClInclude Include="Source\world\Block.h" />
-    <ClInclude Include="Source\world\ClusterManager.h" />
+    <ClInclude Include="Source\world\WorldManager.h" />
     <ClInclude Include="Source\world\Cluster.h" />
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +70,7 @@
     <ClCompile Include="Source\util\math\Math.cpp" />
     <ClCompile Include="source\util\SBUtil.cpp" />
     <ClCompile Include="Source\world\Cluster.cpp" />
+    <ClCompile Include="source\world\WorldManager.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A800B216-D6C5-4B48-A2FE-5960FDEEE66D}</ProjectGuid>

@@ -38,8 +38,8 @@ void CameraNode::Update(double elapsedSeconds)
   {
     Mat4x4 tTrans = m_pTarget->GetTransform();
     m_targetPosition = tTrans.GetPosition();
-    Vector4 target = -Vector4::kUnitZ * 10.0f;
-    target += Vector4::kUnitY * 5.0f;
+    Vector4 target = -Vector4::kUnitZ * 15.0f;
+    target += Vector4::kUnitY * 15.0f;
     target = tTrans.Transform(target);
     Vector3 tPos = Vector3(m_targetPosition.x, m_targetPosition.y, m_targetPosition.z);
     

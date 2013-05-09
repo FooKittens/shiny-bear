@@ -18,11 +18,8 @@ Cluster::Cluster(GraphicsProvider *pProvider)
   Attach(m_pMeshNode);
   
 
-  BlockMaterial mat;
-  mat.diffuse = RGB(rand() % 255, rand() % 255, rand() % 255);
-  //mat.diffuse = 0x0088DD77;
-  mat.specular = 0xFF556655;
-
+  BlockColor mat;
+  mat = ARGB(0x20, rand() % 255, rand() % 255, rand() % 255);
   m_blocks = DBG_NEW Block**[kSizeX];
   for(int x = 0; x < kSizeX; ++x)
   {
@@ -37,20 +34,6 @@ Cluster::Cluster(GraphicsProvider *pProvider)
       }
     }
   }
-
-
-  //for(int x = 0; x < kSizeX; ++x)
-  //    for(int z = 0; z < kSizeZ; ++z)
-  //    {
-  //      float fx = (x - kSizeX / 2.0f) / 32.0f;
-  //      float fz = (z - kSizeY * 6.0f) / 64.0f;
-
-  //      int h = max(2, (sin(fx * 2.0f) * cos(fz * 2.0f) + sin(fz * 4.0f) * cos(fx * fz)) * kSizeY / 3.0f); 
-  //      for(int i = kSizeY - 1; i >= h; --i)
-  //      {
-  //        m_blocks[x][i][z].SetVisible(false);
-  //      }
-  //    }
 }
 
 Cluster::~Cluster()
@@ -148,7 +131,7 @@ void Cluster::CreateCube(float x, float y, float z, const Block &block,
   const D3DXVECTOR3 p7 = D3DXVECTOR3(x + 0.5f, y - 0.5f, z + 0.5f);
 
   UINT v0, v1, v2, v3;
-  BlockMaterial mat = block.GetMaterial();
+  BlockColor mat = block.GetMaterial();
   if(!(hideFlags & HF_FRONT))
   {  
     v0 = pMesh->AddVertex(p0, mat, kFrontNormal);

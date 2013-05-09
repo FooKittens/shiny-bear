@@ -33,7 +33,7 @@ protected:
   void OnUpdate(double elapsedSeconds);
   void OnRender();
 
-  shinybear::MeshNode *CreateMeshNode(shinybear::BlockMaterial *mat);
+  shinybear::MeshNode *CreateMeshNode(shinybear::BlockColor mat);
 
   void OnDeviceLost();
   void OnDeviceReset();
@@ -65,9 +65,9 @@ private:
   shinybear::LightNode *m_pRandomLightNode;
 
   // Materials for testing.
-  shinybear::BlockMaterial m_grassMaterial;
-  shinybear::BlockMaterial m_metalMaterial;
-  shinybear::BlockMaterial m_shinyMaterial;
+  shinybear::BlockColor m_grassMaterial;
+  shinybear::BlockColor m_metalMaterial;
+  shinybear::BlockColor m_shinyMaterial;
 
   shinybear::KeyboardState m_newKeys;
   shinybear::KeyboardState m_oldKeys;

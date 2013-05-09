@@ -417,9 +417,9 @@ void SceneView::CreateVertexDecl()
     VertexElement(VertexDataType::VDT_FLOAT4, VertexUsageType::VUT_COLOR, 0)
   );
 
-  m_voxelDeclaration.AddElement(
-    VertexElement(VertexDataType::VDT_FLOAT4, VertexUsageType::VUT_COLOR, 1)
-  );
+  //m_voxelDeclaration.AddElement(
+  //  VertexElement(VertexDataType::VDT_FLOAT4, VertexUsageType::VUT_COLOR, 1)
+  //);
 
   m_lightDeclaration.AddElement(
     VertexElement(VertexDataType::VDT_FLOAT3, VertexUsageType::VUT_POSITION, 0)
