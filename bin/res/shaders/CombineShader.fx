@@ -16,9 +16,10 @@ cbuffer perObject
 sampler g_lightSampler = sampler_state
 {
   Texture = <g_lightMap>;
-  MinFilter = LINEAR;
+  MinFilter = ANISOTROPIC;
   MagFilter = LINEAR;
   MipFilter = LINEAR;
+  MaxAnisotropy = 8;
 };
 
 texture g_materialMap;

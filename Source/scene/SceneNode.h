@@ -33,6 +33,9 @@ public:
 
   void Translate(float x, float y, float z);
   void Rotate(float radX, float radY, float radZ);
+  void RotateX(float rad);
+  void RotateZ(float rad);
+  void RotateY(float rad);
   void Scale(float scale);
   void LoadIdentity();
 
@@ -80,6 +83,21 @@ inline void SceneNode::Translate(float x, float y, float z)
 inline void SceneNode::Rotate(float x, float y, float z)
 {
   m_rotation *= Mat4x4::CreateYawPitchRoll(x, y, z);
+}
+
+inline void SceneNode::RotateX(float rad)
+{
+  m_rotation *= Mat4x4::CreateRotationX(rad);
+}
+
+inline void SceneNode::RotateY(float rad)
+{
+  m_rotation *= Mat4x4::CreateRotationY(rad);
+}
+
+inline void SceneNode::RotateZ(float rad)
+{
+  m_rotation *= Mat4x4::CreateRotationZ(rad);
 }
 
 inline void SceneNode::Scale(float scale)

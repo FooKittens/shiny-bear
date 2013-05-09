@@ -70,7 +70,7 @@ sampler g_normalSampler = sampler_state
   MinFilter = POINT;
   MagFilter = POINT;
   MipFilter = POINT;
-
+  MaxAnisotropy = 12;
 };
 
 texture g_depthMap;

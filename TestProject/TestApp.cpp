@@ -165,6 +165,7 @@ bool TestApp::OnInitialize()
   CreateLights();
   CreateCubes();
 
+
   // Attach ambient light to the scene.
   m_pScene->GetRoot()->Attach(m_pAmbientLightNode);
 
@@ -178,11 +179,11 @@ bool TestApp::OnInitialize()
   m_pSunAxisNode->Attach(m_pSunCubeNode);
 
   // Create a camera that follows the player.
-  CameraNode *pCam = new CameraNode(GetWindow(), m_pPlayerNode);
-  m_pScene->SetCamera(pCam);
+  m_pCamera = new CameraNode(GetWindow(), m_pPlayerNode);
+  m_pScene->SetCamera(m_pCamera);
 
   // Attach player light node to the player.
-  //m_pPlayerNode->Attach(m_pPlayerLightNode);
+  m_pPlayerNode->Attach(m_pPlayerLightNode);
 
   // Attach the sun axis along with its cube and sun light.
   m_pScene->GetRoot()->Attach(m_pSunAxisNode);
@@ -203,37 +204,34 @@ bool TestApp::OnInitialize()
 void TestApp::CreateLights()
 {
   // Create an ambient light for the scene.
-  m_ambientLight = Light::CreateAmbientLight(D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f));
+  m_ambientLight = Light::CreateAmbientLight(D3DXCOLOR(0.15f, 0.15f, 0.19f, 1.0f));
   m_pAmbientLightNode = DBG_NEW LightNode(m_ambientLight);
 
   // Create light to act as "sun"
-  m_sunLight = Light::CreateDirectionalLight(D3DXCOLOR(0.65f, 0.65f, 0.65f, 1.0f),
+  m_sunLight = Light::CreateDirectionalLight(D3DXCOLOR(0.30f, 0.35f, 0.30f, 1.0f),
     Vector3(0, -1, 0));
   m_pSunLightNode = DBG_NEW LightNode(m_sunLight);
 
-  m_playerLight = Light::CreatePointLight(D3DXCOLOR(0.45f, 0.45f, 0.45f, 1.0f),
-    Vector3(0, 0, 0), 0.5f, 50.0f);
+  m_playerLight = Light::CreatePointLight(D3DXCOLOR(0.95f, 0.95f, 0.95f, 1.0f),
+    Vector3(0, 0, 0), 0.50f, 100.0f);
 
   m_pPlayerLightNode = DBG_NEW LightNode(m_playerLight);
+  m_pPlayerLightNode->Translate(0, 2.0f, 0);
 }
 
 void TestApp::CreateRandomLights()
 {
-  for(int i = 0; i < 5; ++i)
+  for(int i = 0; i < 25; ++i)
   {
-    RandomMover *pMover = DBG_NEW RandomMover(Vector3(0, -5.5f, 0), 70.0f);
+    RandomMover *pMover = DBG_NEW RandomMover(Vector3(0, -7.5f, 0), 70.0f);
     float r = (rand() % 100 + 155) / 255.0f;
     float g = (rand() % 100 + 155) / 255.0f;
     float b = (rand() % 100 + 155) / 255.0f;
 
-    //r = 0.96f;
-    //g = 0.96f;
-    //b = 0.96f;
-
     Light light = Light::CreatePointLight(
       D3DXCOLOR(r, g, b, 1.0f), // Color
       Vector3(0,0,0), // position - Not used atm.
-      0.1f, // Dim factor
+      0.3f, // Dim factor
       rand() % 50 + 25 // Attenuation.
     );
 
@@ -248,6 +246,8 @@ void TestApp::CreateCubes()
   m_pPlayerNode = CreateMeshNode(&m_metalMaterial);
   m_pSunCubeNode = CreateMeshNode(&m_metalMaterial);
   m_pSunAxisNode = CreateMeshNode(&m_metalMaterial);
+
+  //m_pPlayerNode->Rotate(D3DX_PI / 2.0f, 0, 0);
 }
 
 const float kPlayerSpeed = 9.5f;
@@ -269,7 +269,7 @@ void TestApp::OnUpdate(double elapsedSeconds)
   float x = 0.0f;
   float y = 0.0f;
 
-  //rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
+  rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
   //rotA += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().x;
   //rotB += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().y;
   z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
@@ -314,8 +314,26 @@ void TestApp::OnUpdate(double elapsedSeconds)
     y = -kPlayerSpeed * (float)elapsedSeconds;
   }
 
-  m_pPlayerNode->Translate(x, y, z); 
-  m_pPlayerNode->Rotate(rotA, rotB, rotC);
+  if(m_pCamera->IsFreeCam())
+  {
+    m_pCamera->Translate(x, y, z);
+    m_pCamera->RotateY(rotA);
+  }
+  else
+  {
+    m_pPlayerNode->Translate(x, y, z);
+    m_pPlayerNode->RotateY(rotA);
+  }
+
+  if(m_newKeys.IsKeyDown(Keys::K_SPACEBAR) && !m_oldKeys.IsKeyDown(Keys::K_SPACEBAR))
+  {
+    bool isFree = m_pCamera->IsFreeCam();
+    if(isFree)
+    {
+       m_pCamera->LoadIdentity();
+    }
+    m_pCamera->SetFreeCam(!isFree);
+  }
 
   if(m_newKeys.IsKeyDown(Keys::K_ESCAPE) || m_gamePadState.IsButtonDown(ControllerButtons::BACK))
   {

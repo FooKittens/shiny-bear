@@ -8,20 +8,23 @@ CameraNode::CameraNode(GameWindow *pWindow, SceneNode *pTarget)
   m_upVector = Vector3::kUnitY;
   m_position = Vector3::kZero;
   m_targetPosition = Vector3::kZero;
-
+  m_followSpeed = 10.0f;
   m_pTarget = pTarget;
-  SetFieldOfView(70.0f);
+  SetFieldOfView(66.77790f);
   SetAspectRatio(pWindow->GetSize());
-  SetViewDistance(1000.0f);
+  SetViewDistance(500.0f);
   SetNearPlane(1.0f);
   SetupProjection();
-
+  SetFreeCam(true);
+  
+  
   if(m_pTarget == nullptr)
   {
     m_targetPosition.x = 0;
     m_targetPosition.y = 0;
     m_targetPosition.z = 0;
   }
+  
 }
 
 CameraNode::~CameraNode()
@@ -31,23 +34,48 @@ CameraNode::~CameraNode()
 
 void CameraNode::Update(double elapsedSeconds)
 {
-  if(m_pTarget)
+  if(m_pTarget && !m_isFreeCam)
   {
-    m_targetPosition = m_pTarget->GetTransform().GetPosition();
-  }
+    Mat4x4 tTrans = m_pTarget->GetTransform();
+    m_targetPosition = tTrans.GetPosition();
+    Vector4 target = -Vector4::kUnitZ * 10.0f;
+    target += Vector4::kUnitY * 5.0f;
+    target = tTrans.Transform(target);
+    Vector3 tPos = Vector3(m_targetPosition.x, m_targetPosition.y, m_targetPosition.z);
+    
+    Vector3 diff = (Vector3(target) + tPos) - m_position;
 
-  Mat4x4 mat = m_pTarget->GetTransform();
-  Vector4 target = -Vector4::kUnitZ * 11.0f;
-  target += Vector4::kUnitY * 10.0f;
-  Vector4 targetWorld = mat.Transform(target);
-  m_upVector = Vector3::kUnitY;
-  m_position = mat.GetPosition() + Vector3(targetWorld);
-  
+    Vector3 dir = Vector3::Normalize(diff);
+
+    Mat4x4 myTransform = GetTransform().Inverse().Transpose();
+    Vector3 mf = GetTransform().Transform(Vector3::kUnitZ);
+
+    dir *= m_followSpeed * elapsedSeconds;
+    if(dir.Length() < diff.Length())
+    {
+      Translate(dir.x, dir.y, dir.z);
+    }
+    else
+    {
+      Translate(diff.x, diff.y, diff.z);
+    }
+    
+    m_position = GetTransform().GetPosition();
+    m_upVector = myTransform.Transform(Vector3::kUnitY);
+  }
+  else
+  {
+    m_position = GetTransform().GetPosition();
+
+    Mat4x4 transform = GetTransform().Inverse().Transpose();
+    m_targetPosition = m_position + transform.Transform(Vector3::kUnitZ);
+    m_upVector = transform.Transform(Vector3::kUnitY);    
+  }
 
   //m_position = m_view.GetPosition();
 
   m_view = Mat4x4::CreateLookAt(m_position, m_targetPosition, m_upVector);
-
+  //m_view = GetTransform();
   SceneNode::Update(elapsedSeconds);
 }
 

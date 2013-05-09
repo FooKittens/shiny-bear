@@ -113,23 +113,23 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
         }
         else
         {
-          //pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
+          pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
         }
       }
     }
   }
 
-  float tx = (float)(cx - genX / 2) * Cluster::kSizeX;
-  float ty = (float)(cy * Cluster::kSizeY);
-  float tz = (float)(cz - genZ / 2) * Cluster::kSizeZ;
+  float tx = cx - genX / 2;
+  float ty = cy;
+  float tz = cz - genZ / 2;
 
   // Translate the cluster into the correct position.
-  pCluster->Translate(tx, ty, tz);
+  pCluster->Translate(tx * Cluster::kSizeX, ty * Cluster::kSizeY, tz * Cluster::kSizeZ);
 }
 
 int TerrainGenerator::GetHeight(int x, int z)
 {
-  double val = (m_perlin.GetValue(x / 32.0f, 0, z / 32.0f) + 1) * 1.0f;
+  double val = (m_perlin.GetValue(x / 32.0f, 0, z / 32.0f) + 1) * 3.0f;
 
   return static_cast<int>(max(val, 1));
 }

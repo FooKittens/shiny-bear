@@ -56,7 +56,7 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
   m_pSphereVolume->MakeSphere();
   m_pConeVolume->MakeCone();
 
-  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A8R8G8B8);
+  m_pNormalTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pLightTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
   m_pDepthTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_R32F);
   m_pMaterialTarget = DBG_NEW RenderTarget(pProvider, D3DFMT_A16B16G16R16F);
@@ -126,12 +126,12 @@ void SceneView::Render(const RenderList &list)
   RenderNormalPass();
 
   // Render lights into diffuse and specular buffers.
-  //RenderLightPass();
+  RenderLightPass();
 
   // Blend the combined image of the NM and light buffer.
-  //RenderCombinedScene();
+  RenderCombinedScene();
     
-  DisplayRenderTarget(m_pNormalTarget);
+  //DisplayRenderTarget(m_pNormalTarget);
   
   pDevice->BeginScene();
 
@@ -142,18 +142,14 @@ void SceneView::RenderNormalPass()
 {
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
   
-  // Activate the render target for normals, in slot 0.
-  m_pNormalTarget->Activate(0);
-  
-  // Clear render target.
-  HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
-    0, 1.0f, 0));
-
-  m_pNormalTarget->Deactivate();
-  
+  // Activate the render target for normals, in slot 0.  
   m_pNormalTarget->Activate(0);
   m_pDepthTarget->Activate(1);
   m_pMaterialTarget->Activate(2);
+
+    // Clear render target.
+  HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
+     0, 1.0f, 0));
     
   // Normal voxel vertexdeclaration.
   m_voxelDeclaration.Activate();

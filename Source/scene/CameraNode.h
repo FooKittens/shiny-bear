@@ -29,6 +29,8 @@ public:
 
   void Update(double elapsedSeconds);
   void Render(SceneManager *pScene);
+  void SetFreeCam(bool value);
+  bool IsFreeCam() const;
 
 protected:
   virtual void SetupProjection();
@@ -42,12 +44,24 @@ private:
   Vector3 m_upVector;
 
   bool m_displayFrustum;
+  bool m_isFreeCam;
   float m_fieldOfView;
   float m_aspectRatio;
   float m_viewDistance;
   float m_near;
+  float m_followSpeed;
   
 };
+
+inline void CameraNode::SetFreeCam(bool value)
+{
+  m_isFreeCam = value;
+}
+
+inline bool CameraNode::IsFreeCam() const
+{
+  return m_isFreeCam;
+}
 
 inline const Mat4x4 &CameraNode::GetViewMatrix() const
 {

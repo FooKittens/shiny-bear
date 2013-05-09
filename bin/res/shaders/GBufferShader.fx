@@ -60,6 +60,7 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
   // Transform the normal into view space.
   // Uses the inverse transpose of the world-view matrix.
   output.normal = normalize(mul(float4(input.normal, 0.0f), g_inverseTranspose).xyz);
+  output.normal = float4(input.normal, 0);
 
   //output.normal = normalize(mul(float4(input.normal, 0.0f), mul(g_world,  g_view)));
 
@@ -76,9 +77,10 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
 // Writes normaldata into the rgb components and the specular exponent into the alpha channel.
 PSNormalMRTOUT PSNormalSpecularExp(GeometryVSOut input)
 {
+  float3 normal = normalize(mul(input.normal, g_inverseTranspose).xyz);
+
   PSNormalMRTOUT output;
-  output.rt0.rgb = 0.5f * (normalize(input.normal) + 1.0f);
-  output.rt0.a = input.specular.a;
+  output.rt0 = float4(0.5f * (normalize(normal) + 1.0f), 1.0f);
   output.rt1 = input.depth.x / input.depth.y;
   output.rt2 = input.diffuse;
   return output;
@@ -92,7 +94,8 @@ technique NormalTech
     vertexShader = compile vs_3_0 VSNormalSpecularExp();
     pixelShader = compile ps_3_0 PSNormalSpecularExp();
   
-    AlphaBlendEnable = true;
+    //AlphaBlendEnable = true;
+    //CullMode = NONE;
   }
 
   
