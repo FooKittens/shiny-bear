@@ -192,8 +192,6 @@ void SceneView::RenderNormalPass()
   }
   m_pGBufferShader->End();
 
-  pCam->RenderFrustum(m_pProvider);
-
   HR(pDevice->EndScene());
 
   m_pMaterialTarget->Deactivate();
