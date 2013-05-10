@@ -1,7 +1,7 @@
 #ifndef SHINYBEAR_SCENEMANAGER_H
 #define SHINYBEAR_SCENEMANAGER_H
 
-#include "scene\CameraNode.h"
+#include "scene\Camera\Camera.h"
 #include "graphics\Light.h"
 #include "util\math\Math.h"
 #include <d3dx9.h>
@@ -58,8 +58,8 @@ public:
   void OnDeviceLost();
   void OnDeviceReset();
 
-  void SetCamera(CameraNode *pCamera);
-  CameraNode *GetCamera() const;
+  void SetCamera(Camera *pCamera);
+  Camera *GetCamera() const;
 
   void PushRenderData(const RenderData &data);
 
@@ -69,7 +69,7 @@ private:
   ID3DXMatrixStack *m_pMatStack;
   SceneView *m_pView;
   RenderList m_renderList;
-  CameraNode *m_pCamera;
+  Camera *m_pCamera;
   bool m_isCameraSet;
 };
 
@@ -89,17 +89,12 @@ inline void SceneManager::PopMatrix()
   m_pMatStack->Pop();
 }
 
-inline void SceneManager::SetCamera(CameraNode *pCamera)
+inline void SceneManager::SetCamera(Camera *pCamera)
 {
-  if(m_isCameraSet)
-  {
-    m_pRoot->Detach(m_pCamera);
-  }
   m_pCamera = pCamera;
-  m_pRoot->Attach(m_pCamera);
 }
 
-inline CameraNode *SceneManager::GetCamera() const
+inline Camera *SceneManager::GetCamera() const
 {
   return m_pCamera;
 }

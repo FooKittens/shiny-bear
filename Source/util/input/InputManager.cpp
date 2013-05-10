@@ -256,14 +256,12 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
       // Check mouse movement parameters
       if(flags == MOUSE_MOVE_RELATIVE)
       {
-        OutputDbgFormat("Mouse Relative: %i", count++);
         mouseState.m_changeX = static_cast<int>(lastX);
         mouseState.m_changeY = static_cast<int>(lastY);
         overrideMouseChange = false;
       }
       else if (flags & MOUSE_MOVE_ABSOLUTE)
       {
-        OutputDbgFormat("Mouse Abs: %i", count++);
         mouseState.m_absoluteX = static_cast<int>(lastX);
         mouseState.m_absoluteY = static_cast<int>(lastY);
         if (flags & MOUSE_VIRTUAL_DESKTOP)

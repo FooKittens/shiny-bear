@@ -5,6 +5,7 @@
 #include "util\SBUtil.h"
 #include "util\input\InputManager.h"
 #include "sound\SoundManager.h"
+#include "resource\ResourceManager.h"
 #include <fstream>
 
 
@@ -103,6 +104,25 @@ bool BaseGame::Initialize()
     return false;
   }
 
+  // Initialize the resource manager.
+  ResourceManager::Initialize(this);
+
+  D3DXFONT_DESC fontdesc;
+  fontdesc.CharSet = DEFAULT_CHARSET;
+  fontdesc.Height = 16;
+  fontdesc.Italic = false;
+  fontdesc.MipLevels = 0;
+  fontdesc.OutputPrecision = OUT_TT_ONLY_PRECIS;
+  fontdesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+  fontdesc.Quality = DEFAULT_QUALITY;
+  fontdesc.Weight = FW_NORMAL;
+  fontdesc.Width = 0;
+  strcpy_s(fontdesc.FaceName, "Arial");
+
+  m_font.desc = fontdesc;
+  
+  ResourceManager::RegisterResource(&m_font, "BaseGameFont");
+
   // Call derived method.
   if(!OnInitialize())
   {
@@ -110,6 +130,7 @@ bool BaseGame::Initialize()
     return false;
   }
 
+  ResourceManager::OnGraphicsDeviceReset(m_pGraphicsProvider);
   return true;
 }
 
@@ -202,12 +223,15 @@ void BaseGame::OnUpdate(double elapsedSeconds)
   }
 }
 
-void BaseGame::RenderDiagnostics(ID3DXFont *pFont)
+void BaseGame::RenderDiagnostics(ID3DXFont *pFontA)
 {
   char buffer[512];
   sprintf_s(buffer, "FPS: %.2f", GetCurrentFps());
   RECT drawRect = { 20, 20, 200, 150 };
-  pFont->DrawTextA(NULL, buffer, strlen(buffer),
+
+  FontProxy *pFont = ResourceManager::GetResource<FontProxy>("BaseGameFont");
+
+  pFont->pFont->DrawTextA(NULL, buffer, strlen(buffer),
     &drawRect, 0 , 0xFFFFFFFF);
 }
 
@@ -275,22 +299,13 @@ void BaseGame::OnFocusChanged(bool getFocus)
 void BaseGame::OnDeviceLost()
 {
   RELEASECOM(m_pDiagFont);
+  ResourceManager::OnGraphicsDeviceLost();
 }
 
 void BaseGame::OnDeviceReset()
 {
-  D3DXFONT_DESC fontdesc;
-  fontdesc.CharSet = DEFAULT_CHARSET;
-  fontdesc.Height = 16;
-  fontdesc.Italic = false;
-  fontdesc.MipLevels = 0;
-  fontdesc.OutputPrecision = OUT_TT_ONLY_PRECIS;
-  fontdesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-  fontdesc.Quality = DEFAULT_QUALITY;
-  fontdesc.Weight = FW_NORMAL;
-  fontdesc.Width = 0;
-  strcpy_s(fontdesc.FaceName, "Arial");
-  HR(D3DXCreateFontIndirect(m_pGraphicsProvider->GetDevice(), &fontdesc, &m_pDiagFont));
+  ResourceManager::OnGraphicsDeviceReset(m_pGraphicsProvider);
+  //HR(D3DXCreateFontIndirect(m_pGraphicsProvider->GetDevice(), &fontdesc, &m_pDiagFont));
 }
 
 } // namespace shinybear

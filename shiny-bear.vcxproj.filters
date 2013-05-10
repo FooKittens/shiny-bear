@@ -31,6 +31,24 @@
     <Filter Include="Source\sound">
       <UniqueIdentifier>{8b87f6e5-435e-445b-8f5d-754961f11312}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\scene\camera">
+      <UniqueIdentifier>{4c72f6e3-8385-4e62-9d49-8ce854706570}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\graphics\render">
+      <UniqueIdentifier>{a2463deb-a5fa-49c0-9efd-49f1dc053cc4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\resource">
+      <UniqueIdentifier>{ccb95981-17cf-41ec-a300-cf2e2f2414c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\resource\managers">
+      <UniqueIdentifier>{b6dfc7d0-5fd9-4842-9afd-b615dd897ab7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\resource\types">
+      <UniqueIdentifier>{2a52d1bb-19b8-4e40-92c0-08dd66a4912a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\resource\proxy">
+      <UniqueIdentifier>{c086703a-1da6-4438-90cd-a3d5c4e4f0c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -132,6 +150,30 @@
     <ClInclude Include="Source\world\WorldManager.h">
       <Filter>Source\world</Filter>
     </ClInclude>
+    <ClInclude Include="source\scene\camera\Camera.h">
+      <Filter>Source\scene\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\util\math\Frustum.h">
+      <Filter>Source\util\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\util\math\Plane.h">
+      <Filter>Source\util\math</Filter>
+    </ClInclude>
+    <ClInclude Include="source\graphics\render\IDrawable.h">
+      <Filter>Source\graphics\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\resource\ResourceManager.h">
+      <Filter>Source\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="source\resource\types\IGraphicsResource.h">
+      <Filter>Source\resource\types</Filter>
+    </ClInclude>
+    <ClInclude Include="source\resource\IResource.h">
+      <Filter>Source\resource</Filter>
+    </ClInclude>
+    <ClInclude Include="source\resource\proxy\D3DXProxy.h">
+      <Filter>Source\resource\proxy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -208,6 +250,15 @@
     </ClCompile>
     <ClCompile Include="source\world\WorldManager.cpp">
       <Filter>Source\world</Filter>
+    </ClCompile>
+    <ClCompile Include="source\scene\camera\Camera.cpp">
+      <Filter>Source\scene\camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\util\math\Frustum.cpp">
+      <Filter>Source\util\math</Filter>
+    </ClCompile>
+    <ClCompile Include="source\resource\ResourceManager.cpp">
+      <Filter>Source\resource</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -16,7 +16,7 @@ namespace shinybear
 {
   class SceneManager; class SceneView;
   class Mesh; class MeshNode; struct BlockMaterial;
-  class CameraNode;
+  class Camera;
 }
 
 class TerrainGenerator;
@@ -46,7 +46,7 @@ private:
   // Terrain generator for creating clusters.
   TerrainGenerator *m_pGenerator;
 
-  shinybear::CameraNode *m_pCamera;
+  shinybear::Camera *m_pCamera;
 
   shinybear::SceneManager *m_pScene;
   shinybear::MeshNode *m_pPlayerNode;

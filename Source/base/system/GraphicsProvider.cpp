@@ -1,5 +1,6 @@
 #include "base\system\GraphicsProvider.h"
 #include "util\SBUtil.h"
+#include "resource\types\IGraphicsResource.h"
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <Windows.h>
@@ -68,7 +69,6 @@ HRESULT GraphicsProvider::GetDeviceState()
 HRESULT GraphicsProvider::ResetDevice()
 {
   return m_pDevice->Reset(&m_d3dPresent);
-  return true;
 }
 
 const DisplayMode& GraphicsProvider::GetDisplayMode()
@@ -418,8 +418,6 @@ void GraphicsProvider::ApplyChanges()
   m_currentDisplayMode = m_nextDisplayMode;
   m_currentMSAAMode = m_nextMSAAMode;
 }
-
-
 
 
 } // namespace shinybear

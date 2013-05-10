@@ -24,6 +24,7 @@ SceneManager::~SceneManager()
 void SceneManager::Update(double elapsedSeconds)
 {
   m_pRoot->Update(elapsedSeconds);
+  m_pCamera->Update(elapsedSeconds);
 }
 
 void SceneManager::Render()

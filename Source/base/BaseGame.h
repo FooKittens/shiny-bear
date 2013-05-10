@@ -1,7 +1,9 @@
 #ifndef SHINYBEAR_BASEGAME_H
 #define SHINYBEAR_BASEGAME_H
 
+#include "resource\proxy\D3DXProxy.h"
 #include "base\Config.h"
+
 #include <d3dx9.h>
 
 // Forward declarations
@@ -19,6 +21,7 @@ class BaseGame
 {
 public:
   friend class GameWindow;
+  friend class ResourceManager;
 
   BaseGame();
   virtual ~BaseGame();
@@ -77,6 +80,7 @@ private:
   float m_fpsTimer;
   float m_currentFrame;
   float m_lastFps;
+  FontProxy m_font;
   ID3DXFont *m_pDiagFont;
 };
 

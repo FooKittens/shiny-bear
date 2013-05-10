@@ -8,7 +8,7 @@
 #include <scene\SceneView.h>
 #include <scene\MeshNode.h>
 #include <scene\LightNode.h>
-#include <scene\CameraNode.h>
+#include <scene\camera\Camera.h>
 #include <graphics\Mesh.h>
 #include <graphics\Light.h>
 #include <world\Block.h>
@@ -175,8 +175,11 @@ bool TestApp::OnInitialize()
   // Attach the sun and its cube to the axis around which they will spin.
   m_pSunAxisNode->Attach(m_pSunCubeNode);
 
-  // Create a camera that follows the player.
-  m_pCamera = new CameraNode(GetWindow(), m_pPlayerNode);
+  // Create a camera.
+  Size wSize = GetWindow()->GetSize();
+  float aspect = (float)wSize.width / (float)wSize.height;
+  m_pCamera = new Camera(aspect, 60.0f, 1.0f, 100.0f);
+  m_pCamera->SetDebugMode(true);
   m_pScene->SetCamera(m_pCamera);
 
   // Attach player light node to the player.
@@ -189,10 +192,10 @@ bool TestApp::OnInitialize()
   m_pScene->GetRoot()->Attach(m_pPlayerNode);
 
   // Generate an 8x8 world.
-  m_pGenerator->Generate(4, 4);
+  m_pGenerator->Generate(1, 1);
 
   // Creates a set amount of random lights flying about the scene.
-  //CreateRandomLights();
+  CreateRandomLights();
 
   // Initialization successful.
   return true;
@@ -311,25 +314,25 @@ void TestApp::OnUpdate(double elapsedSeconds)
     y = -kPlayerSpeed * (float)elapsedSeconds;
   }
 
-  if(m_pCamera->IsFreeCam())
-  {
-    m_pCamera->Translate(x, y, z);
-    m_pCamera->RotateY(rotA);
-  }
-  else
-  {
-    m_pPlayerNode->Translate(x, y, z);
-    m_pPlayerNode->RotateY(rotA);
-  }
+  //if(m_pCamera->IsFreeCam())
+  //{
+  //  m_pCamera->Translate(x, y, z);
+  //  m_pCamera->RotateY(rotA);
+  //}
+  //else
+  //{
+  //  m_pPlayerNode->Translate(x, y, z);
+  //  m_pPlayerNode->RotateY(rotA);
+  //}
 
   if(m_newKeys.IsKeyDown(Keys::K_SPACEBAR) && !m_oldKeys.IsKeyDown(Keys::K_SPACEBAR))
   {
-    bool isFree = m_pCamera->IsFreeCam();
-    if(isFree)
-    {
-       m_pCamera->LoadIdentity();
-    }
-    m_pCamera->SetFreeCam(!isFree);
+    //bool isFree = m_pCamera->IsFreeCam();
+    //if(isFree)
+    //{
+    //   m_pCamera->LoadIdentity();
+    //}
+    //m_pCamera->SetFreeCam(!isFree);
   }
 
   if(m_newKeys.IsKeyDown(Keys::K_ESCAPE) || m_gamePadState.IsButtonDown(ControllerButtons::BACK))

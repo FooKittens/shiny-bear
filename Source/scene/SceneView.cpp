@@ -113,10 +113,10 @@ void SceneView::Render(const RenderList &list)
   }
 
   // Set matrices for geometry rendering.
-  CameraNode *pCam = m_pScene->GetCamera();
+  Camera *pCam = m_pScene->GetCamera();
 
   // TODO : FIX THE NEED FOR THIS!
-  pCam->Update(0);
+  //pCam->Update(0);
 
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();  
   
@@ -132,7 +132,8 @@ void SceneView::Render(const RenderList &list)
   RenderCombinedScene();
     
   //DisplayRenderTarget(m_pNormalTarget);
-  
+ 
+
   pDevice->BeginScene();
 
   m_isRendering = false;
@@ -161,8 +162,8 @@ void SceneView::RenderNormalPass()
   m_pGBufferShader->SetActiveTechnique("NormalTech");
   
   Mat4x4 wvp;
-  CameraNode *pCam = m_pScene->GetCamera();
-  
+  Camera *pCam = m_pScene->GetCamera();
+
   m_pGBufferShader->SetFloat("g_zfar", pCam->GetViewDistance());
   m_pGBufferShader->SetMatrix("g_view", pCam->GetViewMatrix());
 
@@ -191,6 +192,8 @@ void SceneView::RenderNormalPass()
   }
   m_pGBufferShader->End();
 
+  pCam->RenderFrustum(m_pProvider);
+
   HR(pDevice->EndScene());
 
   m_pMaterialTarget->Deactivate();
@@ -209,14 +212,14 @@ void SceneView::RenderLightPass()
 
   m_lightDeclaration.Activate();
 
-  CameraNode *pCam = m_pScene->GetCamera();
+  Camera *pCam = m_pScene->GetCamera();
 
   Vector2 halfPixel(0.5f / (float)m_pProvider->GetDisplayMode().width,
     0.5f / (float)m_pProvider->GetDisplayMode().height);
 
   m_pLightShader->SetVector2("g_halfPixel", halfPixel);
   m_pLightShader->SetMatrix("g_invProjection", pCam->GetProjectionMatrix().Inverse());
-  m_pLightShader->SetVector3("g_cameraPosition", pCam->GetTransform().GetPosition());
+  m_pLightShader->SetVector3("g_cameraPosition", pCam->GetViewMatrix().GetPosition());
   m_pLightShader->SetTexture("g_normalMap", m_pNormalTarget->GetTexture());
   m_pLightShader->SetTexture("g_depthMap", m_pDepthTarget->GetTexture());
   m_pLightShader->SetMatrix("g_invView", pCam->GetViewMatrix().Inverse().Transpose());
@@ -245,7 +248,7 @@ void SceneView::RenderLight(const Light *pLight)
 
   m_pLightShader->SetMatrix("g_WVP", CalcLightMatrix(pLight));
 
-  CameraNode *pCam = m_pScene->GetCamera();
+  Camera*pCam = m_pScene->GetCamera();
 
   switch(pLight->type)
   {
@@ -286,7 +289,7 @@ void SceneView::RenderLight(const Light *pLight)
 
 Mat4x4 SceneView::CalcLightMatrix(const Light *pLight)
 {
-  CameraNode *pCam = m_pScene->GetCamera();
+  Camera *pCam = m_pScene->GetCamera();
 
   if(pLight->type == LightType::LT_AMBIENT ||
      pLight->type == LightType::LT_DIRECTIONAL)
