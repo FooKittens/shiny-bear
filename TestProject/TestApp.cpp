@@ -178,12 +178,12 @@ bool TestApp::OnInitialize()
   // Create a camera.
   Size wSize = GetWindow()->GetSize();
   float aspect = (float)wSize.width / (float)wSize.height;
-  m_pCamera = new Camera(aspect, 60.0f, 1.0f, 100.0f);
+  m_pCamera = new Camera(aspect, 60.0f, 1.0f, 1000.0f);
   m_pCamera->SetDebugMode(true);
   m_pScene->SetCamera(m_pCamera);
 
   // Attach player light node to the player.
-  //m_pPlayerNode->Attach(m_pPlayerLightNode);
+  m_pPlayerNode->Attach(m_pPlayerLightNode);
 
   // Attach the sun axis along with its cube and sun light.
   m_pScene->GetRoot()->Attach(m_pSunAxisNode);
@@ -192,7 +192,7 @@ bool TestApp::OnInitialize()
   m_pScene->GetRoot()->Attach(m_pPlayerNode);
 
   // Generate an 8x8 world.
-  m_pGenerator->Generate(1, 1);
+  m_pGenerator->Generate(4, 4);
 
   // Creates a set amount of random lights flying about the scene.
   CreateRandomLights();
@@ -221,7 +221,7 @@ void TestApp::CreateLights()
 
 void TestApp::CreateRandomLights()
 {
-  for(int i = 0; i < 25; ++i)
+  for(int i = 0; i < 5; ++i)
   {
     RandomMover *pMover = DBG_NEW RandomMover(Vector3(0, -7.5f, 0), 70.0f);
     float r = (rand() % 100 + 155) / 255.0f;

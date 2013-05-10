@@ -78,8 +78,6 @@ bool BaseGame::Initialize()
   // Initialize sound manager
   SoundManager::Initialize(m_pGameWindow->GetWindowHandle());
 
-  // Register for window events.
-
   // Create the directx wrapper.
   m_pGraphicsProvider = DBG_NEW GraphicsProvider(m_pGameWindow->GetWindowHandle());
   if(m_pGraphicsProvider->Initialize())

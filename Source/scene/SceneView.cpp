@@ -82,10 +82,6 @@ SceneView::~SceneView()
   RELEASECOM(m_pScreenVBuffer);
 }
 
-bool showSpec = false;
-KeyboardState keys;
-KeyboardState pKeys;
-
 void SceneView::Render(const RenderList &list)
 {
   assert(!m_isRendering && "Sceneview already rendering!");
@@ -131,7 +127,7 @@ void SceneView::Render(const RenderList &list)
   // Blend the combined image of the NM and light buffer.
   RenderCombinedScene();
     
-  //DisplayRenderTarget(m_pNormalTarget);
+  //DisplayRenderTarget(m_pDepthTarget);
  
 
   pDevice->BeginScene();
@@ -149,8 +145,7 @@ void SceneView::RenderNormalPass()
   m_pMaterialTarget->Activate(2);
 
     // Clear render target.
-  HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET,
-     0, 1.0f, 0));
+  HR(pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, 0, 1.0f, 0));
     
   // Normal voxel vertexdeclaration.
   m_voxelDeclaration.Activate();
@@ -217,7 +212,6 @@ void SceneView::RenderLightPass()
 
   m_pLightShader->SetVector2("g_halfPixel", halfPixel);
   m_pLightShader->SetMatrix("g_invProjection", pCam->GetProjectionMatrix().Inverse());
-  m_pLightShader->SetVector3("g_cameraPosition", pCam->GetViewMatrix().GetPosition());
   m_pLightShader->SetTexture("g_normalMap", m_pNormalTarget->GetTexture());
   m_pLightShader->SetTexture("g_depthMap", m_pDepthTarget->GetTexture());
   m_pLightShader->SetMatrix("g_invView", pCam->GetViewMatrix().Inverse().Transpose());

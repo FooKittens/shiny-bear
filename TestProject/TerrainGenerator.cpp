@@ -23,21 +23,10 @@ TerrainGenerator::TerrainGenerator(GraphicsProvider *pProvider, SceneNode *pRoot
   m_perlin.SetPersistence(0.1);
   m_perlin.SetSeed(1337);
 
-  m_grassMat = 0x07117711;
-  
-  // Obsidian "test"
-  // m_grassMat.diffuse = 0x00100714;
-  // m_grassMat.specular = 0x22AAAAAA;
-
-  m_stoneMat = 0x02555555;
-
-  m_dirtMat = 0x05534038;
-
-  // For light test
-  //m_dirtMat.diffuse = 0x00888888;
-  //m_dirtMat.specular = 0x01555555;
-
-  m_snowMat = 0xFF888888;
+  m_grassMat  = 0x07117711;
+  m_stoneMat  = 0x02555555;
+  m_dirtMat   = 0x05534038;
+  m_snowMat   = 0xFF888888;
 }
 
 TerrainGenerator::~TerrainGenerator()
@@ -109,7 +98,7 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
         }
         else
         {
-          //pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
+          pCluster->GetBlock(x, h, z)->SetMaterial(GetMaterialHeight(h + offsetY));
         }
       }
     }
@@ -125,7 +114,7 @@ void TerrainGenerator::SetupCluster(Cluster *pCluster, int cx, int cz, int cy,
 
 int TerrainGenerator::GetHeight(int x, int z)
 {
-  double val = (m_perlin.GetValue(x / 32.0f, 0, z / 32.0f) + 1) * 1.0f;
+  double val = (m_perlin.GetValue(x / 32.0f, 0, z / 32.0f) + 1) * 4.0f;
 
   return static_cast<int>(max(val, 1));
 }
