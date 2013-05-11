@@ -1,6 +1,8 @@
 #ifndef SHINYBEAR_VERTEXDECLARATION_H
 #define SHINYBEAR_VERTEXDECLARATION_H
 
+#include "resource\types\IGraphicsResource.h"
+
 #include <d3d9.h>
 #include <vector>
 
@@ -43,7 +45,7 @@ struct VertexElement
 };
 
 
-class VertexDeclaration
+class VertexDeclaration : public IGraphicsResource
 {
 public:
   VertexDeclaration(GraphicsProvider *pProvider);
@@ -55,7 +57,7 @@ public:
   void Activate();
 
   void OnDeviceLost();
-  void OnDeviceReset();
+  void OnDeviceReset(GraphicsProvider *pProvider);
 
 private:
   static D3DDECLUSAGE GetVertexUsageType(VertexUsageType::Enum type);

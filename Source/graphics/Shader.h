@@ -3,7 +3,7 @@
 
 #include "util\math\Math.h"
 #include "util\SBUtil.h"
-
+#include "resource\types\IGraphicsResource.h"
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <cassert>
@@ -13,7 +13,7 @@ namespace shinybear { class GraphicsProvider; }
 namespace shinybear
 {
 
-class Shader
+class Shader : public IGraphicsResource
 {
 public:
   Shader(GraphicsProvider *pProvider);
@@ -42,7 +42,7 @@ public:
   void EndPass();
 
   void OnDeviceLost();
-  void OnDeviceReset();
+  void OnDeviceReset(GraphicsProvider *pProvider);
 
 protected:
 

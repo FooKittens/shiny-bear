@@ -18,8 +18,10 @@
     <ClInclude Include="Source\base\system\GameWindow.h" />
     <ClInclude Include="Source\base\system\GraphicsProvider.h" />
     <ClInclude Include="Source\graphics\Light.h" />
+    <ClInclude Include="source\graphics\lighting\Lighting.h" />
     <ClInclude Include="Source\graphics\LightVolume.h" />
     <ClInclude Include="Source\graphics\Mesh.h" />
+    <ClInclude Include="source\graphics\Renderer.h" />
     <ClInclude Include="Source\graphics\RenderTarget.h" />
     <ClInclude Include="source\graphics\render\IDrawable.h" />
     <ClInclude Include="Source\graphics\Shader.h" />
@@ -61,6 +63,7 @@
     <ClCompile Include="Source\base\system\GraphicsProvider.cpp" />
     <ClCompile Include="Source\graphics\LightVolume.cpp" />
     <ClCompile Include="Source\graphics\Mesh.cpp" />
+    <ClCompile Include="source\graphics\Renderer.cpp" />
     <ClCompile Include="Source\graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\graphics\Shader.cpp" />
     <ClCompile Include="Source\graphics\VertexDeclaration.cpp" />

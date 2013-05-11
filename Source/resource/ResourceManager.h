@@ -31,6 +31,12 @@ public:
   template<class RType>
   static RType * const GetResource(const ResourceKey &key);
 
+  static void DeleteResource(IResource *pResource);
+  static void DeleteResource(ResourceKey name);
+
+  // Deletes all resources.
+  static void Cleanup();
+
 private:
   typedef std::map<ResourceKey, IResource *> ResourceMap;
   typedef std::pair<ResourceKey, IResource *> ResourceMapping;

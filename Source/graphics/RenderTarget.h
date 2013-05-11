@@ -1,6 +1,7 @@
 #ifndef SHINYBEAR_RENDERTARGET_H
 #define SHINYBEAR_RENDERTARGET_H
 
+#include "resource\types\IGraphicsResource.h"
 #include "util\Typedefs.h"
 #include <d3d9.h>
 
@@ -12,7 +13,7 @@ namespace shinybear { class GraphicsProvider; }
 namespace shinybear
 {
 
-class RenderTarget
+class RenderTarget : public IGraphicsResource
 {
 public:
   RenderTarget(GraphicsProvider *pProvider, D3DFORMAT format);
@@ -21,7 +22,7 @@ public:
 
   bool IsValid() const;
 
-  void OnDeviceReset();
+  void OnDeviceReset(GraphicsProvider *pProvider);
   void OnDeviceLost();
 
   IDirect3DTexture9 *GetTexture() const;

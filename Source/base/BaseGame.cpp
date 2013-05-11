@@ -6,6 +6,7 @@
 #include "util\input\InputManager.h"
 #include "sound\SoundManager.h"
 #include "resource\ResourceManager.h"
+#include "graphics\Shader.h"
 #include <fstream>
 
 
@@ -19,7 +20,6 @@ const wchar_t *g_kConfigFileName = L"Engine.cfg";
 BaseGame::BaseGame()
 {
   GetAbsolutePath(g_kConfigFileName, &m_pConfigPath);
-  m_pDiagFont = nullptr;
 }
 
 BaseGame::~BaseGame()
@@ -27,7 +27,6 @@ BaseGame::~BaseGame()
   SAFEDELETE(m_pGameTimer);
   SAFEDELETE(m_pGraphicsProvider);
   SAFEDELETE(m_pGameWindow);
-  RELEASECOM(m_pDiagFont);
   delete[] m_pConfigPath;
 }
 
@@ -185,7 +184,7 @@ bool BaseGame::Run()
       OnRender();
       if(m_doRenderDiagnostics)
       {
-        RenderDiagnostics(m_pDiagFont);
+        RenderDiagnostics();
       }
 
       HR(m_pGraphicsProvider->GetDevice()->EndScene());
@@ -198,11 +197,15 @@ bool BaseGame::Run()
     if(m_isQuitting)
     {
       SoundManager::Shutdown();
-      // TODO : Prepare for exit..
+
+      // Clean up all resources.
+      ResourceManager::Cleanup();
 
       m_isRunning = false;
     }
   }
+
+
 
   return true;
 }
@@ -304,6 +307,29 @@ void BaseGame::OnDeviceReset()
 {
   ResourceManager::OnGraphicsDeviceReset(m_pGraphicsProvider);
   //HR(D3DXCreateFontIndirect(m_pGraphicsProvider->GetDevice(), &fontdesc, &m_pDiagFont));
+}
+
+void BaseGame::LoadDefaultResources()
+{
+  wchar_t *pBuffer;
+  GetAbsolutePath(L"res\\shaders\\LightShader.fx", &pBuffer);
+  Shader *pLightShader = DBG_NEW Shader(m_pGraphicsProvider);
+  pLightShader->LoadFromFile(pBuffer);
+  delete[] pBuffer;
+
+  GetAbsolutePath(L"res\\shaders\\GBufferShader.fx", &pBuffer);
+  Shader *pGBufferShader = DBG_NEW Shader(m_pGraphicsProvider);
+  pGBufferShader->LoadFromFile(pBuffer);
+  delete[] pBuffer;
+
+  GetAbsolutePath(L"res\\shaders\\CombineShader.fx", &pBuffer);
+  Shader *pCombineShader = DBG_NEW Shader(m_pGraphicsProvider);
+  pCombineShader->LoadFromFile(pBuffer);
+  delete[] pBuffer;
+
+  ResourceManager::RegisterResource(pLightShader, "DeferredLightShader");
+  ResourceManager::RegisterResource(pGBufferShader, "DeferredGBufferShader");
+  ResourceManager::RegisterResource(pCombineShader, "DeferredCombineShader");
 }
 
 } // namespace shinybear

@@ -34,7 +34,7 @@ void VertexDeclaration::OnDeviceLost()
   RELEASECOM(m_pDecl);
 }
 
-void VertexDeclaration::OnDeviceReset()
+void VertexDeclaration::OnDeviceReset(GraphicsProvider *pProvider)
 {
   RELEASECOM(m_pDecl);
   D3DVERTEXELEMENT9 *pElements = DBG_NEW D3DVERTEXELEMENT9[m_elements.size() + 1];

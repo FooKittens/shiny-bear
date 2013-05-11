@@ -49,6 +49,9 @@
     <Filter Include="Source\resource\proxy">
       <UniqueIdentifier>{c086703a-1da6-4438-90cd-a3d5c4e4f0c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\graphics\lighting">
+      <UniqueIdentifier>{d7f75e8f-ae6b-4c3f-8f88-4451974f9177}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -174,6 +177,12 @@
     <ClInclude Include="source\resource\proxy\D3DXProxy.h">
       <Filter>Source\resource\proxy</Filter>
     </ClInclude>
+    <ClInclude Include="source\graphics\Renderer.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="source\graphics\lighting\Lighting.h">
+      <Filter>Source\graphics\lighting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -259,6 +268,9 @@
     </ClCompile>
     <ClCompile Include="source\resource\ResourceManager.cpp">
       <Filter>Source\resource</Filter>
+    </ClCompile>
+    <ClCompile Include="source\graphics\Renderer.cpp">
+      <Filter>Source\graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

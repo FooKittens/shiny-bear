@@ -64,7 +64,7 @@ void RenderTarget::OnDeviceLost()
   RELEASECOM(m_pTexture);
 }
 
-void RenderTarget::OnDeviceReset()
+void RenderTarget::OnDeviceReset(GraphicsProvider *pProvider)
 {
   DisplayMode mode = m_pProvider->GetDisplayMode();
 

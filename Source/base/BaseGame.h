@@ -10,8 +10,7 @@
 namespace shinybear
 {
   class GameTimer; class GraphicsProvider;
-  class GameWindow; class IGameView;
-  class FocusChangedEvent; class ILogic;
+  class GameWindow; class Renderer;
 }
 
 namespace shinybear
@@ -41,7 +40,7 @@ protected:
   
   virtual void OnUpdate(double) = 0;
   virtual void OnRender() = 0;
-  virtual void RenderDiagnostics(ID3DXFont *pDiagFont);
+  virtual void RenderDiagnostics();
 
   // Called to close application.
   virtual void Exit();
@@ -51,6 +50,7 @@ protected:
   // Retrieve the games window.
   virtual GameWindow *GetWindow() const;
   virtual GraphicsProvider *GetGraphicsProvider() const;
+  virtual Renderer *GetRenderer() const;
 
   virtual float GetCurrentFps();
 
@@ -64,24 +64,39 @@ private:
   void LoadConfig(Config *pConfig) const;
   void SaveConfig(const Config &cfg) const;
 
+  void LoadDefaultResources();
+
   bool Initialize();
 
   HRESULT CheckDeviceState();
 
-  GameTimer *m_pGameTimer;
   GraphicsProvider *m_pGraphicsProvider;
+
+  // Renderer used to render the game scene. (Not UI related.)
+  Renderer *m_pRenderer;
+
+  GameTimer *m_pGameTimer;
   GameWindow *m_pGameWindow;
+  
+  // States.
   bool m_isRunning;
   bool m_isQuitting;
   bool m_isPaused;
   bool m_hasFocus;
   bool m_doRenderDiagnostics;
+
+  // Path to the current config fil.e
   wchar_t *m_pConfigPath;
+
+  // For measuring fps.
   float m_fpsTimer;
   float m_currentFrame;
   float m_lastFps;
+  
+  // Holds a font used to display fps.
   FontProxy m_font;
-  ID3DXFont *m_pDiagFont;
+  
+
 };
 
 
@@ -112,6 +127,10 @@ inline float BaseGame::GetCurrentFps()
   return static_cast<float>(m_currentFrame + m_lastFps * (1.0f - m_fpsTimer));
 }
 
+inline Renderer *BaseGame::GetRenderer() const
+{
+  return m_pRenderer;
+}
 
 
 } // namespace shinybear

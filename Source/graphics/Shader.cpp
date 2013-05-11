@@ -52,7 +52,7 @@ void Shader::OnDeviceLost()
   HR(m_pEffect->OnLostDevice());
 }
 
-void Shader::OnDeviceReset()
+void Shader::OnDeviceReset(GraphicsProvider *pProvider)
 {
   HR(m_pEffect->OnResetDevice());
 }

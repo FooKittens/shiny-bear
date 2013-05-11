@@ -68,4 +68,42 @@ void ResourceManager::OnGraphicsDeviceReset(GraphicsProvider *pProvider)
   }
 }
 
+void ResourceManager::DeleteResource(IResource *pResource)
+{
+  assert(pResource && "Invalid input!");
+
+  auto it = resources.begin();
+  auto end = resources.end();
+
+  while(it != end)
+  {
+    if(it->second == pResource)
+    {
+      delete it->second;
+      resources.erase(it);
+      break;
+    }
+    ++it;
+  }
+}
+
+void ResourceManager::DeleteResource(ResourceKey name)
+{
+  DeleteResource(resources.find(name)->second);
+}
+
+void ResourceManager::Cleanup()
+{
+  auto it = resources.begin();
+  auto end = resources.end();
+
+  while(it != end)
+  {
+    delete it->second;
+    ++it;
+  }
+
+  resources.clear();
+}
+
 } // namespace shinybear
