@@ -4,6 +4,7 @@
 // Link to Dsound.lib and Dxguid.lib in external project
 #include <dsound.h>
 #include <Windows.h>
+#include <vector>
 
 // Make sure that behaviour and performance are
 // acceptable on both Dsound.vxd and the kernel mixer
@@ -34,7 +35,7 @@ class SoundManager
 public:
   static void Initialize(HWND hwnd);
   static void Shutdown();
-  static void LoadWaveFile(ResourceName resource, IDirectSoundBuffer8**); // Needs resource manager!
+  static void LoadWaveFile(wchar_t *filename); // Needs resource manager!
   static void PlaySound(ResourceName resource); // Needs resource manager?
 
 private: 
@@ -49,6 +50,7 @@ private:
   static IDirectSound8* directSound;
 	static IDirectSoundBuffer* primaryBuffer;
   static bool isInitialized;
+  static std::vector<WaveFile> loadedSounds;
 };
 } // namespace shinybear
 
