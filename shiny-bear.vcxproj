@@ -37,7 +37,7 @@
     <ClInclude Include="Source\scene\SceneNode.h" />
     <ClInclude Include="Source\scene\SceneView.h" />
     <ClInclude Include="Source\sound\SoundManager.h" />
-    <ClInclude Include="Source\sound\SoundResource.h" />
+    <ClInclude Include="Source\sound\WaveFile.h" />
     <ClInclude Include="Source\util\Color4f.h" />
     <ClInclude Include="Source\util\input\InputManager.h" />
     <ClInclude Include="Source\util\input\KeyboardState.h" />
@@ -73,6 +73,7 @@
     <ClCompile Include="Source\scene\SceneNode.cpp" />
     <ClCompile Include="Source\scene\SceneView.cpp" />
     <ClCompile Include="Source\sound\SoundManager.cpp" />
+    <ClCompile Include="Source\sound\WaveFile.cpp" />
     <ClCompile Include="Source\util\input\InputManager.cpp" />
     <ClCompile Include="Source\util\input\KeyboardState.cpp" />
     <ClCompile Include="Source\util\input\MouseState.cpp" />

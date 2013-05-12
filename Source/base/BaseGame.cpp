@@ -76,7 +76,7 @@ bool BaseGame::Initialize()
   InputManager::Initialize(*m_pGameWindow);
 
   // Initialize sound manager
-  SoundManager::Initialize(m_pGameWindow->GetWindowHandle());
+  //SoundManager::Initialize(m_pGameWindow->GetWindowHandle());
 
   // Register for window events.
 

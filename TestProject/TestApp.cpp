@@ -278,6 +278,15 @@ void TestApp::OnUpdate(double elapsedSeconds)
   m_gamePadState.Vibrate(m_gamePadState.leftTrigger,
     m_gamePadState.rightTrigger);
 
+  if(m_newKeys.IsKeyDown(Keys::K_ADD))
+  {
+    rotB = kPlayerAngSpeed * (float)elapsedSeconds;
+  }
+  if(m_newKeys.IsKeyDown(Keys::K_SUBTRACT))
+  {
+    rotB = -kPlayerAngSpeed * (float)elapsedSeconds;
+  }
+
   if(m_newKeys.IsKeyDown(Keys::K_UP))
   {
     z = kPlayerSpeed * (float)elapsedSeconds;
