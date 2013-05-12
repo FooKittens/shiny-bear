@@ -4,11 +4,13 @@
 #include "base\system\GraphicsProvider.h"
 #include "util\SBUtil.h"
 #include "util\input\InputManager.h"
-#include "sound\SoundManager.h"
+#include "sound\SoundProvider.h"
 #include "resource\ResourceManager.h"
 #include <fstream>
 
-
+// TEMP
+#include "sound\WaveFile.h"
+// END TEMP
 
 namespace shinybear
 {
@@ -27,6 +29,7 @@ BaseGame::~BaseGame()
   SAFEDELETE(m_pGameTimer);
   SAFEDELETE(m_pGraphicsProvider);
   SAFEDELETE(m_pGameWindow);
+  SAFEDELETE(m_pSoundProvider);
   RELEASECOM(m_pDiagFont);
   delete[] m_pConfigPath;
 }
@@ -76,7 +79,8 @@ bool BaseGame::Initialize()
   InputManager::Initialize(*m_pGameWindow);
 
   // Initialize sound manager
-  //SoundManager::Initialize(m_pGameWindow->GetWindowHandle());
+  m_pSoundProvider = DBG_NEW SoundProvider();
+  m_pSoundProvider->Initialize(m_pGameWindow->GetWindowHandle());
 
   // Register for window events.
 
@@ -122,6 +126,18 @@ bool BaseGame::Initialize()
   m_font.desc = fontdesc;
   
   ResourceManager::RegisterResource(&m_font, "BaseGameFont");
+  
+  // TEMP
+  wchar_t *pStrBuffer;
+  size_t strSize = GetAbsolutePath(L"res\\sounds\\Wololo.wav", &pStrBuffer);
+  if(FileExists(pStrBuffer, strSize))
+  {
+    WaveFile *testSound;
+    testSound = WaveFile::LoadFromFile(pStrBuffer, m_pSoundProvider);
+    ResourceManager::RegisterResource(testSound, "TestSound");
+  }
+  delete[] pStrBuffer;
+  // END TEMP
 
   // Call derived method.
   if(!OnInitialize())
@@ -199,7 +215,6 @@ bool BaseGame::Run()
 
     if(m_isQuitting)
     {
-      SoundManager::Shutdown();
       // TODO : Prepare for exit..
 
       m_isRunning = false;

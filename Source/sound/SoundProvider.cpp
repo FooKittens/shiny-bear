@@ -1,4 +1,4 @@
-#include "sound\SoundManager.h"
+#include "sound\SoundProvider.h"
 #include "sound\WaveFile.h"
 #include "util\SBUtil.h"
 #include <dsound.h>
@@ -9,19 +9,38 @@
 namespace shinybear
 {
 
-// Forward declarations
-DSCAPS SoundManager::dscaps; 
-DWORD SoundManager::dwSpeakerConfig;
-IDirectSound8* SoundManager::directSound;
-IDirectSoundBuffer* SoundManager::primaryBuffer;
-bool SoundManager::isInitialized = false;
-
-void SoundManager::Initialize(HWND hwnd)
+SoundProvider::SoundProvider()
 {
-  if(!isInitialized)
+  m_isInitialized = false;
+  memset(&m_dscaps, 0, sizeof(DSCAPS));
+  m_dwSpeakerConfig = 0;
+  m_pDirectSound = nullptr;
+	m_pPrimaryBuffer = nullptr;
+}
+
+SoundProvider::~SoundProvider()
+{
+  // Release the primary sound buffer pointer.
+	if(m_pPrimaryBuffer)
+	{
+		m_pPrimaryBuffer->Release();
+		m_pPrimaryBuffer = nullptr;
+	}
+  
+	// Release the direct sound interface pointer.
+	if(m_pDirectSound)
+	{
+		m_pDirectSound->Release();
+		m_pDirectSound = nullptr;
+	}
+}
+
+void SoundProvider::Initialize(HWND hwnd)
+{
+  if(!m_isInitialized)
   {
-    directSound = 0;
-    primaryBuffer = 0;
+    m_pDirectSound = nullptr;
+    m_pPrimaryBuffer = nullptr;
 
     // Initialize direct sound and the primary sound buffer.
     // Enumerate devices
@@ -34,22 +53,22 @@ void SoundManager::Initialize(HWND hwnd)
 	  WAVEFORMATEX waveFormat;
 
     // Initialize direct sound interface the primary sound buffer
-    result = DirectSoundCreate8(NULL, &directSound, NULL);
+    result = DirectSoundCreate8(NULL, &m_pDirectSound, NULL);
     if(FAILED(result))
     {
       assert(false && "Failed to initalize Direct Sound!");
     }
 
     // Set cooperative level
-    result = directSound->SetCooperativeLevel(hwnd, DSSCL_PRIORITY);
+    result = m_pDirectSound->SetCooperativeLevel(hwnd, DSSCL_PRIORITY);
     if(FAILED(result))
     {
       assert(false && "Failed to set application to prioritized sound accessor!");
     }
 
     // Get device capabilities
-    dscaps.dwSize = sizeof(DSCAPS);
-    result = directSound->GetCaps(&dscaps); 
+    m_dscaps.dwSize = sizeof(DSCAPS);
+    result = m_pDirectSound->GetCaps(&m_dscaps); 
     if(FAILED(result))
     {
       assert(false && "Failed to get the sound device capabilities!");
@@ -58,7 +77,7 @@ void SoundManager::Initialize(HWND hwnd)
     // http://msdn.microsoft.com/en-us/library/windows/desktop/microsoft.directx_sdk.reference.dscaps(v=vs.85).aspx
 
     // Get the speaker configuration
-    result = directSound->GetSpeakerConfig(&dwSpeakerConfig);
+    result = m_pDirectSound->GetSpeakerConfig(&m_dwSpeakerConfig);
     if(FAILED(result))
     {
       assert(false && "Could not get the speaker configuration!");
@@ -77,7 +96,7 @@ void SoundManager::Initialize(HWND hwnd)
     // http://msdn.microsoft.com/en-us/library/windows/desktop/ee416240(v=vs.85).aspx
 
     // Get control of the primary sound buffer on the default sound device.
-	  result = directSound->CreateSoundBuffer(&bufferDesc, &primaryBuffer, NULL);
+	  result = m_pDirectSound->CreateSoundBuffer(&bufferDesc, &m_pPrimaryBuffer, NULL);
 	  if(FAILED(result))
 	  {
 		  assert(false && "Unable to create primary sound buffer!");
@@ -94,13 +113,13 @@ void SoundManager::Initialize(HWND hwnd)
 	  waveFormat.cbSize = 0;
     
 	  // Set the primary buffer to be the wave format specified.
-	  result = primaryBuffer->SetFormat(&waveFormat);
+	  result = m_pPrimaryBuffer->SetFormat(&waveFormat);
 	  if(FAILED(result))
 	  {
 		  assert(false && "Unable to set primary buffer wave format!");
 	  }
 
-    isInitialized = true;
+    m_isInitialized = true;
   }
   else
   {
@@ -108,24 +127,7 @@ void SoundManager::Initialize(HWND hwnd)
   }
 }
 
-void SoundManager::Shutdown()
-{
-  // Release the primary sound buffer pointer.
-	if(primaryBuffer)
-	{
-		primaryBuffer->Release();
-		primaryBuffer = 0;
-	}
- 
-	// Release the direct sound interface pointer.
-	if(directSound)
-	{
-		directSound->Release();
-		directSound = 0;
-	}
-}
-
-BOOL CALLBACK SoundManager::DSEnumProc(LPGUID lpGUID,
+BOOL CALLBACK SoundProvider::DSEnumProc(LPGUID lpGUID,
   LPCTSTR lpszDesc, LPCTSTR lpszDrvName, LPVOID lpContext)
 {
   lpGUID;

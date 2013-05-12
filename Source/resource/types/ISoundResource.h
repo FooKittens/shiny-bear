@@ -11,14 +11,12 @@ namespace shinybear
 class ISoundResource : public IResource
 {
 public:
-  virtual ~ISoundResource() = 0 { }
-
   // Called when there's a new sound device available.
   // Passes in the sound manager to help re-create any resources.
-  virtual void OnDeviceReset(SoundManager *pSoundManager) = 0;
+  //virtual void OnDeviceReset(SoundManager *pSoundManager) = 0;
 
   // Called when the sound device has been destroyed.
-  virtual void OnDeviceLost() = 0;
+  //virtual void OnDeviceLost() = 0;
 
   ResourceType::Enum GetType() const { return ResourceType::RT_SOUND; }
 };

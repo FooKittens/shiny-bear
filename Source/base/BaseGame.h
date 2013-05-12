@@ -12,6 +12,7 @@ namespace shinybear
   class GameTimer; class GraphicsProvider;
   class GameWindow; class IGameView;
   class FocusChangedEvent; class ILogic;
+  class SoundProvider;
 }
 
 namespace shinybear
@@ -70,6 +71,7 @@ private:
 
   GameTimer *m_pGameTimer;
   GraphicsProvider *m_pGraphicsProvider;
+  SoundProvider *m_pSoundProvider;
   GameWindow *m_pGameWindow;
   bool m_isRunning;
   bool m_isQuitting;
