@@ -34,24 +34,20 @@ class SoundManager
 public:
   static void Initialize(HWND hwnd);
   static void Shutdown();
+  static void LoadWaveFile(ResourceName resource, IDirectSoundBuffer8**); // Needs resource manager!
+  static void PlaySound(ResourceName resource); // Needs resource manager?
 
-private:
-  static void InitializeDirectSound(HWND);
-	static void ShutdownDirectSound();
- 
-	static void LoadWaveFile(wchar_t*, IDirectSoundBuffer8**);
-  static void PlayWaveFile();
-	static void ShutdownWaveFile(IDirectSoundBuffer8**);
+private: 
+  static void ReleaseAllBuffers(); // Neccessary?
 
-    // Enumerates all available devices
+  // Enumerates all available devices
   static BOOL CALLBACK DSEnumProc(LPGUID lpGUID,
     LPCTSTR lpszDesc, LPCTSTR lpszDrvName, LPVOID lpContext);
 
-  static DSCAPS dscaps;
+  static DSCAPS dscaps; // Device capabilities
   static DWORD dwSpeakerConfig;
   static IDirectSound8* directSound;
 	static IDirectSoundBuffer* primaryBuffer;
-	static IDirectSoundBuffer8* secondaryBuffer1; // Will need more
   static bool isInitialized;
 };
 } // namespace shinybear

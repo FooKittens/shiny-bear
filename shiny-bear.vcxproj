@@ -31,7 +31,6 @@
     <ClInclude Include="Source\scene\SceneNode.h" />
     <ClInclude Include="Source\scene\SceneView.h" />
     <ClInclude Include="Source\sound\SoundManager.h" />
-    <ClInclude Include="Source\sound\SoundResource.h" />
     <ClInclude Include="Source\sound\WaveFile.h" />
     <ClInclude Include="Source\util\Color4f.h" />
     <ClInclude Include="Source\util\input\InputManager.h" />

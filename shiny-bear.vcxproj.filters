@@ -126,9 +126,6 @@
     <ClInclude Include="Source\graphics\Shader.h">
       <Filter>Source\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Source\sound\SoundResource.h">
-      <Filter>Source\sound</Filter>
-    </ClInclude>
     <ClInclude Include="Source\sound\SoundManager.h">
       <Filter>Source\sound</Filter>
     </ClInclude>
