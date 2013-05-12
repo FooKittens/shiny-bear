@@ -1,6 +1,8 @@
 #ifndef SHINYBEAR_SOUNDMANAGER_H
 #define SHINYBEAR_SOUNDMANAGER_H
 
+#include "resource\ResourceManager.h"
+
 // Link to Dsound.lib and Dxguid.lib in external project
 #include <dsound.h>
 #include <Windows.h>
@@ -35,8 +37,8 @@ class SoundManager
 public:
   static void Initialize(HWND hwnd);
   static void Shutdown();
-  static void LoadWaveFile(wchar_t *filename); // Needs resource manager!
-  static void PlaySound(ResourceName resource); // Needs resource manager?
+  static void LoadWaveFile(wchar_t *filename);
+  static void PlaySound(ResourceKey resource);
 
 private: 
   static void ReleaseAllBuffers(); // Neccessary?
