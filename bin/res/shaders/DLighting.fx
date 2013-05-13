@@ -156,7 +156,7 @@ PSInput VS(VSInput input)
 	PSInput pOut = (PSInput)0;
 
 	// Simple transform into screen coordinates, used by all lights.
-	pOut.SVPos = mul(input.position, g_WVP);
+	pOut.SVPos = mul(float4(input.position.xyz, 1.0f), g_WVP);
 	pOut.position = pOut.SVPos;
 
 	// Handle specific parameters for different light types. We don't need to
@@ -165,7 +165,7 @@ PSInput VS(VSInput input)
 	{
 		case DIRECTIONAL_LIGHT:
 		// Transform light direction into view space.
-		pOut.viewLightDir = normalize(mul(float4(g_lightDir, 1), g_invView).xyz);
+		pOut.viewLightDir = normalize(mul(float4(g_lightDir, 0), g_invView).xyz);
 		break;
 		case POINT_LIGHT:
 		// Transform the lights world position into view space.
@@ -190,10 +190,10 @@ float4 PS(PSInput input) : SV_TARGET
 	}
 
 	// Will be our return value.
-	float4 litColor = 0;
+	float4 litColor = float4(0.25f, 0, 0.25f, 1.0f);
 
 	// Calculated texture coordinates from screen position.
-	float2 uv = (input.position.xy) * 0.5f + 0.5f;
+	float2 uv = (input.position.xy / input.position.w) * 0.5f + 0.5f;
 	uv.y = 1.0f - uv.y;
 	uv += g_halfPixel;
 
@@ -212,7 +212,7 @@ float4 PS(PSInput input) : SV_TARGET
 	{
 		litColor = DirectionalLight(position, normal, input.viewLightDir, specExp);
 	}
-	else if(g_lightType == SPOT_LIGHT)
+	else
 	{
 		litColor = PointLight(position, normal, input.viewLightPos, specExp);
 	}
@@ -231,5 +231,7 @@ technique LightTech
 		SrcBlend = ONE;
 		DestBlend = ONE;
 		BlendOp = ADD;
+		//FillMode = WIREFRAME;
+		CullMode = NONE;
 	}
 }

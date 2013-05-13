@@ -79,6 +79,8 @@ public:
     SetAttuneation();
   }
 
+  LightType::E GetType() const { return LightType::LT_POINT; }
+
   // Helps calculate attuneation factors from range and dimfactor.
   void SetAttuneation()
   {

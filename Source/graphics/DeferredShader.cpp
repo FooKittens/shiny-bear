@@ -90,7 +90,7 @@ void DeferredShader::BeginGBuffer()
   m_currentPass = P_GBUFFER;
   
   // Set normals and specular in render target 0.
-  m_pNormalTarget->Activate(0);
+  //m_pNormalTarget->Activate(0);
   
   // Set depth as rendertarget 1.
   m_pDepthTarget->Activate(1);
@@ -134,7 +134,7 @@ void DeferredShader::EndGBuffer()
   m_pGBufferShader->End();
   
   // Deactivate render targets.
-  m_pNormalTarget->Deactivate();
+  //m_pNormalTarget->Deactivate();
   m_pDepthTarget->Deactivate();
   m_pMaterialTarget->Deactivate();
 
@@ -156,11 +156,14 @@ void DeferredShader::BeginLightPass()
   // Clear light target.
   pDevice->Clear(0, 0, D3DCLEAR_TARGET, 0, 0, 0);
 
+
   // This is needed for mapping pixels to texels in directx9.
   Vector2 halfPixel(
     0.5f / (float)m_pProvider->GetDisplayMode().width,
     0.5f / (float)m_pProvider->GetDisplayMode().height
   );
+
+  m_pLightDecl->Activate();
 
   m_pLightShader->SetActiveTechnique("LightTech");
 
@@ -222,7 +225,9 @@ void DeferredShader::RenderDirectionalLight(DirectionalLight *pLight)
 void DeferredShader::RenderPointLight(PointLight *pLight)
 {
   Mat4x4 wvp = Mat4x4::CreateScale(pLight->m_range) *
-    Mat4x4::CreateTranslation(pLight->m_position);
+    Mat4x4::CreateTranslation(pLight->m_position) *
+    m_pCamera->GetViewMatrix() *
+    m_pCamera->GetProjectionMatrix();
 
   m_pLightShader->SetMatrix("g_WVP", wvp);
   m_pLightShader->SetVector3("g_lightWP", pLight->m_position);
@@ -232,6 +237,7 @@ void DeferredShader::RenderPointLight(PointLight *pLight)
 
   m_pLightShader->BeginPass(0);
   m_pSphereVolume->Render();
+  //m_pQuadRenderer->Render(Vector2::kOne * -1.0f, Vector2::kOne);
   m_pLightShader->EndPass();
 }
 

@@ -6,7 +6,6 @@
 #include <d3dx9.h>
 #include <vector>
 
-
 struct IDirect3DVertexBuffer9;
 struct IDirect3DIndexBuffer9;
 
@@ -42,7 +41,7 @@ public:
 private:
   struct VertexData
   {
-    Vector4 position;
+    Vector3 position;
   };
   enum Type
   {
@@ -52,9 +51,9 @@ private:
   } m_type;
 
   // used to split icohedradon edges for spheres.
-  UINT SplitEdge(std::vector<Vector4> &verts, const Vector4 &v0, const Vector4 &v1);
+  UINT SplitEdge(std::vector<Vector3> &verts, const Vector3 &v0, const Vector3 &v1);
 
-  void CreateSphereData(UINT levels, std::vector<Vector4> &verts,
+  void CreateSphereData(UINT levels, std::vector<Vector3> &verts,
     std::vector<Triangle> &tris);
 
   UINT m_vertexCount;

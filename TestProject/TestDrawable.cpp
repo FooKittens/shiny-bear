@@ -7,7 +7,7 @@ using namespace shinybear;
 TestDrawable::TestDrawable()
 {
   m_world = Mat4x4::kIdentity;
-  m_world = Mat4x4::CreateScale(10.0f);
+  m_world = Mat4x4::CreateScale(1.0f);
 }
 
 TestDrawable::~TestDrawable()

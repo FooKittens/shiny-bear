@@ -77,12 +77,12 @@ void Camera::DoFreeCamMovement(double dt)
   
   if(m_keys.IsKeyDown(Keys::K_LEFT))
   {
-    rotY -= 1.0f * v;
+    rotY -= 1.0f * v / 10.0f;
   }
 
   if(m_keys.IsKeyDown(Keys::K_RIGHT))
   {
-    rotY += 1.0f * v;
+    rotY += 1.0f * v / 10.0f;
   }
 
   m_worldPosition += deltaX + deltaZ + deltaY;
