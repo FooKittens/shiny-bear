@@ -82,7 +82,7 @@ void DeferredShader::ClearGBuffer()
   m_pGBufferShader->End();
 
   // Reset z-writing to its previous state.
-  m_pProvider->GetDevice()->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+  m_pProvider->GetDevice()->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 
 void DeferredShader::BeginGBuffer()
@@ -229,7 +229,7 @@ void DeferredShader::RenderPointLight(PointLight *pLight)
     m_pCamera->GetViewMatrix() *
     m_pCamera->GetProjectionMatrix();
 
-  if(m_pCamera->GetViewMatrix().Transform(pLight->m_position).Length() < pLight->m_range)
+  if(m_pCamera->GetViewMatrix().Transform(pLight->m_position).Length() < pLight->m_range / 2.0f)
   {
     m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
   }
@@ -260,6 +260,9 @@ void DeferredShader::EndLightPass()
 
 void DeferredShader::RenderCompositeImage()
 {
+  IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
+  pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+
   m_pCombineShader->SetTexture("g_lightMap", m_pLightTarget->GetTexture());
   m_pCombineShader->SetTexture("g_materialMap", m_pMaterialTarget->GetTexture());
 
@@ -269,6 +272,8 @@ void DeferredShader::RenderCompositeImage()
   m_pQuadRenderer->Render(-Vector2::kOne, Vector2::kOne);
   m_pCombineShader->EndPass();
   m_pCombineShader->End();
+
+  pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 
 void DeferredShader::DisplayRenderTarget(RenderTarget *pTarget)

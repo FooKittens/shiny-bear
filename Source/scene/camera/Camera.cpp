@@ -6,7 +6,7 @@ namespace shinybear
 {
 
 Camera::Camera(float aspectRatio, float fov, float znear, float zfar)
-  :m_speed(8.0f)
+  :m_speed(2.0f)
 {
   SetViewDistance(zfar);
   SetNearPlane(znear);
@@ -77,12 +77,12 @@ void Camera::DoFreeCamMovement(double dt)
   
   if(m_keys.IsKeyDown(Keys::K_LEFT))
   {
-    rotY -= 1.0f * v / 10.0f;
+    rotY -= 1.0f * v / 2.0f;
   }
 
   if(m_keys.IsKeyDown(Keys::K_RIGHT))
   {
-    rotY += 1.0f * v / 10.0f;
+    rotY += 1.0f * v / 2.0f;
   }
 
   m_worldPosition += deltaX + deltaZ + deltaY;
@@ -106,7 +106,14 @@ void Camera::UpdateProjectionMatrix()
 
 void Camera::RenderFrustum(GraphicsProvider *pProvider) const
 {
-  Mat4x4 world = Mat4x4::CreateTranslation(m_view.GetPosition());
+  
+  float angle;
+  Vector3 axis;
+  Quaternion::CreateFromMatrix(m_view).GetAxisAngle(&axis, &angle);
+
+  Mat4x4 world = Mat4x4::CreateAxisAngle(axis, -angle) * 
+    Mat4x4::CreateTranslation(m_worldPosition);
+  
   IDirect3DDevice9 *pDevice = pProvider->GetDevice();
   pDevice->SetTransform(D3DTS_WORLD, &Mat4x4::kIdentity);
   pDevice->SetTransform(D3DTS_VIEW, &m_view);

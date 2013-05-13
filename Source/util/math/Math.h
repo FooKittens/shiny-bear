@@ -514,6 +514,11 @@ inline Quaternion Quaternion::CreateAxisAngle(const Vector3 &axis, float angle)
   return quat;
 }
 
+inline void Quaternion::GetAxisAngle(Vector3 * const axis, float *angle) const
+{
+  D3DXQuaternionToAxisAngle(this, axis, angle);
+}
+
 inline Quaternion Quaternion::CreateFromMatrix(const Mat4x4 &mat)
 {
   Quaternion quat;

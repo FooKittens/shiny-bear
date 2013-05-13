@@ -63,8 +63,9 @@ void Renderer::RenderScene()
 
   // Merge render targets into a final result.
   m_pDShader->RenderCompositeImage();
-
+  m_pCamera->RenderFrustum(m_pProvider);
   //m_pDShader->DisplayRenderTarget(m_pDShader->GetNormalTarget());
+  
 }
 
 
