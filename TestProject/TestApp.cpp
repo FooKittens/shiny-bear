@@ -175,7 +175,7 @@ bool TestApp::OnInitialize()
   Mesh *pMesh = DBG_NEW Mesh(GetGraphicsProvider());
   Block b(0);
 
-  b.SetMaterial(m_grassMaterial);
+  b.SetMaterial(m_shinyMaterial);
   CreateCube(0, 0, 0, b, pMesh, 0);
   pMesh->UpdateBuffers();
   m_pDrawable->SetMesh(pMesh);
@@ -183,13 +183,13 @@ bool TestApp::OnInitialize()
   pRenderer->SetCamera(m_pCamera);
 
   
-  //pRenderer->AddLight(DBG_NEW BaseLight(D3DXCOLOR(0.15f, 0.15f, 0.15f, 1.0f)));
+  pRenderer->AddLight(DBG_NEW BaseLight(D3DXCOLOR(0.15f, 0.15f, 0.15f, 1.0f)));
   pRenderer->AddLight(DBG_NEW DirectionalLight(
-    D3DXCOLOR(0.15f, 0.45f, 0.15f, 1.0f), Vector3(1.0f, 0.0f, 0.0f))
+    D3DXCOLOR(0.15f, 0.15f, 0.15f, 1.0f), Vector3(1.0f, 0.0f, 0.0f))
   );
 
-  //pRenderer->AddLight(DBG_NEW PointLight(
-  // D3DXCOLOR(0.5f, 0.95f, 0.5f, 1.0f), Vector3(0, 0, -2.0f), 0.0f, 15.0f));
+  pRenderer->AddLight(DBG_NEW PointLight(
+   D3DXCOLOR(0.5f, 0.95f, 0.5f, 1.0f), Vector3(0.0f, 3.5f, 0.0f), 0.0f, 15.0f));
 
   //m_pScene = DBG_NEW SceneManager(GetGraphicsProvider());
   //m_pGenerator = DBG_NEW TerrainGenerator(GetGraphicsProvider(), m_pScene->GetRoot());

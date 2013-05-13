@@ -90,7 +90,7 @@ void DeferredShader::BeginGBuffer()
   m_currentPass = P_GBUFFER;
   
   // Set normals and specular in render target 0.
-  //m_pNormalTarget->Activate(0);
+  m_pNormalTarget->Activate(0);
   
   // Set depth as rendertarget 1.
   m_pDepthTarget->Activate(1);
@@ -134,7 +134,7 @@ void DeferredShader::EndGBuffer()
   m_pGBufferShader->End();
   
   // Deactivate render targets.
-  //m_pNormalTarget->Deactivate();
+  m_pNormalTarget->Deactivate();
   m_pDepthTarget->Deactivate();
   m_pMaterialTarget->Deactivate();
 
@@ -229,6 +229,11 @@ void DeferredShader::RenderPointLight(PointLight *pLight)
     m_pCamera->GetViewMatrix() *
     m_pCamera->GetProjectionMatrix();
 
+  if(m_pCamera->GetViewMatrix().Transform(pLight->m_position).Length() < pLight->m_range)
+  {
+    m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+  }
+
   m_pLightShader->SetMatrix("g_WVP", wvp);
   m_pLightShader->SetVector3("g_lightWP", pLight->m_position);
   m_pLightShader->SetFloat("g_att0", pLight->att0);
@@ -239,6 +244,7 @@ void DeferredShader::RenderPointLight(PointLight *pLight)
   m_pSphereVolume->Render();
   //m_pQuadRenderer->Render(Vector2::kOne * -1.0f, Vector2::kOne);
   m_pLightShader->EndPass();
+  m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 }
 
 void DeferredShader::EndLightPass()

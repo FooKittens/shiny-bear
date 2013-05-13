@@ -232,6 +232,6 @@ technique LightTech
 		DestBlend = ONE;
 		BlendOp = ADD;
 		//FillMode = WIREFRAME;
-		CullMode = NONE;
+		//CullMode = NONE;
 	}
 }

@@ -59,12 +59,12 @@ void Renderer::RenderScene()
   RenderGBuffer();
 
   // Render a light accumulation buffer.
-  //RenderLightBuffer();
+  RenderLightBuffer();
 
   // Merge render targets into a final result.
-  //m_pDShader->RenderCompositeImage();
+  m_pDShader->RenderCompositeImage();
 
-  //m_pDShader->DisplayRenderTarget(m_pDShader->GetLightTarget());
+  //m_pDShader->DisplayRenderTarget(m_pDShader->GetNormalTarget());
 }
 
 

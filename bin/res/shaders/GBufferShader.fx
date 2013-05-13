@@ -45,8 +45,8 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
   
   // Transform the normal into view space.
   // Uses the inverse transpose of the world-view matrix.
-  output.normal = normalize(mul(float4(input.normal, 0.0f), g_inverseTranspose).xyz);
-  //output.normal = float4(input.normal, 0);
+  //output.normal = normalize(mul(float4(input.normal, 0.0f), g_inverseTranspose).xyz);
+  output.normal = float4(input.normal, 0);
 
   //output.normal = normalize(mul(float4(input.normal, 0.0f), mul(g_world,  g_view)));
 
