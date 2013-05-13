@@ -28,44 +28,65 @@ WaveFile *WaveFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvide
   WaveFile *pResult = DBG_NEW WaveFile();
   WaveHeader &wh = pResult->m_waveHeader;
 
+  // Open file stream
   std::wifstream file(filename, std::ios::binary);
   if(!file.is_open())
   {
     assert(false && "Unable to open the specified audio file");
   }
+  
+  // Read file
+  size_t bufSz = sizeof(WaveHeader);
+  wchar_t *tempBuffer = DBG_NEW wchar_t[bufSz];
+  file.read(tempBuffer, bufSz);
 
-  wchar_t *tempBuffer = new wchar_t[sizeof(WaveHeader)];
-  file.read(tempBuffer, sizeof(WaveHeader));
+  unsigned int pos = file.tellg();
+  file.seekg(bufSz);
 
-  char *realBuffer = reinterpret_cast<char*>(&wh);
+  // Reinterpret into header data
+  UnpadWideChar(tempBuffer, bufSz, reinterpret_cast<char*>(&wh), bufSz);
+  tempBuffer = nullptr;
 
-  int i = 0;
-  for(auto it = realBuffer; it != realBuffer + sizeof(WaveHeader); ++it)
-  {
-    *it = static_cast<char>(tempBuffer[i++]);
-  }
-
-  //TODO header data should be satisfactory now, make sanity checks!
+  // Make sure it's a wave file
   if((wh.chunkId[0] != 'R') || (wh.chunkId[1] != 'I') || 
 	   (wh.chunkId[2] != 'F') || (wh.chunkId[3] != 'F'))
 	{
-		assert(false && "Bad wave file!");
+		assert(false && "Bad wave file! (not RIFF chunk format)");
+  }
+  if((wh.format[0] != 'W') || (wh.format[1] != 'A') ||
+	   (wh.format[2] != 'V') || (wh.format[3] != 'E'))
+	{
+		assert(false && "Bad wave file! (not WAVE format)");
+	}
+  if((wh.subChunkId[0] != 'f') || (wh.subChunkId[1] != 'm') ||
+	   (wh.subChunkId[2] != 't') || (wh.subChunkId[3] != ' '))
+	{
+		assert(false && "Bad wave file! (not fmt sub chunk format)");
+	}
+  if(wh.audioFormat != WAVE_FORMAT_PCM)
+	{
+		assert(false && "Bad wave file! (not PCM format)");
 	}
 
-  // all is good, so we load the actual data!
-  pResult->m_pPCMData = DBG_NEW char[pResult->m_waveHeader.dataSize];
-  file.read((wchar_t*)pResult->m_pPCMData, pResult->m_waveHeader.dataSize);
+  // All is good, so we load the actual data!
+  bufSz = pResult->m_waveHeader.dataSize;
+  pResult->m_pPCMData = DBG_NEW char[bufSz];
+  tempBuffer = DBG_NEW wchar_t[bufSz];
+  file.read(tempBuffer, bufSz);
+  UnpadWideChar(tempBuffer, bufSz,
+    reinterpret_cast<char*>(pResult->m_pPCMData), bufSz
+  );
 
-  // TODO convert to char array. =(
+  delete[] tempBuffer;
 
-  if(file.eof())
-  {
-    file.close();
-  }
-  else
-  {
-    assert(false && "bad wave file!");
-  }
+  //if(file.eof())
+  //{
+  //  file.close();
+  //}
+  //else
+  //{
+  //  assert(false && "Bad wave file!");
+  //}
 
   WAVEFORMATEX waveFormat;
   waveFormat.cbSize = sizeof(WAVEFORMATEX);

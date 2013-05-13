@@ -14,7 +14,10 @@
 #include <world\Block.h>
 #include <world\Cluster.h>
 #include <util\SBUtil.h>
-
+//TEMP
+#include <resource\ResourceManager.h>
+#include <sound\WaveFile.h>
+//END TEMP
 #include "TerrainGenerator.h"
 #include "RandomMover.h"
 
@@ -147,8 +150,16 @@ MeshNode *TestApp::CreateMeshNode(BlockColor mat)
   return pNode;
 }
 
+// TEMP
+WaveFile *testSound = nullptr;
+// END TEMP
+
 bool TestApp::OnInitialize() 
 {
+  // TEMP
+  testSound = ResourceManager::GetResource<WaveFile>("TestSound");
+  // END TEMP
+
   m_pScene = DBG_NEW SceneManager(GetGraphicsProvider());
   m_pGenerator = DBG_NEW TerrainGenerator(GetGraphicsProvider(), m_pScene->GetRoot());
 
@@ -277,6 +288,11 @@ void TestApp::OnUpdate(double elapsedSeconds)
 
   m_gamePadState.Vibrate(m_gamePadState.leftTrigger,
     m_gamePadState.rightTrigger);
+
+  if(m_newKeys.IsKeyDown(Keys::K_NUMPAD0))
+  {
+    testSound->Play();
+  }
 
   if(m_newKeys.IsKeyDown(Keys::K_ADD))
   {

@@ -37,10 +37,28 @@ void ToWideChar(const char *str, size_t len,
   }
 
   // Make sure the buffer is large enough to contain the string.
-  assert((len + 1) <= targetSize && "TargetBuffer is too small!");
+  assert((len + 1) <= targetSize && "Target wide char buffer is too small!");
 
   // Print the string into the wide buffer.
   wsprintfW(pTarget, L"%s", str);
+}
+
+void UnpadWideChar(wchar_t *str, size_t len,
+  char *pTarget, size_t targetSize)
+{
+  if(len == 0) 
+  {
+    // if 0 is passed for len it should mean the string is null terminated.
+    for(auto it = str; *it != '\0'; ++it, ++len) { }
+  }
+
+  assert(targetSize >= len && "Target char buffer is too small!");
+
+  int i = 0;
+  for(auto it = pTarget; it != pTarget + len; ++it)
+  {
+    *it = static_cast<char>(str[i++]);
+  }
 }
 
 size_t GetExecutablePath(wchar_t **ppBuffer, size_t *pSize) 

@@ -38,6 +38,7 @@ namespace shinybear
 bool FileExists(const wchar_t *pPath, size_t len);
 
 void ToWideChar(const char *str, size_t len, wchar_t *pTarget, size_t targetSize);
+void UnpadWideChar(wchar_t *str, size_t len, char *pTarget, size_t targetSize);
 
 // Retrieves the path of the executable.
 // ppBuffer : pointer to an allocated buffer,
