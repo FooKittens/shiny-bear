@@ -27,7 +27,7 @@ RenderTarget::~RenderTarget()
 
 void RenderTarget::Initialize()
 {
-  OnDeviceReset();
+  OnDeviceReset(m_pProvider);
 }
 
 void RenderTarget::Activate(UINT slot)

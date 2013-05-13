@@ -18,7 +18,7 @@ namespace LightType
     LT_AMBIENT = 1,
     LT_DIRECTIONAL,
     LT_POINT,
-    LT_SPOT,
+    LT_SPOT
   };
 }
 
@@ -33,14 +33,14 @@ public:
 
   // Virtual destructor to ensure correct
   // destroying of sub classes.
-  virtual ~BaseLight() = 0 { }
+  virtual ~BaseLight() { }
 
   // All lights come with a color.
   virtual const D3DXCOLOR &GetColor() const { return m_color; }
   virtual void SetColor(const D3DXCOLOR &color) { m_color = color; }
 
   // Used to determine the type of light in rendering.
-  virtual LightType::E GetType() const = 0;
+  virtual LightType::E GetType() const { return LightType::LT_AMBIENT; }
 
 protected:
   D3DXCOLOR m_color;
@@ -56,7 +56,7 @@ public:
   // Default constructor with white light.
   DirectionalLight(const Vector3 &direction) : m_direction(direction) { }
 
-  void LightType::E GetType() const { return LightType::LT_DIRECTIONAL; }
+  LightType::E GetType() const { return LightType::LT_DIRECTIONAL; }
 
   // Allow for simple editing.
   Vector3 m_direction; 

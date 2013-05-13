@@ -6,6 +6,7 @@
 cbuffer perFrame
 {
   texture g_lightMap;
+  float2 g_halfPixel;
 };
 
 cbuffer perObject
@@ -34,7 +35,7 @@ sampler g_materialSampler = sampler_state
 
 struct VSCombineInput
 {
-  float3 position : POSITION0;
+  float4 position : POSITION0;
 };
 
 struct VSCombineOutput
@@ -47,7 +48,7 @@ struct VSCombineOutput
 VSCombineOutput VSCombine(VSCombineInput input)
 {
   VSCombineOutput output;
-  output.position = float4(input.position, 1.0f);
+  output.position = input.position;
   output.pp = output.position;
   return output;
 }
@@ -83,19 +84,12 @@ technique CombineTech
 ////// RENDERSCREEN PASS //////////////
 ///////////////////////////////////////
 
-struct TextureVSIn
+
+struct VSRTSOUT
 {
-
-  float4 position : POSITION0;
-  float2 texcoords : TEXCOORD0;
+  float4 pos : SV_POSITION;
+  float4 pp : TEXCOORD0;
 };
-
-struct TextureVSOut
-{
-  float4 position : SV_POSITION;
-  float2 texcoords : TEXCOORD0;
-};
-
 
 // Used for fullscreen texture rendering.
 texture g_texture;
@@ -112,18 +106,34 @@ sampler samplerstate = sampler_state
 };
 
 // Expects coordinates to be in screen space.
-TextureVSOut VSRenderToScreen(TextureVSIn input)
+VSRTSOUT VSRenderToScreen(float4 pos : POSITION0)
 {
-  TextureVSOut output;
-  output.position = input.position;
-  output.texcoords = input.texcoords;
+  VSRTSOUT output;
+  output.pos = pos;
+  output.pp = pos;
+
+  float2 uv = pos.xy / pos.w;
+
+  uv *= 0.5f;
+  uv += 0.5f;
+  uv.y *= -1.0f;
+  uv.xy = uv.xy + float2(0.5f / 1280.0f, 0.5f / 720.0f);
+
+  output.pp = pos * pos.w;
   return output;
 }
 
-float4 PSRenderToScreen(TextureVSOut input) : SV_TARGET
+float4 PSRenderToScreen(float4 pos : POSITION0, float4 tex : TEXCOORD0) : SV_TARGET
 {
+  float2 uv = tex.xy;
+
+  uv *= 0.5f;
+  uv += 0.5f;
+  uv.y = 1.0f - uv.y;
+  uv.xy = uv.xy + float2(0.5f / 1280.0f, 0.5f / 720.0f);
+
   //return float4(.95f, .25f, .25f, 1.0f);
-  return tex2D(samplerstate, input.texcoords);
+  return tex2D(samplerstate, uv);
 }
 
 // Technique used to render a fullscreen quad to with a texture to the screen.

@@ -1,10 +1,12 @@
 #ifndef SHINYBEAR_MESH_H
 #define SHINYBEAR_MESH_H
 
-#include <d3d9.h>
-#include <vector>
+
+#include "graphics\render\IDrawable.h"
 #include "graphics\VertexFormats.h"
 #include "util\Typedefs.h"
+#include <d3d9.h>
+#include <vector>
 
 namespace shinybear { class GraphicsProvider; }
 

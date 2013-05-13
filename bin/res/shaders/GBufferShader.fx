@@ -3,12 +3,11 @@
 cbuffer perFrame
 {
   float g_zfar;
+  float4x4 g_view;
 }
 
 cbuffer perObject
 {
-  float4x4 g_proj;
-  float4x4 g_view;
   float4x4 g_world;
   float4x4 g_WVP;
   float4x4 g_inverseTranspose;
@@ -29,23 +28,12 @@ struct GeometryVSOut
   float2 depth : TEXCOORD1;
 };
 
-struct PSNormalMRTOUT
+struct MRTOUT
 {
   float4 rt0 : COLOR0;
   float4 rt1 : COLOR1;
   float4 rt2 : COLOR2;
 };
-
-// Helper methods for packing normal values.
-float PackRange(float f)
-{
-  return (f * 0.5f) + 0.5f;
-}
-
-float UnPackRange(float f)
-{
-  return (f - 0.5f) * 2.0f;
-}
 
 // Used for send normal and specular data to pixelshader.
 GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
@@ -58,7 +46,7 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
   // Transform the normal into view space.
   // Uses the inverse transpose of the world-view matrix.
   output.normal = normalize(mul(float4(input.normal, 0.0f), g_inverseTranspose).xyz);
-  output.normal = float4(input.normal, 0);
+  //output.normal = float4(input.normal, 0);
 
   //output.normal = normalize(mul(float4(input.normal, 0.0f), mul(g_world,  g_view)));
 
@@ -72,11 +60,11 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
 }
 
 // Writes normaldata into the rgb components and the specular exponent into the alpha channel.
-PSNormalMRTOUT PSNormalSpecularExp(GeometryVSOut input)
+MRTOUT PSNormalSpecularExp(GeometryVSOut input)
 {
   float3 normal = normalize(mul(input.normal, g_inverseTranspose).xyz);
 
-  PSNormalMRTOUT output;
+  MRTOUT output;
   output.rt0 = float4(0.5f * (normalize(normal) + 1.0f), input.color.a);
   output.rt1 = input.depth.x / input.depth.y;
   output.rt2 = float4(input.color.rgb, 1.0f);
@@ -94,3 +82,35 @@ technique NormalTech
 
   
 }
+
+float4 VSClearGBuffer(float4 pos : POSITION0) : SV_POSITION
+{
+  return pos;
+}
+
+MRTOUT PSClearGBuffer(float4 pos : POSITION0) 
+{
+  // Clear normal buffer to "zero"
+  MRTOUT mOut = (MRTOUT)0;
+
+  // Results in a zero normal with 0 in specular.
+  mOut.rt0 = float4(0.5f, 0.5f, 0.5f, 0.0f);
+
+  mOut.rt1 = float4(0, 0, 0, 0);
+  mOut.rt2 = float4(0, 0, 0, 1.0f);
+  return mOut;
+}
+
+technique ClearGBufferTech
+{
+  pass p0
+  {
+    vertexShader = compile vs_3_0 VSClearGBuffer();
+    pixelShader = compile ps_3_0 PSClearGBuffer();
+  }
+
+}
+
+
+
+

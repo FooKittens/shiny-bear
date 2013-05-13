@@ -1,7 +1,13 @@
 #include "graphics\Renderer.h"
+#include "graphics\Shader.h"
 #include "graphics\RenderTarget.h"
+#include "graphics\VertexDeclaration.h"
+#include "graphics\DeferredShader.h"
 #include "graphics\render\IDrawable.h"
+#include "graphics\render\QuadRenderer.h"
 #include "resource\ResourceManager.h"
+#include "scene\camera\Camera.h"
+#include "base\system\GraphicsProvider.h"
 #include "util\SBUtil.h"
 
 #include <cassert>
@@ -13,17 +19,10 @@ Renderer::Renderer(GraphicsProvider *pProvider)
 {
   m_pProvider = pProvider;
 
-  // RenderTargets.
-  m_pNormalTarget   = nullptr;
-  m_pLightTarget    = nullptr;
-  m_pDepthTarget    = nullptr;
-  m_pMaterialTarget = nullptr;
-
-  // Shaders.
-  m_pGBufferShader  = nullptr;
-  m_pLightShader    = nullptr;
-  m_pCombineShader  = nullptr;
+  m_pDShader = nullptr;
   
+  m_pMeshDecl = nullptr;
+
   m_pCamera = nullptr;
   m_isInitialized = false;
 }
@@ -34,51 +33,101 @@ Renderer::~Renderer()
   m_geometryList.clear();
   m_lights.clear();
 
-  ResourceManager::DeleteResource(m_pNormalTarget);
-  ResourceManager::DeleteResource(m_pLightTarget);
-  ResourceManager::DeleteResource(m_pMaterialTarget);
-  ResourceManager::DeleteResource(m_pDepthTarget);
+  //delete m_pQuadRenderer;
 }
 
 void Renderer::Initialize()
 {
-  m_pNormalTarget   = DBG_NEW RenderTarget(m_pProvider, D3DFMT_A16B16G16R16F);
-  m_pLightTarget    = DBG_NEW RenderTarget(m_pProvider, D3DFMT_A16B16G16R16F);
-  m_pMaterialTarget = DBG_NEW RenderTarget(m_pProvider, D3DFMT_A16B16G16R16F);
-  m_pDepthTarget    = DBG_NEW RenderTarget(m_pProvider, D3DFMT_R32F);
-  
-  // Register resources for automatic updating.
-  ResourceManager::RegisterResource(m_pNormalTarget, "RendererNormalTarget");
-  ResourceManager::RegisterResource(m_pLightTarget, "RendererLightTarget");
-  ResourceManager::RegisterResource(m_pMaterialTarget, "RendererMaterialTarget");
-  ResourceManager::RegisterResource(m_pDepthTarget, "RendererDepthTarget");
+  m_pDShader = DBG_NEW DeferredShader(m_pProvider);
+  m_pDShader->Initialize();
 
-  // Retrieve shader resources from content pipeline.
-  m_pGBufferShader = ResourceManager::GetResource<Shader>("DeferredGBufferShader");
-  m_pLightShader   = ResourceManager::GetResource<Shader>("DeferredLightBufferShader");
-  m_pCombineShader = ResourceManager::GetResource<Shader>("DeferredCombineShader");
+  ResourceManager::RegisterResource(m_pDShader, "DeferredShader");
+
+  m_isInitialized = true;
 }
 
 void Renderer::RenderScene()
 {
   // Make sure the renderer is initialized.
   assert(m_isInitialized && "Renderer not initialized!");
+  assert(m_pCamera && "Camera not set!");
 
   // Updates the render list with visible geometry.
   UpdateRenderList();
+   
+  // Render Geometry buffer.
+  RenderGBuffer();
 
-  // Clear render targets to correct colors.
-  ClearGBuffer();
-  
+  // Render a light accumulation buffer.
+  RenderLightBuffer();
+
+  // Merge render targets into a final result.
+  //m_pDShader->RenderCompositeImage();
+
+  m_pDShader->DisplayRenderTarget(m_pDShader->GetLightTarget());
 }
 
+
+void Renderer::RenderGBuffer()
+{
+  // No use rendering anything if we don't have a camera.
+  if(!m_pCamera) return;
+
+  m_pDShader->BeginGBuffer();
+
+  auto it = m_renderList.begin();
+  auto end = m_renderList.end();
+  while(it != end)
+  {
+    m_pDShader->RenderGeometry(*it++);    
+  }
+
+  m_pDShader->EndGBuffer();
+}
+
+void Renderer::RenderLightBuffer()
+{
+  m_pDShader->BeginLightPass();
+
+  auto it = m_lights.begin();
+  auto end = m_lights.end();
+
+  while(it != end)
+  {
+    m_pDShader->RenderLight(*it++);
+  }
+
+  m_pDShader->EndLightPass();
+}
+
+
+// TODO : Perform culling etc.
 void Renderer::UpdateRenderList()
 {
+  m_renderList.clear();
+  m_alphaList.clear();
+  m_forwardList.clear();
+
   auto it = m_geometryList.begin();
   auto end = m_geometryList.end();
   while(it != end)
   {
-    m_renderList.push_front(*it++);
+    // Sort geometry list into separate passes for alpha and forward rendering.
+    switch((*it)->GetRenderPass())
+    {
+    case RenderPass::DEFERRED:
+      m_renderList.push_front(*it++);
+      break;
+    case RenderPass::ALPHA:
+      m_alphaList.push_front(*it++);
+      break;
+    case RenderPass::FORWARD:
+      m_forwardList.push_front(*it++);
+      break;
+    default:
+      assert(false && "Invalid Renderpass specified!");
+    }
+    
   }
 }
 
@@ -137,6 +186,7 @@ void Renderer::RemoveLight(const BaseLight *pLight)
 void Renderer::SetCamera(Camera *pCamera)
 {
   m_pCamera = pCamera;
+  m_pDShader->SetCamera(pCamera);
 }
 
 const Camera * const Renderer::GetCamera() const

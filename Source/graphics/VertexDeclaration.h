@@ -52,6 +52,7 @@ public:
   ~VertexDeclaration();
 
   void AddElement(const VertexElement &elem);
+  void AddElement(VertexDataType::Enum vdt, VertexUsageType::Enum vut, UINT slot);
   void RemoveElement(UINT index);
 
   void Activate();
@@ -73,6 +74,12 @@ private:
 inline void VertexDeclaration::AddElement(const VertexElement &elem)
 {
   m_elements.push_back(elem);
+}
+
+inline void VertexDeclaration::AddElement(VertexDataType::Enum vdt,
+  VertexUsageType::Enum vut, UINT slot)
+{
+  AddElement(VertexElement(vdt, vut, slot));
 }
 
 inline void VertexDeclaration::RemoveElement(UINT index)

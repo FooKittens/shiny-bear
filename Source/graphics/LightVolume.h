@@ -1,9 +1,11 @@
 #ifndef SHINYBEAR_LIGHTVOLUME_H
 #define SHINYBEAR_LIGHTVOLUME_H
 
+#include "resource\types\IGraphicsResource.h"
 #include "util\math\Math.h"
 #include <d3dx9.h>
 #include <vector>
+
 
 struct IDirect3DVertexBuffer9;
 struct IDirect3DIndexBuffer9;
@@ -21,13 +23,13 @@ struct Triangle
   UINT v0, v1, v2;
 };
 
-class LightVolume
+class LightVolume : public IGraphicsResource
 {
 public:
   LightVolume(GraphicsProvider *pProvider);
   ~LightVolume();
 
-  void OnDeviceReset();
+  void OnDeviceReset(GraphicsProvider *pProvider);
   void OnDeviceLost();
 
   // Used for creating different shapes.
@@ -40,7 +42,7 @@ public:
 private:
   struct VertexData
   {
-    Vector3 position;
+    Vector4 position;
   };
   enum Type
   {
@@ -50,9 +52,9 @@ private:
   } m_type;
 
   // used to split icohedradon edges for spheres.
-  UINT SplitEdge(std::vector<Vector3> &verts, const Vector3 &v0, const Vector3 &v1);
+  UINT SplitEdge(std::vector<Vector4> &verts, const Vector4 &v0, const Vector4 &v1);
 
-  void CreateSphereData(UINT levels, std::vector<Vector3> &verts,
+  void CreateSphereData(UINT levels, std::vector<Vector4> &verts,
     std::vector<Triangle> &tris);
 
   UINT m_vertexCount;

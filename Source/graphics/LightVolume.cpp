@@ -102,10 +102,10 @@ void LightVolume::MakeQuad()
 }
 
 
-UINT LightVolume::SplitEdge(std::vector<Vector3> &verts,
-  const Vector3 &v0, const Vector3 &v1)
+UINT LightVolume::SplitEdge(std::vector<Vector4> &verts,
+  const Vector4 &v0, const Vector4 &v1)
 {
-  Vector3 v = (v0 + v1) / 2.0f;
+  Vector4 v = (v0 + v1) / 2.0f;
   verts.push_back(v);
   return verts.size() - 1;
 }
@@ -117,7 +117,7 @@ void LightVolume::MakeSphere()
 
   IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
 
-  std::vector<Vector3> verts;
+  std::vector<Vector4> verts;
   std::vector<Triangle> tris;
 
   CreateSphereData(2, verts, tris);
@@ -173,7 +173,7 @@ void LightVolume::MakeSphere()
   m_type = LV_SPHERE;
 }
 
-void LightVolume::CreateSphereData(UINT levels, std::vector<Vector3> &verts,
+void LightVolume::CreateSphereData(UINT levels, std::vector<Vector4> &verts,
   std::vector<Triangle> &tris)
 {
   verts.clear();
@@ -252,7 +252,7 @@ void LightVolume::MakeCone()
 
 }
 
-void LightVolume::OnDeviceReset()
+void LightVolume::OnDeviceReset(GraphicsProvider *pProvider)
 {
   switch(m_type)
   {

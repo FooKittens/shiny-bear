@@ -8,7 +8,6 @@
 #include <crtdbg.h>
 
 
-
 namespace shinybear
 {
 

@@ -18,4 +18,5 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev,
   pGame->Run();
 
   delete pGame;
+  return 0;
 }

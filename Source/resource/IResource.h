@@ -21,7 +21,7 @@ enum Enum
 class IResource
 {
 public:
-  virtual ~IResource() = 0 { }
+  virtual ~IResource() { }
   virtual ResourceType::Enum GetType() const = 0;
 };
 

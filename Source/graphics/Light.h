@@ -8,7 +8,7 @@
 namespace shinybear
 {
 
-namespace LightType
+namespace LightTypeHURRR
 {
 enum Enum : UINT
 {
@@ -23,7 +23,7 @@ struct Light
 {
   Vector3 position;
   float filler_1;
-  LightType::Enum type;
+  LightTypeHURRR::Enum type;
   
   float filler_2;
   float filler_3;
@@ -39,7 +39,7 @@ struct Light
   static Light CreateAmbientLight(const D3DXCOLOR &color)
   {
     Light lt;
-    lt.type = LightType::LT_AMBIENT;
+    lt.type = LightTypeHURRR::LT_AMBIENT;
     lt.color = color;
     return lt;
   }
@@ -48,7 +48,7 @@ struct Light
     const Vector3 &direction)
   {
     Light lt;
-    lt.type = LightType::LT_DIRECTIONAL;
+    lt.type = LightTypeHURRR::LT_DIRECTIONAL;
     lt.color = color;
     lt.direction = direction;
     return lt;
@@ -58,7 +58,7 @@ struct Light
     const Vector3 &position, float dimFactor, float range)
   {
     Light lt;
-    lt.type = LightType::LT_POINT;
+    lt.type = LightTypeHURRR::LT_POINT;
     lt.color = color;
     lt.position = position;
     lt.attenuation = Vector3(dimFactor, 4.5f / range, 85.0f / (range * range));

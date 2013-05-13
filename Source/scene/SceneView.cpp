@@ -244,20 +244,20 @@ void SceneView::RenderLight(const Light *pLight)
 
   switch(pLight->type)
   {
-  case LightType::LT_AMBIENT:
+  case LightTypeHURRR::LT_AMBIENT:
     m_pLightShader->SetActiveTechnique("AmbientLightTech");
     m_pLightShader->Begin();
     m_pLightShader->BeginPass(0);
     m_pQuadVolume->Render();    
     break;
-  case LightType::LT_DIRECTIONAL:
+  case LightTypeHURRR::LT_DIRECTIONAL:
     m_pLightShader->SetActiveTechnique("DiffuseLightTech");
     // Begin rendering with technique.
     m_pLightShader->Begin();
     m_pLightShader->BeginPass(0);
     m_pQuadVolume->Render();
     break;
-  case LightType::LT_POINT:
+  case LightTypeHURRR::LT_POINT:
     m_pLightShader->SetActiveTechnique("PointLightTech");
     if(pCam->GetViewMatrix().Transform(pLight->position).Length() < pLight->range)
     {
@@ -268,7 +268,7 @@ void SceneView::RenderLight(const Light *pLight)
     m_pSphereVolume->Render();
     m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
     break;
-  case LightType::LT_SPOT:
+  case LightTypeHURRR::LT_SPOT:
     m_pConeVolume->Render();
     break;
   default:
@@ -283,12 +283,12 @@ Mat4x4 SceneView::CalcLightMatrix(const Light *pLight)
 {
   Camera *pCam = m_pScene->GetCamera();
 
-  if(pLight->type == LightType::LT_AMBIENT ||
-     pLight->type == LightType::LT_DIRECTIONAL)
+  if(pLight->type == LightTypeHURRR::LT_AMBIENT ||
+     pLight->type == LightTypeHURRR::LT_DIRECTIONAL)
   {
     return Mat4x4::CreateScale(2.0f);
   } 
-  else if(pLight->type == LightType::LT_POINT)
+  else if(pLight->type == LightTypeHURRR::LT_POINT)
   {
     return Mat4x4::CreateScale(pLight->range) * Mat4x4::CreateTranslation(pLight->position) * 
       pCam->GetViewMatrix() * pCam->GetProjectionMatrix();
@@ -372,22 +372,22 @@ void SceneView::OnDeviceReset()
   // Create Vertexbuffer used to draw rendertargets to screen.
   CreateScreenVBuffer();
 
-  m_pNormalTarget->OnDeviceReset();
-  m_pLightTarget->OnDeviceReset();
-  m_pDepthTarget->OnDeviceReset();
-  m_pMaterialTarget->OnDeviceReset();
+  m_pNormalTarget->OnDeviceReset(m_pProvider);
+  m_pLightTarget->OnDeviceReset(m_pProvider);
+  m_pDepthTarget->OnDeviceReset(m_pProvider);
+  m_pMaterialTarget->OnDeviceReset(m_pProvider);
 
-  m_voxelDeclaration.OnDeviceReset();
-  m_textureDeclaration.OnDeviceReset();
-  m_lightDeclaration.OnDeviceReset();
+  m_voxelDeclaration.OnDeviceReset(m_pProvider);
+  m_textureDeclaration.OnDeviceReset(m_pProvider);
+  m_lightDeclaration.OnDeviceReset(m_pProvider);
 
-  m_pQuadVolume->OnDeviceReset();
-  m_pSphereVolume->OnDeviceReset();
+  //m_pQuadVolume->OnDeviceReset();
+  //m_pSphereVolume->OnDeviceReset();
   //m_pConeVolume->OnDeviceReset();
 
-  m_pGBufferShader->OnDeviceReset();
-  m_pLightShader->OnDeviceReset();
-  m_pCombineShader->OnDeviceReset();
+  m_pGBufferShader->OnDeviceReset(m_pProvider);
+  m_pLightShader->OnDeviceReset(m_pProvider);
+  m_pCombineShader->OnDeviceReset(m_pProvider);
 }
 
 void SceneView::CreateVertexDecl()

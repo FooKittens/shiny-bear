@@ -37,11 +37,11 @@ void LightNode::Update(double elapsedSeconds)
 
 void LightNode::Render(SceneManager *pScene)
 {
-  if(m_light.type == LightType::LT_SPOT || m_light.type == LightType::LT_POINT)
+  if(m_light.type == LightTypeHURRR::LT_SPOT || m_light.type == LightTypeHURRR::LT_POINT)
   {
     m_light.position = GetTransform().GetPosition();
   } 
-  else if(m_light.type == LightType::LT_DIRECTIONAL)
+  else if(m_light.type == LightTypeHURRR::LT_DIRECTIONAL)
   {
     Vector3 pos = Mat4x4(*pScene->GetTransform()).GetPosition();
     m_light.direction = -pos;

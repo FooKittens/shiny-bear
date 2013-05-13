@@ -93,6 +93,7 @@ void Camera::DoFreeCamMovement(double dt)
 void Camera::UpdateViewMatrix()
 {
   Vector3 target = m_worldPosition + m_forwardVector;
+
   D3DXMatrixLookAtLH(&m_view, &m_worldPosition, &target, &m_upVector);
 }
 

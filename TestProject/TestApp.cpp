@@ -11,12 +11,14 @@
 #include <scene\camera\Camera.h>
 #include <graphics\Mesh.h>
 #include <graphics\Light.h>
+#include <graphics\lighting\Lighting.h>
 #include <world\Block.h>
 #include <world\Cluster.h>
 #include <util\SBUtil.h>
 
 #include "TerrainGenerator.h"
 #include "RandomMover.h"
+#include "TestDrawable.h"
 
 using namespace shinybear;
 
@@ -32,6 +34,9 @@ TestApp::TestApp()
   m_pSunLightNode     = nullptr;
   m_pRandomLightNode  = nullptr;
   m_pGenerator        = nullptr;
+
+  m_pCamera = nullptr;
+  m_pDrawable = nullptr;
 }
 
 TestApp::~TestApp()
@@ -45,6 +50,8 @@ TestApp::~TestApp()
 
   delete m_pGenerator;
   delete m_pScene;
+  delete m_pCamera;
+  delete m_pDrawable;
 }
 
 // REMOVE ME
@@ -80,8 +87,6 @@ void CreateCube(float x, float y, float z, const Block &block,
     
   pMesh->AddTriangle(v0, v1, v2);
   pMesh->AddTriangle(v2, v3, v0);
-  
-
 
   v0 = pMesh->AddVertex(p4, mat, kBackNormal);
   v1 = pMesh->AddVertex(p5, mat, kBackNormal);
@@ -91,8 +96,6 @@ void CreateCube(float x, float y, float z, const Block &block,
   pMesh->AddTriangle(v0, v1, v2);
   pMesh->AddTriangle(v2, v3, v0);
   
-
- 
   v0 = pMesh->AddVertex(p5, mat, kTopNormal);
   v1 = pMesh->AddVertex(p4, mat, kTopNormal);
   v2 = pMesh->AddVertex(p1, mat, kTopNormal);
@@ -144,14 +147,12 @@ MeshNode *TestApp::CreateMeshNode(BlockColor mat)
   pMesh->BeginMesh();
   CreateCube(0, 0, 0, block, pMesh, 0);
   pMesh->EndMesh();
+  
   return pNode;
 }
 
 bool TestApp::OnInitialize() 
 {
-  m_pScene = DBG_NEW SceneManager(GetGraphicsProvider());
-  m_pGenerator = DBG_NEW TerrainGenerator(GetGraphicsProvider(), m_pScene->GetRoot());
-
   // Set up material parameters.
   #pragma region MaterialConfig
   m_grassMaterial = 0x03036804;
@@ -159,43 +160,74 @@ bool TestApp::OnInitialize()
   m_shinyMaterial = 0xFFAAAAAA;
   #pragma endregion
 
-  CreateLights();
-  CreateCubes();
+  Renderer *pRenderer = GetRenderer();
+  
+  m_pDrawable = DBG_NEW TestDrawable();
 
-
-  // Attach ambient light to the scene.
-  m_pScene->GetRoot()->Attach(m_pAmbientLightNode);
-
-  // Translate the sun straight up vertically to give it a good axis.
-  m_pSunCubeNode->Translate(-3.0f, 10.0f, 5.0f);
- 
-  // Attach sun light to the suns cube.
-  m_pSunCubeNode->Attach(m_pSunLightNode);
-
-  // Attach the sun and its cube to the axis around which they will spin.
-  m_pSunAxisNode->Attach(m_pSunCubeNode);
+  pRenderer->AddDrawable(m_pDrawable);
 
   // Create a camera.
   Size wSize = GetWindow()->GetSize();
   float aspect = (float)wSize.width / (float)wSize.height;
-  m_pCamera = new Camera(aspect, 60.0f, 1.0f, 1000.0f);
+  m_pCamera = DBG_NEW Camera(aspect, 60.0f, 1.0f, 1000.0f);
   m_pCamera->SetDebugMode(true);
-  m_pScene->SetCamera(m_pCamera);
 
-  // Attach player light node to the player.
-  m_pPlayerNode->Attach(m_pPlayerLightNode);
+  Mesh *pMesh = DBG_NEW Mesh(GetGraphicsProvider());
+  Block b(0);
 
-  // Attach the sun axis along with its cube and sun light.
-  m_pScene->GetRoot()->Attach(m_pSunAxisNode);
+  b.SetMaterial(m_grassMaterial);
+  CreateCube(0, 0, 0, b, pMesh, 0);
+  pMesh->UpdateBuffers();
+  m_pDrawable->SetMesh(pMesh);
 
-  // Attach the player to the root node.
-  m_pScene->GetRoot()->Attach(m_pPlayerNode);
+  pRenderer->SetCamera(m_pCamera);
 
-  // Generate an 8x8 world.
-  m_pGenerator->Generate(4, 4);
+  
+  pRenderer->AddLight(DBG_NEW BaseLight(D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f)));
+  pRenderer->AddLight(DBG_NEW DirectionalLight(Vector3(1.0f, 0.0f, 0.0f)));
 
-  // Creates a set amount of random lights flying about the scene.
-  CreateRandomLights();
+  //m_pScene = DBG_NEW SceneManager(GetGraphicsProvider());
+  //m_pGenerator = DBG_NEW TerrainGenerator(GetGraphicsProvider(), m_pScene->GetRoot());
+
+
+
+  //CreateLights();
+  //CreateCubes();
+
+
+  //// Attach ambient light to the scene.
+  //m_pScene->GetRoot()->Attach(m_pAmbientLightNode);
+
+  //// Translate the sun straight up vertically to give it a good axis.
+  //m_pSunCubeNode->Translate(-3.0f, 10.0f, 5.0f);
+ 
+  //// Attach sun light to the suns cube.
+  //m_pSunCubeNode->Attach(m_pSunLightNode);
+
+  //// Attach the sun and its cube to the axis around which they will spin.
+  //m_pSunAxisNode->Attach(m_pSunCubeNode);
+
+  //// Create a camera.
+  //Size wSize = GetWindow()->GetSize();
+  //float aspect = (float)wSize.width / (float)wSize.height;
+  //m_pCamera = DBG_NEW Camera(aspect, 60.0f, 1.0f, 1000.0f);
+  //m_pCamera->SetDebugMode(true);
+  //m_pScene->SetCamera(m_pCamera);
+
+  //// Attach player light node to the player.
+  //m_pPlayerNode->Attach(m_pPlayerLightNode);
+
+  //// Attach the sun axis along with its cube and sun light.
+  //m_pScene->GetRoot()->Attach(m_pSunAxisNode);
+
+  //// Attach the player to the root node.
+  //m_pScene->GetRoot()->Attach(m_pPlayerNode);
+
+  //// Generate an 8x8 world.
+  //m_pGenerator->Generate(4, 4);
+
+  //// Creates a set amount of random lights flying about the scene.
+  //CreateRandomLights();
 
   // Initialization successful.
   return true;
@@ -256,97 +288,98 @@ const float kPlayerAngSpeed = 2.5f;
 void TestApp::OnUpdate(double elapsedSeconds) 
 {
   BaseGame::OnUpdate(elapsedSeconds);
-  m_pScene->Update(elapsedSeconds);
+  //m_pScene->Update(elapsedSeconds);
+  m_pCamera->Update(elapsedSeconds);
 
-  InputManager::GetControllerState(&m_gamePadState);
-  InputManager::GetKeyboardState(&m_newKeys);
-  InputManager::GetMouseState(&m_newMouse);
+  //InputManager::GetControllerState(&m_gamePadState);
+  //InputManager::GetKeyboardState(&m_newKeys);
+  //InputManager::GetMouseState(&m_newMouse);
 
-  float rotA = 0.0f;
-  float rotB = 0.0f;
-  float rotC = 0.0f;
-  float z = 0.0f;
-  float x = 0.0f;
-  float y = 0.0f;
+  //float rotA = 0.0f;
+  //float rotB = 0.0f;
+  //float rotC = 0.0f;
+  //float z = 0.0f;
+  //float x = 0.0f;
+  //float y = 0.0f;
 
-  rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
-  rotA += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().x;
-  rotB += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().y;
-  z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
-  z += kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.rightTrigger;
+  //rotA = kPlayerAngSpeed * (float)elapsedSeconds * m_gamePadState.rightThumbstick.x;
+  //rotA += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().x;
+  //rotB += kPlayerAngSpeed * (float)elapsedSeconds * m_newMouse.GetPositionalChange().y;
+  //z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
+  //z += kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.rightTrigger;
 
-  m_gamePadState.Vibrate(m_gamePadState.leftTrigger,
-    m_gamePadState.rightTrigger);
+  //m_gamePadState.Vibrate(m_gamePadState.leftTrigger,
+  //  m_gamePadState.rightTrigger);
 
-  if(m_newKeys.IsKeyDown(Keys::K_UP))
-  {
-    z = kPlayerSpeed * (float)elapsedSeconds;
-  }
-  if(m_newKeys.IsKeyDown(Keys::K_DOWN))
-  {
-    z = -kPlayerSpeed * (float)elapsedSeconds;
-  }
-
-  if(m_newKeys.IsKeyDown(Keys::K_LEFT))
-  {
-    rotA = -kPlayerAngSpeed * (float)elapsedSeconds;
-  }
-  if(m_newKeys.IsKeyDown(Keys::K_RIGHT))
-  {
-    rotA = kPlayerAngSpeed * (float)elapsedSeconds;
-  }
-
-  if(m_newKeys.IsKeyDown(Keys::K_W))
-  {
-    y = kPlayerSpeed * (float)elapsedSeconds;
-  }
-  if(m_newKeys.IsKeyDown(Keys::K_S))
-  {
-    y = -kPlayerSpeed * (float)elapsedSeconds;
-  }
-
-  if(m_gamePadState.IsButtonDown(ControllerButtons::DPAD_UP))
-  {
-    y = kPlayerSpeed * (float)elapsedSeconds;
-  }
-  if(m_gamePadState.IsButtonDown(ControllerButtons::DPAD_DOWN))
-  {
-    y = -kPlayerSpeed * (float)elapsedSeconds;
-  }
-
-  //if(m_pCamera->IsFreeCam())
+  //if(m_newKeys.IsKeyDown(Keys::K_UP))
   //{
-  //  m_pCamera->Translate(x, y, z);
-  //  m_pCamera->RotateY(rotA);
+  //  z = kPlayerSpeed * (float)elapsedSeconds;
   //}
-  //else
+  //if(m_newKeys.IsKeyDown(Keys::K_DOWN))
   //{
-  //  m_pPlayerNode->Translate(x, y, z);
-  //  m_pPlayerNode->RotateY(rotA);
+  //  z = -kPlayerSpeed * (float)elapsedSeconds;
   //}
 
-  if(m_newKeys.IsKeyDown(Keys::K_SPACEBAR) && !m_oldKeys.IsKeyDown(Keys::K_SPACEBAR))
-  {
-    //bool isFree = m_pCamera->IsFreeCam();
-    //if(isFree)
-    //{
-    //   m_pCamera->LoadIdentity();
-    //}
-    //m_pCamera->SetFreeCam(!isFree);
-  }
+  //if(m_newKeys.IsKeyDown(Keys::K_LEFT))
+  //{
+  //  rotA = -kPlayerAngSpeed * (float)elapsedSeconds;
+  //}
+  //if(m_newKeys.IsKeyDown(Keys::K_RIGHT))
+  //{
+  //  rotA = kPlayerAngSpeed * (float)elapsedSeconds;
+  //}
 
-  if(m_newKeys.IsKeyDown(Keys::K_ESCAPE) || m_gamePadState.IsButtonDown(ControllerButtons::BACK))
-  {
-    Exit();
-  }
+  //if(m_newKeys.IsKeyDown(Keys::K_W))
+  //{
+  //  y = kPlayerSpeed * (float)elapsedSeconds;
+  //}
+  //if(m_newKeys.IsKeyDown(Keys::K_S))
+  //{
+  //  y = -kPlayerSpeed * (float)elapsedSeconds;
+  //}
 
-  m_oldKeys = m_newKeys;
+  //if(m_gamePadState.IsButtonDown(ControllerButtons::DPAD_UP))
+  //{
+  //  y = kPlayerSpeed * (float)elapsedSeconds;
+  //}
+  //if(m_gamePadState.IsButtonDown(ControllerButtons::DPAD_DOWN))
+  //{
+  //  y = -kPlayerSpeed * (float)elapsedSeconds;
+  //}
+
+  ////if(m_pCamera->IsFreeCam())
+  ////{
+  ////  m_pCamera->Translate(x, y, z);
+  ////  m_pCamera->RotateY(rotA);
+  ////}
+  ////else
+  ////{
+  ////  m_pPlayerNode->Translate(x, y, z);
+  ////  m_pPlayerNode->RotateY(rotA);
+  ////}
+
+  //if(m_newKeys.IsKeyDown(Keys::K_SPACEBAR) && !m_oldKeys.IsKeyDown(Keys::K_SPACEBAR))
+  //{
+  //  //bool isFree = m_pCamera->IsFreeCam();
+  //  //if(isFree)
+  //  //{
+  //  //   m_pCamera->LoadIdentity();
+  //  //}
+  //  //m_pCamera->SetFreeCam(!isFree);
+  //}
+
+  //if(m_newKeys.IsKeyDown(Keys::K_ESCAPE) || m_gamePadState.IsButtonDown(ControllerButtons::BACK))
+  //{
+  //  Exit();
+  //}
+
+  //m_oldKeys = m_newKeys;
 }
 
 void TestApp::OnRender()
 {
-  GetGraphicsProvider()->Clear(Color4f(0.0f, 0.15f, 0.0f, 0.0f));
-  m_pScene->Render();
+  //GetGraphicsProvider()->Clear(Color4f(0.0f, 0.15f, 0.0f, 0.0f));
+  //m_pScene->Render();
 }
 
 void TestApp::OnDeviceReset()

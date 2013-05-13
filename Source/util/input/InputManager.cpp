@@ -73,7 +73,7 @@ void InputManager::HandleInput(const HRAWINPUT &hInput)
   // Find size of rawinput
   UINT dwSize;
   GetRawInputData(hInput, RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER));
-  LPBYTE lpb = new BYTE[dwSize];
+  LPBYTE lpb = DBG_NEW BYTE[dwSize];
   if(lpb == NULL)
   {
     // If size is zero, exit (should never happen though)

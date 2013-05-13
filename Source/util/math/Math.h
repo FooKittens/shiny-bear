@@ -17,6 +17,7 @@ public:
   static const Vector2 kZero;
   static const Vector2 kUnitX;
   static const Vector2 kUnitY;
+  static const Vector2 kOne;
 
   Vector2() : D3DXVECTOR2(0, 0) { }
   Vector2(float x, float y) : D3DXVECTOR2(x, y) { }
@@ -92,6 +93,9 @@ public:
   Vector4(float x, float y, float z, float w)
     :D3DXVECTOR4(x, y, z, w) { }
 
+  Vector4(const D3DXCOLOR &col) 
+    : D3DXVECTOR4(col.r, col.g, col.b, col.a) { }
+
   void Normalize();
   float Length() const;
   float Dot(const Vector4 &v) const;
@@ -163,6 +167,11 @@ public:
   Vector3(const D3DXVECTOR4 &v) { x = v.x; y = v.y; z = v.z; }
   Vector3(float x, float y, float z) :D3DXVECTOR3(x, y, z) { }
   Vector3(const Vector4 &v4) { x = v4.x; y = v4.y; z = v4.z; }
+
+  operator Vector4()
+  {
+    return Vector4(x, y, z, 0);
+  }
 
   void Normalize();
   float Length() const;

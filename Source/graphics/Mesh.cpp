@@ -34,6 +34,9 @@ void Mesh::UpdateBuffers()
   RELEASECOM(m_pVBuffer);
   RELEASECOM(m_pIBuffer);
 
+  m_vertexCount = m_vertices.size();
+  m_indexCount = m_indices.size();
+
   if(m_vertexCount == 0 || m_indexCount == 0)
     return;
   

@@ -4,6 +4,7 @@
 #include "resource\IResource.h"
 #include <map>
 #include <string>
+#include <cassert>
 
 namespace shinybear 
 { 

@@ -183,6 +183,15 @@
     <ClInclude Include="source\graphics\lighting\Lighting.h">
       <Filter>Source\graphics\lighting</Filter>
     </ClInclude>
+    <ClInclude Include="source\graphics\VertexManager.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\render\QuadRenderer.h">
+      <Filter>Source\graphics\render</Filter>
+    </ClInclude>
+    <ClInclude Include="source\graphics\DeferredShader.h">
+      <Filter>Source\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -270,6 +279,15 @@
       <Filter>Source\resource</Filter>
     </ClCompile>
     <ClCompile Include="source\graphics\Renderer.cpp">
+      <Filter>Source\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="source\graphics\VertexManager.cpp">
+      <Filter>Source\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\graphics\render\QuadRenderer.cpp">
+      <Filter>Source\graphics\render</Filter>
+    </ClCompile>
+    <ClCompile Include="source\graphics\DeferredShader.cpp">
       <Filter>Source\graphics</Filter>
     </ClCompile>
   </ItemGroup>

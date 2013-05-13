@@ -17,6 +17,8 @@ struct FontProxy : IGraphicsResource
 
   FontProxy() : pFont(nullptr) { }
 
+  ~FontProxy() { RELEASECOM(pFont); }
+
   ID3DXFont *pFont;
   D3DXFONT_DESC desc;
 

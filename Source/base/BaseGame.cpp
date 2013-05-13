@@ -7,6 +7,8 @@
 #include "sound\SoundManager.h"
 #include "resource\ResourceManager.h"
 #include "graphics\Shader.h"
+#include "graphics\VertexManager.h"
+#include "graphics\Renderer.h"
 #include <fstream>
 
 
@@ -22,12 +24,14 @@ BaseGame::BaseGame()
   GetAbsolutePath(g_kConfigFileName, &m_pConfigPath);
 }
 
+
 BaseGame::~BaseGame()
 {
   SAFEDELETE(m_pGameTimer);
   SAFEDELETE(m_pGraphicsProvider);
   SAFEDELETE(m_pGameWindow);
   delete[] m_pConfigPath;
+  delete m_pRenderer;
 }
 
 void BaseGame::SaveConfig(const Config &cfg) const
@@ -103,22 +107,10 @@ bool BaseGame::Initialize()
 
   // Initialize the resource manager.
   ResourceManager::Initialize(this);
+  LoadDefaultResources();
 
-  D3DXFONT_DESC fontdesc;
-  fontdesc.CharSet = DEFAULT_CHARSET;
-  fontdesc.Height = 16;
-  fontdesc.Italic = false;
-  fontdesc.MipLevels = 0;
-  fontdesc.OutputPrecision = OUT_TT_ONLY_PRECIS;
-  fontdesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-  fontdesc.Quality = DEFAULT_QUALITY;
-  fontdesc.Weight = FW_NORMAL;
-  fontdesc.Width = 0;
-  strcpy_s(fontdesc.FaceName, "Arial");
-
-  m_font.desc = fontdesc;
-  
-  ResourceManager::RegisterResource(&m_font, "BaseGameFont");
+  m_pRenderer = DBG_NEW Renderer(m_pGraphicsProvider);
+  m_pRenderer->Initialize();
 
   // Call derived method.
   if(!OnInitialize())
@@ -137,7 +129,6 @@ bool BaseGame::Initialize()
 // begin the game loop.
 bool BaseGame::Run()
 {
-
   if(!Initialize())
   {
     // TODO : Present useful information to user about initialization failure.
@@ -181,7 +172,11 @@ bool BaseGame::Run()
     {
       HR(m_pGraphicsProvider->GetDevice()->BeginScene());
       // call virtual method to delegate rendering to derived classes.
-      OnRender();
+      //OnRender();
+
+      m_pGraphicsProvider->Clear(Color4f(0.0f, 0.25f, 0.0f, 1.0f));
+      m_pRenderer->RenderScene();
+
       if(m_doRenderDiagnostics)
       {
         RenderDiagnostics();
@@ -200,6 +195,9 @@ bool BaseGame::Run()
 
       // Clean up all resources.
       ResourceManager::Cleanup();
+
+      // Clean up allocated vertex declarations.
+      VertexManager::Cleanup();
 
       m_isRunning = false;
     }
@@ -224,7 +222,7 @@ void BaseGame::OnUpdate(double elapsedSeconds)
   }
 }
 
-void BaseGame::RenderDiagnostics(ID3DXFont *pFontA)
+void BaseGame::RenderDiagnostics()
 {
   char buffer[512];
   sprintf_s(buffer, "FPS: %.2f", GetCurrentFps());
@@ -299,7 +297,6 @@ void BaseGame::OnFocusChanged(bool getFocus)
 
 void BaseGame::OnDeviceLost()
 {
-  RELEASECOM(m_pDiagFont);
   ResourceManager::OnGraphicsDeviceLost();
 }
 
@@ -311,8 +308,23 @@ void BaseGame::OnDeviceReset()
 
 void BaseGame::LoadDefaultResources()
 {
+  D3DXFONT_DESC fontdesc;
+  fontdesc.CharSet = DEFAULT_CHARSET;
+  fontdesc.Height = 16;
+  fontdesc.Italic = false;
+  fontdesc.MipLevels = 0;
+  fontdesc.OutputPrecision = OUT_TT_ONLY_PRECIS;
+  fontdesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+  fontdesc.Quality = DEFAULT_QUALITY;
+  fontdesc.Weight = FW_NORMAL;
+  fontdesc.Width = 0;
+  strcpy_s(fontdesc.FaceName, "Arial");
+
+  m_pFont = DBG_NEW FontProxy(nullptr, fontdesc);
+  ResourceManager::RegisterResource(m_pFont, "BaseGameFont");
+
   wchar_t *pBuffer;
-  GetAbsolutePath(L"res\\shaders\\LightShader.fx", &pBuffer);
+  GetAbsolutePath(L"res\\shaders\\DLighting.fx", &pBuffer);
   Shader *pLightShader = DBG_NEW Shader(m_pGraphicsProvider);
   pLightShader->LoadFromFile(pBuffer);
   delete[] pBuffer;
@@ -330,6 +342,9 @@ void BaseGame::LoadDefaultResources()
   ResourceManager::RegisterResource(pLightShader, "DeferredLightShader");
   ResourceManager::RegisterResource(pGBufferShader, "DeferredGBufferShader");
   ResourceManager::RegisterResource(pCombineShader, "DeferredCombineShader");
+
+  // Initialize vertex manager, which creates the default vertex formats in use.
+  VertexManager::Initialize(m_pGraphicsProvider);
 }
 
 } // namespace shinybear

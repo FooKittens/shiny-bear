@@ -5,6 +5,7 @@ namespace shinybear
   const Vector2 Vector2::kZero(0, 0);
   const Vector2 Vector2::kUnitX(1, 0);
   const Vector2 Vector2::kUnitY(0, 1);
+  const Vector2 Vector2::kOne(1, 1);
 
   const Vector3 Vector3::kZero(0, 0, 0);
   const Vector3 Vector3::kUnitX(1, 0, 0);

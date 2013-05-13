@@ -94,7 +94,7 @@ private:
   float m_lastFps;
   
   // Holds a font used to display fps.
-  FontProxy m_font;
+  FontProxy *m_pFont;
   
 
 };

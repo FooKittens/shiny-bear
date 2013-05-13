@@ -79,6 +79,7 @@ void ResourceManager::DeleteResource(IResource *pResource)
   {
     if(it->second == pResource)
     {
+      OutputDbgFormat("Resource [%s] was deleted.", it->first);
       delete it->second;
       resources.erase(it);
       break;
@@ -100,6 +101,7 @@ void ResourceManager::Cleanup()
   while(it != end)
   {
     delete it->second;
+    it->second = nullptr;
     ++it;
   }
 

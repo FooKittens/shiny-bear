@@ -29,7 +29,6 @@ GameWindow::GameWindow(BaseGame *pGame, const Size &size)
   wclass.lpszClassName = s_className;
   wclass.hCursor = LoadCursor(NULL, IDC_ARROW);
   
-
   // Register the class for usage.
   RegisterClass(&wclass);
 

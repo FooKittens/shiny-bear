@@ -1,6 +1,8 @@
 #ifndef TESTAPP_H
 #define TESTAPP_H
 
+#include "TestDrawable.h"
+
 #include <base\BaseGame.h>
 #include <scene\LightNode.h>
 #include <graphics\Light.h>
@@ -42,6 +44,8 @@ private:
   void CreateCubes();
   void CreateLights();
   void CreateRandomLights();
+
+  TestDrawable *m_pDrawable;
 
   // Terrain generator for creating clusters.
   TerrainGenerator *m_pGenerator;
