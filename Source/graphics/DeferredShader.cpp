@@ -173,6 +173,8 @@ void DeferredShader::BeginLightPass()
   m_pLightShader->SetTexture("g_depthMap", m_pDepthTarget->GetTexture());
   m_pLightShader->SetMatrix("g_invView", m_pCamera->GetViewMatrix().Inverse().Transpose());
   m_pLightShader->SetMatrix("g_view", m_pCamera->GetViewMatrix());
+  m_pLightShader->SetFloat("g_zFar", m_pCamera->GetViewDistance());
+
 
   m_pLightShader->Begin();
 }

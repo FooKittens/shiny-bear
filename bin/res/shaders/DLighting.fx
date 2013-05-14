@@ -14,6 +14,7 @@ cbuffer perFrame
 
 	// Used to offset textures.
 	float2 g_halfPixel;
+	float g_zFar;
 	
 	texture g_normalMap;
 	texture g_depthMap;
@@ -66,7 +67,7 @@ float3 UnProjectPosition(float2 uv, float4 screenPos)
 {
 	float ldz =	tex2D(g_depthSampler, uv).r;
 	float3 posView = mul(float4(screenPos), g_invProjection).xyz;
-	float3 viewRay = float3(posView.xy * (25.0f / posView.z), 25.0f);
+	float3 viewRay = float3(posView.xy * (g_zFar/ posView.z), g_zFar);
 	return viewRay * ldz;
 
 
@@ -97,7 +98,7 @@ float4 DirectionalLight(float3 position, float3 normal, float3 lightDir, float s
 
 		// Specular intensity
 		float sInten = pow(max(0.0f, dot(viewVec, reflectVec)), specExp);
-		sInten = 0;
+
 		retCol = float4(g_lightColor.rgb * dInten, sInten);
 	}
 

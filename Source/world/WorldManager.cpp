@@ -37,9 +37,9 @@ void WorldManager::Generate(int sizeX, int sizeZ)
 
       Cluster *cluster = DBG_NEW Cluster(m_pProvider);
       cluster->m_world = Mat4x4::CreateTranslation(
-        tx * Cluster::kSizeX + Cluster::kSizeX / 2,
+        tx * Cluster::kSizeX,
         0,
-        tz * Cluster::kSizeZ + Cluster::kSizeZ / 2
+        tz * Cluster::kSizeZ
       );
 
       // Add cluster to drawable list.

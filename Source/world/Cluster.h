@@ -19,9 +19,9 @@ class Cluster : public IDrawable, public IGraphicsResource
 public:
   friend class WorldManager;
 
-  static const int kSizeX = 4;
-  static const int kSizeY = 1;
-  static const int kSizeZ = 4;
+  static const int kSizeX = 16;
+  static const int kSizeY = 16;
+  static const int kSizeZ = 16;
 
   Cluster(GraphicsProvider *pProvider);
   ~Cluster();

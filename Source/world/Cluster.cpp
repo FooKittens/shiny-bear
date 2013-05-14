@@ -16,7 +16,8 @@ Cluster::Cluster(GraphicsProvider *pProvider)
   m_pMesh = DBG_NEW Mesh(pProvider);  
 
   BlockColor mat;
-  mat = ARGB(0x20, rand() % 255, rand() % 255, rand() % 255);
+  mat = ARGB(0x40, rand() % 255, rand() % 255, rand() % 255);
+  mat = ARGB(0x40, 0x99, 0x99, 0x99);
   m_blocks = DBG_NEW Block**[kSizeX];
   for(int x = 0; x < kSizeX; ++x)
   {
@@ -44,6 +45,8 @@ Cluster::~Cluster()
     delete[] m_blocks[x];
   }
   delete[] m_blocks;
+
+  delete m_pMesh;
 
 }
 
@@ -83,9 +86,9 @@ void Cluster::RecreateMesh()
           continue;
         }
         
-        float blockX = x - kSizeX / 2;
-        float blockY = y - kSizeY / 2;
-        float blockZ = z - kSizeZ / 2;
+        float blockX = (float)x - (float)kSizeX / 2.0f;
+        float blockY = (float)y - (float)kSizeY / 2.0f;
+        float blockZ = (float)z - (float)kSizeZ / 2.0f;
 
         int hideFlags = 0;
         if(x > 0 && m_blocks[x - 1][y][z].IsVisible())

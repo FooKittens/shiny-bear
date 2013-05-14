@@ -35,6 +35,16 @@ TestApp::TestApp()
 
 TestApp::~TestApp()
 {
+  auto it = m_lights.begin();
+  auto end = m_lights.end();
+
+  while(it != end)
+  {
+    delete *it++;
+  }
+
+  m_lights.clear();
+
   delete m_pWorldManager;
   delete m_pCamera;
   delete m_pDrawable;
@@ -171,17 +181,37 @@ bool TestApp::OnInitialize()
   
   pRenderer->AddLight(DBG_NEW BaseLight(D3DXCOLOR(0.15f, 0.15f, 0.15f, 1.0f)));
   pRenderer->AddLight(DBG_NEW DirectionalLight(
-    D3DXCOLOR(0.15f, 0.15f, 0.15f, 1.0f), Vector3(1.0f, 0.0f, 0.0f))
+    D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f), Vector3(1.0f, -0.7f, -1.0f))
   );
 
   pRenderer->AddLight(DBG_NEW PointLight(
-   D3DXCOLOR(0.5f, 0.95f, 0.5f, 1.0f), Vector3(1.0f, 3.5f, 1.0f), 0.0f, 25.0f));
+    D3DXCOLOR(0.5f, 0.65f, 0.5f, 1.0f), Vector3(0.0f, 9.5f, 0.0f), 0.0f, 35.0f));
 
   m_pWorldManager = DBG_NEW WorldManager(GetGraphicsProvider(), GetRenderer());
-  m_pWorldManager->Generate(4, 4);
+  m_pWorldManager->Generate(8, 8);
+
+  CreateLights();
 
   // Initialization successful.
   return true;
+}
+
+void TestApp::CreateLights()
+{
+  D3DXCOLOR color;
+  for(int i = 0; i < 200; ++i)
+  {
+    float r = (rand() % 100 + 155) / 255.0f;
+    float g = (rand() % 100 + 155) / 255.0f;
+    float b = (rand() % 100 + 155) / 255.0f;
+
+
+    PointLight *pLight = DBG_NEW PointLight(
+      D3DXCOLOR(r, g, b, 1.0f), Vector3::kZero, 0.0f, 35.0f);
+
+    m_lights.push_back(DBG_NEW RandomMover(pLight, Vector3::kUnitY * 10.0f, 50.0f));
+    GetRenderer()->AddLight(pLight);
+  }
 }
 
 const float kPlayerSpeed = 9.5f;
@@ -191,6 +221,12 @@ void TestApp::OnUpdate(double elapsedSeconds)
 {
   BaseGame::OnUpdate(elapsedSeconds);
   m_pCamera->Update(elapsedSeconds);
+
+  size_t sz = m_lights.size();
+  for(int i = 0; i < sz; ++i)
+  {
+    m_lights[i]->Update(elapsedSeconds);
+  }
 
   InputManager::GetControllerState(&m_gamePadState);
   InputManager::GetKeyboardState(&m_newKeys);

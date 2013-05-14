@@ -1,37 +1,38 @@
 #ifndef RANDOMMOVER_H
 #define RANDOMMOVER_H
 
-#include <scene\SceneNode.h>
+#include "graphics\lighting\Lighting.h"
 #include <util\math\Math.h>
 
 
 // Moves around randomly on the xz plane on a given height..
-class RandomMover : public shinybear::SceneNode
+class RandomMover
 {
 public:
-  RandomMover(const shinybear::Vector3 &center, float radius)
+  RandomMover(shinybear::PointLight *pLight, const shinybear::Vector3 &center, float radius)
   {
+    m_pLight = pLight;
     m_radius = radius;
     m_height = center.y;
     m_center = center;
-    Translate(center.x, center.y, center.z);
+    m_world = shinybear::Mat4x4::CreateTranslation(center.x, center.y, center.z);
+    
     SelectNewTarget();
   }
-  ~RandomMover() { }
+  ~RandomMover() { delete m_pLight; }
 
   void Update(double elapsedTime) 
   {
-    if(m_target.DistanceTo(GetTransform().GetPosition()) < 5.0f)
+    if(m_target.DistanceTo(m_world.GetPosition()) < 5.0f)
     {
       SelectNewTarget();
     }
 
-    shinybear::Vector3 dir = m_target - GetTransform().GetPosition();
+    shinybear::Vector3 dir = m_target - m_world.GetPosition();
     dir.Normalize();
     dir *= m_speed * elapsedTime;
-    Translate(dir.x, dir.y, dir.z);
-
-    UpdateChildren(elapsedTime);
+    m_world *= shinybear::Mat4x4::CreateTranslation(dir.x, dir.y, dir.z);
+    m_pLight->m_position = m_world.GetPosition();
   }
 
 private:
@@ -52,6 +53,9 @@ private:
   float m_speed;
   float m_currentX;
   float m_currentZ;
+
+  shinybear::PointLight *m_pLight;
+  shinybear::Mat4x4 m_world;
 };
 
 #endif // RANDOMMOVER_H

@@ -19,7 +19,10 @@ namespace shinybear
   class SceneManager; class SceneView;
   class Mesh; class MeshNode; struct BlockMaterial;
   class Camera; class WorldManager;
+  class BaseLight;
 }
+
+class RandomMover;
 
 class TestApp : public shinybear::BaseGame
 {
@@ -40,6 +43,8 @@ protected:
 private:
   TestDrawable *m_pDrawable;
 
+  void CreateLights();
+
   // Terrain generator for creating clusters.
   shinybear::WorldManager *m_pWorldManager;
 
@@ -54,6 +59,7 @@ private:
   shinybear::KeyboardState m_oldKeys;
   shinybear::MouseState m_newMouse;
   shinybear::GamePadState m_gamePadState;
+  std::vector<RandomMover*> m_lights;
 };
 
 #endif
