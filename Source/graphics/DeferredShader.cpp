@@ -229,7 +229,9 @@ void DeferredShader::RenderPointLight(PointLight *pLight)
     m_pCamera->GetViewMatrix() *
     m_pCamera->GetProjectionMatrix();
 
-  if(m_pCamera->GetViewMatrix().Transform(pLight->m_position).Length() < pLight->m_range / 2.0f)
+  Vector4 lPos = pLight->m_position;
+  lPos.w = 1.0f;
+  if(m_pCamera->GetViewMatrix().Transform(lPos).Length() < pLight->m_range)
   {
     m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
   }

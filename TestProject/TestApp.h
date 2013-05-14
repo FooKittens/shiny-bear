@@ -18,10 +18,8 @@ namespace shinybear
 {
   class SceneManager; class SceneView;
   class Mesh; class MeshNode; struct BlockMaterial;
-  class Camera;
+  class Camera; class WorldManager;
 }
-
-class TerrainGenerator;
 
 class TestApp : public shinybear::BaseGame
 {
@@ -40,33 +38,12 @@ protected:
   void OnDeviceLost();
   void OnDeviceReset();
 private:
-
-  void CreateCubes();
-  void CreateLights();
-  void CreateRandomLights();
-
   TestDrawable *m_pDrawable;
 
   // Terrain generator for creating clusters.
-  TerrainGenerator *m_pGenerator;
+  shinybear::WorldManager *m_pWorldManager;
 
   shinybear::Camera *m_pCamera;
-
-  shinybear::SceneManager *m_pScene;
-  shinybear::MeshNode *m_pPlayerNode;
-  shinybear::MeshNode *m_pSunCubeNode;
-  shinybear::MeshNode *m_pSunAxisNode;
-
-  // Some random lights.
-  shinybear::Light m_ambientLight;
-  shinybear::Light m_sunLight;
-  shinybear::Light m_playerLight;
-  shinybear::Light m_randomLight;
-
-  shinybear::LightNode *m_pAmbientLightNode;
-  shinybear::LightNode *m_pSunLightNode;
-  shinybear::LightNode *m_pPlayerLightNode;
-  shinybear::LightNode *m_pRandomLightNode;
 
   // Materials for testing.
   shinybear::BlockColor m_grassMaterial;
@@ -77,8 +54,6 @@ private:
   shinybear::KeyboardState m_oldKeys;
   shinybear::MouseState m_newMouse;
   shinybear::GamePadState m_gamePadState;
-
-  std::vector<shinybear::MeshNode *> m_meshes;
 };
 
 #endif

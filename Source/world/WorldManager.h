@@ -4,23 +4,32 @@
 #include "scene\SceneNode.h"
 #include <vector>
 
-namespace shinybear { class Cluster; }
+namespace shinybear 
+{ 
+  class Cluster; class GraphicsProvider;
+  class Renderer;
+}
 
 namespace shinybear
 {
 
-class WorldManager : public SceneNode
+class WorldManager
 {
 public:
-  WorldManager();
+  WorldManager(GraphicsProvider *pProvider, Renderer *pRenderer);
 
   ~WorldManager();
 
-  void AddCluster(Cluster *pCluster);
+  void Generate(int sizeX, int sizeZ);
   void Update(double elapsedSeconds);
+  
 
 private:
-  //std::vector<Cluster*> m_clusters;
+  void DeleteAll();
+
+  GraphicsProvider *m_pProvider;
+  Renderer *m_pRenderer;
+  std::vector<Cluster*> m_clusters;
 };
 
 } // namespace shinybear

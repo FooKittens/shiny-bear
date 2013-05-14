@@ -6,7 +6,7 @@ namespace shinybear
 {
 
 Camera::Camera(float aspectRatio, float fov, float znear, float zfar)
-  :m_speed(2.0f)
+  :m_speed(8.0f)
 {
   SetViewDistance(zfar);
   SetNearPlane(znear);

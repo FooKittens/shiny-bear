@@ -62,15 +62,23 @@ sampler g_depthSampler = sampler_state
 
 
 // Helper function to retrieve a view-space position from a screen-space coordinate and depth.
-float3 UnProjectPosition(float2 uv)
+float3 UnProjectPosition(float2 uv, float4 screenPos)
 {
-  float z = tex2D(g_depthSampler, uv).r;
-  float x = uv.x * 2 - 1;
-  float y = (1 - uv.y)  * 2 -1;
+	float ldz =	tex2D(g_depthSampler, uv).r;
+	float3 posView = mul(float4(screenPos), g_invProjection).xyz;
+	float3 viewRay = float3(posView.xy * (25.0f / posView.z), 25.0f);
+	return viewRay * ldz;
 
-  // Un-Projected position.
-  float4 upPos = mul(float4(x, y, z, 1.0f), g_invProjection);
-  return upPos.xyz / upPos.w;
+
+	//float ldz =	tex2D(g_depthSampler, uv).r;
+	float z = ldz * (100.0f - 1.0f) + 1.0f;
+	float x = uv.x * 2 - 1;
+	float y = (1 - uv.y)  * 2 -1;
+  
+    // Un-Projected position.
+ 	float4 upPos = mul(float4(x, y, ldz, 1.0f), g_invProjection);
+ 	//upPos.z = z;
+	return upPos.xyz / upPos.w;
 }
 
 // Used to calculate a directional light.
@@ -206,7 +214,7 @@ float4 PS(PSInput input) : SV_TARGET
 	float3 normal = normalize(2.0f * normalVal.xyz - 1.0f);
 
 	// Retrieve view-space position.
-	float3 position = UnProjectPosition(uv);
+	float3 position = UnProjectPosition(uv, input.position);
 
 	if(g_lightType == DIRECTIONAL_LIGHT)
 	{

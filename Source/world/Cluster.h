@@ -1,24 +1,27 @@
 #ifndef SHINYBEAR_CLUSTER_H
 #define SHINYBEAR_CLUSTER_H
 
-#include "scene\SceneNode.h"
+#include "resource\types\IGraphicsResource.h"
+#include "graphics\render\IDrawable.h"
 #include "world\Block.h"
 
 namespace shinybear 
 {
-  class MeshNode; class Mesh;
+  class Mesh; class WorldManager;
   class GraphicsProvider;
 }
 
 namespace shinybear
 {
 
-class Cluster : public SceneNode
+class Cluster : public IDrawable, public IGraphicsResource
 {
 public:
-  static const int kSizeX = 32;
-  static const int kSizeY = 32;
-  static const int kSizeZ = 32;
+  friend class WorldManager;
+
+  static const int kSizeX = 4;
+  static const int kSizeY = 1;
+  static const int kSizeZ = 4;
 
   Cluster(GraphicsProvider *pProvider);
   ~Cluster();
@@ -26,7 +29,16 @@ public:
   void SetBlock(const Block &newBlock, int x, int y, int z);
   Block *GetBlock(int x, int y, int z);
 
-  void Render(SceneManager *pScene);
+  void Render(GraphicsProvider *pProvider);
+
+  // For IGraphicsResource interface.
+  void OnDeviceLost();
+  void OnDeviceReset(GraphicsProvider *pProvider);
+
+  // For IDrawable Interface
+  const Mat4x4 &GetWorldMatrix() const { return m_world; }
+  float GetBoundingRadius() const { return static_cast<float>(kSizeX); }
+  RenderPass::E GetRenderPass() const { return RenderPass::DEFERRED; }
 
 private:
   enum HideFlags
@@ -44,8 +56,11 @@ private:
     const Block &block, Mesh *pMesh, int hideFlags);
 
   bool m_recreateMesh;
-  MeshNode *m_pMeshNode;
+  Mesh *m_pMesh;
   Block ***m_blocks;
+
+  // Cluster world matrix.
+  Mat4x4 m_world;
 };
 
 inline void Cluster::SetBlock(const Block &newBlock, int x, int y, int z)

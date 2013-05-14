@@ -56,6 +56,8 @@ GeometryVSOut VSNormalSpecularExp(GeometryVSIn input)
   float z = mul(float4(input.position, 1), mul(g_world, g_view)).z;
   output.depth.x = output.position.z;
   output.depth.y = output.position.w;
+  //output.depth.x = (z - 1.0f) / (g_zfar - 1.0f);
+  output.depth.x = z;
   return output;
 }
 
@@ -66,7 +68,7 @@ MRTOUT PSNormalSpecularExp(GeometryVSOut input)
 
   MRTOUT output;
   output.rt0 = float4(0.5f * (normalize(normal) + 1.0f), input.color.a);
-  output.rt1 = input.depth.x / input.depth.y;
+  output.rt1 = input.depth.x / (g_zfar - 1.0f); // ((input.depth.x - 1.0f) / (g_zfar - 1.0f)) / input.depth.y;
   output.rt2 = float4(input.color.rgb, 1.0f);
   return output;
 }
@@ -96,7 +98,7 @@ MRTOUT PSClearGBuffer(float4 pos : POSITION0)
   // Results in a zero normal with 0 in specular.
   mOut.rt0 = float4(0.5f, 0.5f, 0.5f, 0.0f);
 
-  mOut.rt1 = float4(0, 0, 0, 0);
+  mOut.rt1 = 1; //float4(0, 0, 0, 0);
   mOut.rt2 = float4(0, 0, 0, 1.0f);
   return mOut;
 }

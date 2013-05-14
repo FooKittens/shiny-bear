@@ -32,8 +32,9 @@ public:
 
   void RenderMesh();
 
-private:
   void Clear();
+private:
+  
 
   GraphicsProvider *m_pProvider;
   size_t m_vertexCount;

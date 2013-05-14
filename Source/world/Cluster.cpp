@@ -13,10 +13,7 @@ namespace shinybear
 Cluster::Cluster(GraphicsProvider *pProvider)
 {
   m_recreateMesh = true;
-  Mesh *pMesh = DBG_NEW Mesh(pProvider);
-  m_pMeshNode = DBG_NEW MeshNode(pMesh);
-  Attach(m_pMeshNode);
-  
+  m_pMesh = DBG_NEW Mesh(pProvider);  
 
   BlockColor mat;
   mat = ARGB(0x20, rand() % 255, rand() % 255, rand() % 255);
@@ -50,7 +47,17 @@ Cluster::~Cluster()
 
 }
 
-void Cluster::Render(SceneManager *pScene)
+void Cluster::OnDeviceLost()
+{
+  m_pMesh->Clear();
+}
+
+void Cluster::OnDeviceReset(GraphicsProvider *pProvider)
+{
+  m_recreateMesh = true;
+}
+
+void Cluster::Render(GraphicsProvider *pProvider)
 {
   if(m_recreateMesh)
   {
@@ -58,13 +65,12 @@ void Cluster::Render(SceneManager *pScene)
     m_recreateMesh = false;
   }
 
-  RenderChildren(pScene);
+  m_pMesh->RenderMesh();  
 }
 
 void Cluster::RecreateMesh()
 {
-  Mesh *pMesh = m_pMeshNode->GetMesh();
-  pMesh->BeginMesh();
+  m_pMesh->BeginMesh();
   //pMesh->Reserve(kSizeX * kSizeY * kSizeZ * 24);
   for(int x = 0; x < kSizeX; ++x)
   {
@@ -77,9 +83,9 @@ void Cluster::RecreateMesh()
           continue;
         }
         
-        float blockX = (float)x - (float)kSizeX / 2.0f;
-        float blockY = (float)y - (float)kSizeY / 2.0f;
-        float blockZ = (float)z - (float)kSizeZ / 2.0f;
+        float blockX = x - kSizeX / 2;
+        float blockY = y - kSizeY / 2;
+        float blockZ = z - kSizeZ / 2;
 
         int hideFlags = 0;
         if(x > 0 && m_blocks[x - 1][y][z].IsVisible())
@@ -100,12 +106,12 @@ void Cluster::RecreateMesh()
         if(z < kSizeZ - 1 && m_blocks[x][y][z + 1].IsVisible())
           hideFlags |= HF_BACK;
 
-        CreateCube(blockX, blockY, blockZ, m_blocks[x][y][z], pMesh, hideFlags);
+        CreateCube(blockX, blockY, blockZ, m_blocks[x][y][z], m_pMesh, hideFlags);
       }
     }
   }
 
-  pMesh->EndMesh();
+  m_pMesh->EndMesh();
 }
 
 void Cluster::CreateCube(float x, float y, float z, const Block &block,
