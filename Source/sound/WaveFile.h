@@ -2,9 +2,6 @@
 #define SHINYBEAR_WAVEFILE_H
 
 #include "resource\types\ISoundResource.h"
-#include "sound\SoundProvider.h"
-
-#include <dsound.h>
 
 namespace shinybear
 {
@@ -25,21 +22,16 @@ struct WaveHeader
 	char dataChunkId[4];
 	unsigned long dataSize;
 };
-#pragma pop
+#pragma pack(pop)
 
 class WaveFile : public ISoundResource
 {
 public:
-  ~WaveFile();
-
   static WaveFile *LoadFromFile(wchar_t *filename, SoundProvider*);
-  void Play();
 
 private:
   WaveFile();
   WaveHeader m_waveHeader;
-  char *m_pPCMData;
-  IDirectSoundBuffer8 *m_pSecondaryBuffer;
 };
 
 } // namespace shinybear

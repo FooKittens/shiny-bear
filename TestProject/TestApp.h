@@ -11,7 +11,6 @@
 #include <d3d9.h>
 #include <vector>
 
-
 namespace shinybear
 {
   class SceneManager; class SceneView;

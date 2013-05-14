@@ -150,16 +150,19 @@ MeshNode *TestApp::CreateMeshNode(BlockColor mat)
   return pNode;
 }
 
-// TEMP
-WaveFile *testSound = nullptr;
-// END TEMP
-
 bool TestApp::OnInitialize() 
 {
-  // TEMP
-  testSound = ResourceManager::GetResource<WaveFile>("TestSound");
-  // END TEMP
+  // Sound!
+  wchar_t *pStrBuffer;
+  size_t strSize = GetAbsolutePath(L"res\\sounds\\Wololo.wav", &pStrBuffer);
+  if(FileExists(pStrBuffer, strSize))
+  {
+    WaveFile *testSound = WaveFile::LoadFromFile(pStrBuffer, GetSoundProvider());
+    ResourceManager::RegisterResource(testSound, "TestSound");
+  }
+  delete[] pStrBuffer;
 
+  // Graphics!
   m_pScene = DBG_NEW SceneManager(GetGraphicsProvider());
   m_pGenerator = DBG_NEW TerrainGenerator(GetGraphicsProvider(), m_pScene->GetRoot());
 
@@ -289,9 +292,9 @@ void TestApp::OnUpdate(double elapsedSeconds)
   m_gamePadState.Vibrate(m_gamePadState.leftTrigger,
     m_gamePadState.rightTrigger);
 
-  if(m_newKeys.IsKeyDown(Keys::K_NUMPAD0))
+  if(m_newKeys.IsKeyDown(Keys::K_NUMPAD0) && !m_oldKeys.IsKeyDown(Keys::K_NUMPAD0))
   {
-    testSound->Play();
+    ResourceManager::GetResource<ISoundResource>("TestSound")->Play();
   }
 
   if(m_newKeys.IsKeyDown(Keys::K_ADD))

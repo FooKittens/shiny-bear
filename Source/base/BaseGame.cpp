@@ -8,10 +8,6 @@
 #include "resource\ResourceManager.h"
 #include <fstream>
 
-// TEMP
-#include "sound\WaveFile.h"
-// END TEMP
-
 namespace shinybear
 {
 
@@ -126,18 +122,6 @@ bool BaseGame::Initialize()
   m_font.desc = fontdesc;
   
   ResourceManager::RegisterResource(&m_font, "BaseGameFont");
-  
-  // TEMP
-  wchar_t *pStrBuffer;
-  size_t strSize = GetAbsolutePath(L"res\\sounds\\Wololo.wav", &pStrBuffer);
-  if(FileExists(pStrBuffer, strSize))
-  {
-    WaveFile *testSound;
-    testSound = WaveFile::LoadFromFile(pStrBuffer, m_pSoundProvider);
-    ResourceManager::RegisterResource(testSound, "TestSound");
-  }
-  delete[] pStrBuffer;
-  // END TEMP
 
   // Call derived method.
   if(!OnInitialize())

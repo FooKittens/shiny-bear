@@ -66,6 +66,7 @@
     <ClCompile Include="Source\graphics\Shader.cpp" />
     <ClCompile Include="Source\graphics\VertexDeclaration.cpp" />
     <ClCompile Include="source\resource\ResourceManager.cpp" />
+    <ClCompile Include="Source\resource\types\ISoundResource.cpp" />
     <ClCompile Include="Source\scene\CameraNode.cpp" />
     <ClCompile Include="source\scene\camera\Camera.cpp" />
     <ClCompile Include="Source\scene\LightNode.cpp" />

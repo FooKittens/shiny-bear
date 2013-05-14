@@ -14,18 +14,12 @@ namespace shinybear
 WaveFile::WaveFile()
 {
   memset(&m_waveHeader, 0, sizeof(WaveHeader));
-  m_pPCMData = nullptr;
-  m_pSecondaryBuffer = nullptr;
-}
-
-WaveFile::~WaveFile()
-{
-  delete[] m_pPCMData;
 }
 
 WaveFile *WaveFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvider)
 {
   WaveFile *pResult = DBG_NEW WaveFile();
+  pResult->m_pSoundProvider = pSoundProvider;
   WaveHeader &wh = pResult->m_waveHeader;
 
   // Open file stream
@@ -45,7 +39,7 @@ WaveFile *WaveFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvide
 
   // Reinterpret into header data
   UnpadWideChar(tempBuffer, bufSz, reinterpret_cast<char*>(&wh), bufSz);
-  tempBuffer = nullptr;
+  delete[] tempBuffer;
 
   // Make sure it's a wave file
   if((wh.chunkId[0] != 'R') || (wh.chunkId[1] != 'I') || 
@@ -70,23 +64,16 @@ WaveFile *WaveFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvide
 
   // All is good, so we load the actual data!
   bufSz = pResult->m_waveHeader.dataSize;
-  pResult->m_pPCMData = DBG_NEW char[bufSz];
+  char *pPCMData = DBG_NEW char[bufSz];
   tempBuffer = DBG_NEW wchar_t[bufSz];
   file.read(tempBuffer, bufSz);
   UnpadWideChar(tempBuffer, bufSz,
-    reinterpret_cast<char*>(pResult->m_pPCMData), bufSz
+    reinterpret_cast<char*>(pPCMData), bufSz
   );
 
   delete[] tempBuffer;
 
-  //if(file.eof())
-  //{
-  //  file.close();
-  //}
-  //else
-  //{
-  //  assert(false && "Bad wave file!");
-  //}
+  file.close();
 
   WAVEFORMATEX waveFormat;
   waveFormat.cbSize = sizeof(WAVEFORMATEX);
@@ -118,7 +105,7 @@ WaveFile *WaveFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvide
      assert(false && "Could not create the temporary sound buffer!");
   }
   hr = pTempBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*)&resultBuffer);
-  if(FAILED(hr)) 
+  if(FAILED(hr))
   { 
      assert(false && "Could not query the created sound buffer interface!");
   }
@@ -136,7 +123,8 @@ WaveFile *WaveFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvide
     NULL,
     DSBLOCK_ENTIREBUFFER
   );
-  memcpy(lpvWrite, pResult->m_pPCMData, dwLength);
+  memcpy(lpvWrite, pPCMData, dwLength);
+  delete[] pPCMData;
   resultBuffer->Unlock(
     lpvWrite,
     dwLength,
@@ -145,13 +133,6 @@ WaveFile *WaveFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvide
   );
   
   return pResult;
-}
-
-void WaveFile::Play()
-{
-  // Info on the third parameter, the play flags
-  // http://msdn.microsoft.com/en-us/library/windows/desktop/microsoft.directx_sdk.idirectsoundbuffer8.idirectsoundbuffer8.play(v=vs.85).aspx
-  m_pSecondaryBuffer->Play(0, 0, 0);
 }
 
 } // namespace shinybear

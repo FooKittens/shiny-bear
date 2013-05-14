@@ -52,6 +52,7 @@ protected:
   // Retrieve the games window.
   virtual GameWindow *GetWindow() const;
   virtual GraphicsProvider *GetGraphicsProvider() const;
+  virtual SoundProvider *GetSoundProvider() const;
 
   virtual float GetCurrentFps();
 
@@ -97,6 +98,11 @@ inline GameWindow *BaseGame::GetWindow() const
 inline GraphicsProvider *BaseGame::GetGraphicsProvider() const
 {
   return m_pGraphicsProvider;
+}
+
+inline SoundProvider *BaseGame::GetSoundProvider() const
+{
+  return m_pSoundProvider;
 }
 
 inline bool BaseGame::IsPaused() const

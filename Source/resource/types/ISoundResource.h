@@ -2,8 +2,11 @@
 #define SHINYBEAR_ISOUNDRESOURCE_H
 
 #include "resource\IResource.h"
+#include "sound\SoundProvider.h"
 
-namespace shinybear { class SoundManager; }
+#include <dsound.h>
+
+namespace shinybear { class SoundProvider; }
 
 namespace shinybear
 {
@@ -11,6 +14,7 @@ namespace shinybear
 class ISoundResource : public IResource
 {
 public:
+  ~ISoundResource();
   // Called when there's a new sound device available.
   // Passes in the sound manager to help re-create any resources.
   //virtual void OnDeviceReset(SoundManager *pSoundManager) = 0;
@@ -19,23 +23,13 @@ public:
   //virtual void OnDeviceLost() = 0;
 
   ResourceType::Enum GetType() const { return ResourceType::RT_SOUND; }
-};
 
-class SoundResource : public ISoundResource
-{
-public:
-  SoundResource(SoundManager *pSoundManager)
-  {
-    m_pSoundManager = pSoundManager;
-  }
-
-  void OnDeviceReset(SoundManager *pSoundManager) { }
-  void OnDeviceLost() { }
+  virtual void Play();
 protected:
-  SoundManager * const GetSoundManager() const { return m_pSoundManager; }
-
-private:
-  SoundManager *m_pSoundManager;
+  ISoundResource();
+  SoundProvider *m_pSoundProvider;
+  IDirectSoundBuffer8 *m_pSecondaryBuffer;
+  IDirectSoundBuffer8 *m_pExtraBuffer;
 };
 
 } // namespace shinybear

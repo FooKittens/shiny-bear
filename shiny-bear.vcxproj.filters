@@ -266,5 +266,8 @@
     <ClCompile Include="Source\sound\SoundProvider.cpp">
       <Filter>Source\sound</Filter>
     </ClCompile>
+    <ClCompile Include="Source\resource\types\ISoundResource.cpp">
+      <Filter>Source\resource\types</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
