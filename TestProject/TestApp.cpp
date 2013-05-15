@@ -152,21 +152,29 @@ MeshNode *TestApp::CreateMeshNode(BlockColor mat)
 
 bool TestApp::OnInitialize()
 {
-  // Sound!
+  // Sounds!
   wchar_t *pStrBuffer;
   size_t strSize = GetAbsolutePath(L"res\\sounds\\Wololo.wav", &pStrBuffer);
   if(FileExists(pStrBuffer, strSize))
   {
     WaveFile *testSound = WaveFile::LoadFromFile(pStrBuffer, GetSoundProvider());
-    ResourceManager::RegisterResource(testSound, "TestSound");
+    ResourceManager::RegisterResource(testSound, "Wololo");
   }
   delete[] pStrBuffer;
 
-  strSize = GetAbsolutePath(L"res\\sounds\\Targeted_Therapy_Ogg_Synth.ogg", &pStrBuffer);
+  strSize = GetAbsolutePath(L"res\\sounds\\Wololo Blues.ogg", &pStrBuffer);
   if(FileExists(pStrBuffer, strSize))
   {
     OggFile *oggTest = OggFile::LoadFromFile(pStrBuffer, GetSoundProvider());
-    ResourceManager::RegisterResource(oggTest, "OggTest");
+    ResourceManager::RegisterResource(oggTest, "Blues");
+  }
+  delete[] pStrBuffer;
+
+  strSize = GetAbsolutePath(L"res\\sounds\\Roggan.ogg", &pStrBuffer);
+  if(FileExists(pStrBuffer, strSize))
+  {
+    OggFile *oggTest = OggFile::LoadFromFile(pStrBuffer, GetSoundProvider());
+    ResourceManager::RegisterResource(oggTest, "Roggan");
   }
   delete[] pStrBuffer;
 
@@ -302,12 +310,17 @@ void TestApp::OnUpdate(double elapsedSeconds)
 
   if(m_newKeys.IsKeyDown(Keys::K_NUMPAD0) && !m_oldKeys.IsKeyDown(Keys::K_NUMPAD0))
   {
-    ResourceManager::GetResource<ISoundResource>("TestSound")->Play();
+    ResourceManager::GetResource<ISoundResource>("Wololo")->Play();
   }
 
   if(m_newKeys.IsKeyDown(Keys::K_NUMPAD1) && !m_oldKeys.IsKeyDown(Keys::K_NUMPAD1))
   {
-    ResourceManager::GetResource<ISoundResource>("OggTest")->Play();
+    ResourceManager::GetResource<ISoundResource>("Blues")->Play();
+  }
+
+  if(m_newKeys.IsKeyDown(Keys::K_NUMPAD2) && !m_oldKeys.IsKeyDown(Keys::K_NUMPAD2))
+  {
+    ResourceManager::GetResource<ISoundResource>("Roggan")->Play();
   }
 
   if(m_newKeys.IsKeyDown(Keys::K_ADD))
