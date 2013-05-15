@@ -14,10 +14,10 @@
 #include <world\Block.h>
 #include <world\Cluster.h>
 #include <util\SBUtil.h>
-//TEMP
 #include <resource\ResourceManager.h>
 #include <sound\WaveFile.h>
-//END TEMP
+#include <sound\OggFile.h>
+
 #include "TerrainGenerator.h"
 #include "RandomMover.h"
 
@@ -150,7 +150,7 @@ MeshNode *TestApp::CreateMeshNode(BlockColor mat)
   return pNode;
 }
 
-bool TestApp::OnInitialize() 
+bool TestApp::OnInitialize()
 {
   // Sound!
   wchar_t *pStrBuffer;
@@ -159,6 +159,14 @@ bool TestApp::OnInitialize()
   {
     WaveFile *testSound = WaveFile::LoadFromFile(pStrBuffer, GetSoundProvider());
     ResourceManager::RegisterResource(testSound, "TestSound");
+  }
+  delete[] pStrBuffer;
+
+  strSize = GetAbsolutePath(L"res\\sounds\\Targeted_Therapy_Ogg_Synth.ogg", &pStrBuffer);
+  if(FileExists(pStrBuffer, strSize))
+  {
+    OggFile *oggTest = OggFile::LoadFromFile(pStrBuffer, GetSoundProvider());
+    ResourceManager::RegisterResource(oggTest, "OggTest");
   }
   delete[] pStrBuffer;
 
@@ -295,6 +303,11 @@ void TestApp::OnUpdate(double elapsedSeconds)
   if(m_newKeys.IsKeyDown(Keys::K_NUMPAD0) && !m_oldKeys.IsKeyDown(Keys::K_NUMPAD0))
   {
     ResourceManager::GetResource<ISoundResource>("TestSound")->Play();
+  }
+
+  if(m_newKeys.IsKeyDown(Keys::K_NUMPAD1) && !m_oldKeys.IsKeyDown(Keys::K_NUMPAD1))
+  {
+    ResourceManager::GetResource<ISoundResource>("OggTest")->Play();
   }
 
   if(m_newKeys.IsKeyDown(Keys::K_ADD))

@@ -177,6 +177,9 @@
     <ClInclude Include="Source\sound\SoundProvider.h">
       <Filter>Source\sound</Filter>
     </ClInclude>
+    <ClInclude Include="Source\sound\OggFile.h">
+      <Filter>Source\sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\base\system\GameWindow.cpp">
@@ -268,6 +271,9 @@
     </ClCompile>
     <ClCompile Include="Source\resource\types\ISoundResource.cpp">
       <Filter>Source\resource\types</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sound\OggFile.cpp">
+      <Filter>Source\sound</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

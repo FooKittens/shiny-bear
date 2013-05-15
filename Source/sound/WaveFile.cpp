@@ -23,23 +23,15 @@ WaveFile *WaveFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvide
   WaveHeader &wh = pResult->m_waveHeader;
 
   // Open file stream
-  std::wifstream file(filename, std::ios::binary);
+  std::ifstream file(filename, std::ios::binary);
   if(!file.is_open())
   {
     assert(false && "Unable to open the specified audio file");
   }
   
-  // Read file
+  // Read file header
   size_t bufSz = sizeof(WaveHeader);
-  wchar_t *tempBuffer = DBG_NEW wchar_t[bufSz];
-  file.read(tempBuffer, bufSz);
-
-  unsigned int pos = file.tellg();
-  file.seekg(bufSz);
-
-  // Reinterpret into header data
-  UnpadWideChar(tempBuffer, bufSz, reinterpret_cast<char*>(&wh), bufSz);
-  delete[] tempBuffer;
+  file.read(reinterpret_cast<char*>(&wh), bufSz);
 
   // Make sure it's a wave file
   if((wh.chunkId[0] != 'R') || (wh.chunkId[1] != 'I') || 
@@ -65,72 +57,23 @@ WaveFile *WaveFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvide
   // All is good, so we load the actual data!
   bufSz = pResult->m_waveHeader.dataSize;
   char *pPCMData = DBG_NEW char[bufSz];
-  tempBuffer = DBG_NEW wchar_t[bufSz];
-  file.read(tempBuffer, bufSz);
-  UnpadWideChar(tempBuffer, bufSz,
-    reinterpret_cast<char*>(pPCMData), bufSz
-  );
-
-  delete[] tempBuffer;
-
+  file.read(pPCMData, bufSz);
   file.close();
 
   WAVEFORMATEX waveFormat;
-  waveFormat.cbSize = sizeof(WAVEFORMATEX);
+  waveFormat.cbSize = 0;
   waveFormat.wFormatTag = WAVE_FORMAT_PCM;
   waveFormat.nChannels = wh.numChannels;
   waveFormat.nBlockAlign = wh.blockAlign;
   waveFormat.nSamplesPerSec = wh.sampleRate;
   waveFormat.nAvgBytesPerSec = wh.blockAlign * wh.sampleRate;
   waveFormat.wBitsPerSample = wh.bitsPerSample;
-
-  // A listing of flags for the buffer description:
-  // http://msdn.microsoft.com/en-us/library/windows/desktop/microsoft.directx_sdk.reference.dsbcaps(v=vs.85).aspx
-  DSBUFFERDESC bufDesc;
-  bufDesc.dwSize = sizeof(DSBUFFERDESC);
-  bufDesc.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME |
-    DSBCAPS_CTRLFREQUENCY;
-  bufDesc.dwReserved = 0;
-  bufDesc.lpwfxFormat = &waveFormat;
-  bufDesc.dwBufferBytes = wh.dataSize;
-  bufDesc.guid3DAlgorithm = GUID_NULL; // unless DSBCAPS_CTRL3D
+  
+  DSBUFFERDESC bufDesc = *CreateBufferDescription(&waveFormat, wh.dataSize);
 
   // ... and create the sound buffer with the description above
-  IDirectSoundBuffer8* &resultBuffer = pResult->m_pSecondaryBuffer;
-
-  LPDIRECTSOUNDBUFFER pTempBuffer = nullptr;
-  HRESULT hr = pSoundProvider->GetDevice()->CreateSoundBuffer(&bufDesc, &pTempBuffer, NULL);
-  if(FAILED(hr))
-  { 
-     assert(false && "Could not create the temporary sound buffer!");
-  }
-  hr = pTempBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*)&resultBuffer);
-  if(FAILED(hr))
-  { 
-     assert(false && "Could not query the created sound buffer interface!");
-  }
-  pTempBuffer->Release();
-
-  LPVOID lpvWrite;
-  DWORD dwLength;
-
-  resultBuffer->Lock(
-    0,
-    0,
-    &lpvWrite,
-    &dwLength,
-    NULL,
-    NULL,
-    DSBLOCK_ENTIREBUFFER
-  );
-  memcpy(lpvWrite, pPCMData, dwLength);
-  delete[] pPCMData;
-  resultBuffer->Unlock(
-    lpvWrite,
-    dwLength,
-    NULL,
-    NULL
-  );
+  pResult->m_pSecondaryBuffer = CreateSecondaryBuffer(
+    pPCMData, &bufDesc, pSoundProvider);
   
   return pResult;
 }

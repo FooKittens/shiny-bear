@@ -30,6 +30,9 @@ protected:
   SoundProvider *m_pSoundProvider;
   IDirectSoundBuffer8 *m_pSecondaryBuffer;
   IDirectSoundBuffer8 *m_pExtraBuffer;
+
+  static DSBUFFERDESC *CreateBufferDescription(WAVEFORMATEX*, unsigned long bufferSize);
+  static IDirectSoundBuffer8 *CreateSecondaryBuffer(char *pPCMData, DSBUFFERDESC*, SoundProvider*);
 };
 
 } // namespace shinybear

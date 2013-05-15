@@ -45,4 +45,60 @@ void ISoundResource::Play()
   m_pSecondaryBuffer->Play(0, 0, 0);
 }
 
+DSBUFFERDESC *ISoundResource::CreateBufferDescription(WAVEFORMATEX *waveFormat, unsigned long bufferSize)
+{
+   // A listing of flags for the buffer description:
+  // http://msdn.microsoft.com/en-us/library/windows/desktop/microsoft.directx_sdk.reference.dsbcaps(v=vs.85).aspx
+  DSBUFFERDESC bufDesc;
+  bufDesc.dwSize = sizeof(DSBUFFERDESC);
+  bufDesc.dwFlags = DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME |
+    DSBCAPS_CTRLFREQUENCY;
+  bufDesc.dwReserved = 0;
+  bufDesc.lpwfxFormat = waveFormat;
+  bufDesc.dwBufferBytes = bufferSize;
+  bufDesc.guid3DAlgorithm = GUID_NULL; // unless DSBCAPS_CTRL3D
+
+  return &bufDesc;
+}
+
+IDirectSoundBuffer8 *ISoundResource::CreateSecondaryBuffer(char *pPCMData, DSBUFFERDESC *bufferDescription, SoundProvider *pSoundProvider)
+{
+  IDirectSoundBuffer8* resultBuffer = nullptr;
+  LPDIRECTSOUNDBUFFER pTempBuffer = nullptr;
+  HRESULT hr = pSoundProvider->GetDevice()->CreateSoundBuffer(bufferDescription, &pTempBuffer, NULL);
+  if(FAILED(hr))
+  {
+     assert(false && "Could not create the temporary sound buffer!");
+  }
+  hr = pTempBuffer->QueryInterface(IID_IDirectSoundBuffer8, (LPVOID*)&resultBuffer);
+  if(FAILED(hr))
+  { 
+     assert(false && "Could not query the created sound buffer interface!");
+  }
+  pTempBuffer->Release();
+
+  LPVOID lpvWrite;
+  DWORD dwLength;
+
+  resultBuffer->Lock(
+    0,
+    0,
+    &lpvWrite,
+    &dwLength,
+    NULL,
+    NULL,
+    DSBLOCK_ENTIREBUFFER
+  );
+  memcpy(lpvWrite, pPCMData, dwLength);
+  delete[] pPCMData;
+  resultBuffer->Unlock(
+    lpvWrite,
+    dwLength,
+    NULL,
+    NULL
+  );
+
+  return resultBuffer;
+}
+
 } // namespace shinybear
