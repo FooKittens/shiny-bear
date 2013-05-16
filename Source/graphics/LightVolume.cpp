@@ -120,7 +120,7 @@ void LightVolume::MakeSphere()
   std::vector<Vector3> verts;
   std::vector<Triangle> tris;
 
-  CreateSphereData(2, verts, tris);
+  CreateSphereData(1, verts, tris);
 
   m_vertexCount = verts.size();
 
@@ -140,7 +140,7 @@ void LightVolume::MakeSphere()
   for(int i = 0; i < verts.size(); ++i)
   {
     verts[i].Normalize();
-    pVertices[i].position = verts[i] * 0.5f;
+    pVertices[i].position = verts[i];
   }
 
   HR(m_pVBuffer->Unlock());
@@ -181,9 +181,9 @@ void LightVolume::CreateSphereData(UINT levels, std::vector<Vector3> &verts,
   tris.clear();
   tris.shrink_to_fit();
 
-  float t = (1.0f + sqrtf(5.0f)) / 4.0f;
+  float t = (1.0f + sqrtf(5.0f)) / 2.0f;
 
-  float l = 0.5f;
+  float l = 1.0f;
 
   // X-Parallell
   verts.push_back(Vector3(-t, +l, +0)); // p7

@@ -2,6 +2,7 @@
 #include "resource\types\IGraphicsResource.h"
 #include "base\BaseGame.h"
 #include "util\SBUtil.h"
+#include "graphics\Shader.h"
 
 #include <cassert>
 
@@ -10,6 +11,9 @@ namespace shinybear
 
 BaseGame *ResourceManager::pGame = nullptr;
 ResourceManager::ResourceMap ResourceManager::resources;
+
+// Resource paths
+const wchar_t *ResourceManager::kShadersPath = L"res\\shaders\\";
 
 void ResourceManager::Initialize(BaseGame *pGame)
 {
@@ -80,7 +84,6 @@ void ResourceManager::DeleteResource(IResource *pResource)
     if(it->second == pResource)
     {
       OutputDbgFormat("Resource [%s] was deleted.", it->first);
-      delete it->second;
       resources.erase(it);
       break;
     }
@@ -91,21 +94,6 @@ void ResourceManager::DeleteResource(IResource *pResource)
 void ResourceManager::DeleteResource(ResourceKey name)
 {
   DeleteResource(resources.find(name)->second);
-}
-
-void ResourceManager::Cleanup()
-{
-  auto it = resources.begin();
-  auto end = resources.end();
-
-  while(it != end)
-  {
-    delete it->second;
-    it->second = nullptr;
-    ++it;
-  }
-
-  resources.clear();
 }
 
 } // namespace shinybear

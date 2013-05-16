@@ -7,6 +7,7 @@
 #include <scene\LightNode.h>
 #include <graphics\Light.h>
 #include <graphics\VertexFormats.h>
+#include <graphics\Renderer.h>
 #include <util\input\InputManager.h>
 #include <windows.h>
 #include <d3dx9.h>
@@ -19,7 +20,7 @@ namespace shinybear
   class SceneManager; class SceneView;
   class Mesh; class MeshNode; struct BlockMaterial;
   class Camera; class WorldManager;
-  class BaseLight;
+  class BaseLight; class IDrawable;
 }
 
 class RandomMover;
@@ -50,6 +51,9 @@ private:
 
   shinybear::Camera *m_pCamera;
 
+  // Used to render the scene.
+  shinybear::Renderer *m_pRenderer;
+
   // Materials for testing.
   shinybear::BlockColor m_grassMaterial;
   shinybear::BlockColor m_metalMaterial;
@@ -60,6 +64,9 @@ private:
   shinybear::MouseState m_newMouse;
   shinybear::GamePadState m_gamePadState;
   std::vector<RandomMover*> m_lights;
+
+  // Used for drawing random geometry for testing.
+  std::vector<shinybear::IDrawable*> m_drawables;
 };
 
 #endif

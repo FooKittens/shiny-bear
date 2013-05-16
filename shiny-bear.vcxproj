@@ -17,7 +17,8 @@
     <ClInclude Include="Source\base\system\GameTimer.h" />
     <ClInclude Include="Source\base\system\GameWindow.h" />
     <ClInclude Include="Source\base\system\GraphicsProvider.h" />
-    <ClInclude Include="source\graphics\DeferredShader.h" />
+    <ClInclude Include="Source\graphics\effects\DeferredShader.h" />
+    <ClInclude Include="Source\graphics\effects\SSAOShader.h" />
     <ClInclude Include="Source\graphics\Light.h" />
     <ClInclude Include="source\graphics\lighting\Lighting.h" />
     <ClInclude Include="Source\graphics\LightVolume.h" />
@@ -27,6 +28,7 @@
     <ClInclude Include="source\graphics\render\IDrawable.h" />
     <ClInclude Include="Source\graphics\render\QuadRenderer.h" />
     <ClInclude Include="Source\graphics\Shader.h" />
+    <ClInclude Include="Source\graphics\Texture.h" />
     <ClInclude Include="Source\graphics\VertexDeclaration.h" />
     <ClInclude Include="Source\graphics\VertexFormats.h" />
     <ClInclude Include="source\graphics\VertexManager.h" />
@@ -64,13 +66,15 @@
     <ClCompile Include="Source\base\system\GameTimer.cpp" />
     <ClCompile Include="Source\base\system\GameWindow.cpp" />
     <ClCompile Include="Source\base\system\GraphicsProvider.cpp" />
-    <ClCompile Include="source\graphics\DeferredShader.cpp" />
+    <ClCompile Include="Source\graphics\effects\DeferredShader.cpp" />
+    <ClCompile Include="Source\graphics\effects\SSAOShader.cpp" />
     <ClCompile Include="Source\graphics\LightVolume.cpp" />
     <ClCompile Include="Source\graphics\Mesh.cpp" />
     <ClCompile Include="source\graphics\Renderer.cpp" />
     <ClCompile Include="Source\graphics\RenderTarget.cpp" />
     <ClCompile Include="Source\graphics\render\QuadRenderer.cpp" />
     <ClCompile Include="Source\graphics\Shader.cpp" />
+    <ClCompile Include="Source\graphics\Texture.cpp" />
     <ClCompile Include="Source\graphics\VertexDeclaration.cpp" />
     <ClCompile Include="source\graphics\VertexManager.cpp" />
     <ClCompile Include="source\resource\ResourceManager.cpp" />

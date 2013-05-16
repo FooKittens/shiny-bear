@@ -1,4 +1,4 @@
-#include "graphics\DeferredShader.h"
+#include "graphics\effects\DeferredShader.h"
 #include "graphics\Renderer.h"
 #include "graphics\RenderTarget.h"
 #include "graphics\Shader.h"
@@ -27,7 +27,24 @@ DeferredShader::DeferredShader(GraphicsProvider *pProvider)
 
 DeferredShader::~DeferredShader()
 {
+  ResourceManager::DeleteResource(m_pNormalTarget);
+  ResourceManager::DeleteResource(m_pLightTarget);
+  ResourceManager::DeleteResource(m_pMaterialTarget);
+  ResourceManager::DeleteResource(m_pDepthTarget);
+  ResourceManager::DeleteResource(m_pGBufferShader);
+  ResourceManager::DeleteResource(m_pLightShader);
+  ResourceManager::DeleteResource(m_pSphereVolume);
+
   delete m_pQuadRenderer;
+  delete m_pSphereVolume;
+
+  delete m_pNormalTarget;
+  delete m_pLightTarget;
+  delete m_pMaterialTarget;
+  delete m_pDepthTarget;
+
+  delete m_pGBufferShader;
+  delete m_pLightShader;
 }
 
 void DeferredShader::Initialize()
@@ -45,10 +62,14 @@ void DeferredShader::Initialize()
   ResourceManager::RegisterResource(m_pDepthTarget, "RendererDepthTarget");
 
   // Retrieve shader resources from content pipeline.
-  m_pGBufferShader = ResourceManager::GetResource<Shader>("DeferredGBufferShader");
-  m_pLightShader   = ResourceManager::GetResource<Shader>("DeferredLightShader");
-  m_pCombineShader = ResourceManager::GetResource<Shader>("DeferredCombineShader");
+  m_pGBufferShader = DBG_NEW Shader(m_pProvider);
+  m_pGBufferShader->LoadFromFile("res\\shaders\\GBufferShader.fx");
+  ResourceManager::RegisterResource(m_pGBufferShader, "DS_GBUFFERSHADER");
 
+  m_pLightShader   = DBG_NEW Shader(m_pProvider);
+  m_pLightShader->LoadFromFile("res\\shaders\\DLighting.fx");
+  ResourceManager::RegisterResource(m_pLightShader, "DS_LIGHTSHADER");
+  
   // Create a utility object for rendering fullscreen quads.
   m_pQuadRenderer = DBG_NEW QuadRenderer(m_pProvider);
   m_pQuadRenderer->Initialize();
@@ -231,9 +252,10 @@ void DeferredShader::RenderPointLight(PointLight *pLight)
     m_pCamera->GetViewMatrix() *
     m_pCamera->GetProjectionMatrix();
 
-  Vector4 lPos = pLight->m_position;
-  lPos.w = 1.0f;
-  if(m_pCamera->GetViewMatrix().Transform(lPos).Length() < pLight->m_range)
+  // TODO INVESTIGATE! (Dig deeper Watson!)
+  float minRadius = pLight->m_range + m_pCamera->GetNearPlane();
+
+  if(m_pCamera->GetViewMatrix().Transform(pLight->m_position).Length() < minRadius)
   {
     m_pProvider->GetDevice()->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
   }
@@ -262,39 +284,7 @@ void DeferredShader::EndLightPass()
   pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 
-void DeferredShader::RenderCompositeImage()
-{
-  IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
-  pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
 
-  m_pCombineShader->SetTexture("g_lightMap", m_pLightTarget->GetTexture());
-  m_pCombineShader->SetTexture("g_materialMap", m_pMaterialTarget->GetTexture());
-
-  m_pCombineShader->SetActiveTechnique("CombineTech");
-  m_pCombineShader->Begin();
-  m_pCombineShader->BeginPass(0);
-  m_pQuadRenderer->Render(-Vector2::kOne, Vector2::kOne);
-  m_pCombineShader->EndPass();
-  m_pCombineShader->End();
-
-  pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-}
-
-void DeferredShader::DisplayRenderTarget(RenderTarget *pTarget)
-{
-  m_pCombineShader->SetActiveTechnique("RenderToScreen");
-  
-  m_pCombineShader->SetTexture("g_texture", pTarget->GetTexture());
-
-  m_pCombineShader->Begin();
-  m_pCombineShader->BeginPass(0);
-
-  // Render a full-screen quad to clear the GBuffer.
-  m_pQuadRenderer->Render(-Vector2::kOne, Vector2::kOne);
-
-  m_pCombineShader->EndPass();
-  m_pCombineShader->End();
-}
 
 void DeferredShader::OnDeviceLost()
 {

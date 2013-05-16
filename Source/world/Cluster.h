@@ -8,7 +8,7 @@
 namespace shinybear 
 {
   class Mesh; class WorldManager;
-  class GraphicsProvider;
+  class GraphicsProvider; class Renderer;
 }
 
 namespace shinybear
@@ -29,7 +29,7 @@ public:
   void SetBlock(const Block &newBlock, int x, int y, int z);
   Block *GetBlock(int x, int y, int z);
 
-  void Render(GraphicsProvider *pProvider);
+  void Render(GraphicsProvider *pRenderer);
 
   // For IGraphicsResource interface.
   void OnDeviceLost();

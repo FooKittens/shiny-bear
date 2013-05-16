@@ -12,10 +12,12 @@
 #include <graphics\Mesh.h>
 #include <graphics\Light.h>
 #include <graphics\lighting\Lighting.h>
+#include <graphics\render\IDrawable.h>
 #include <world\WorldManager.h>
 #include <world\Block.h>
 #include <world\Cluster.h>
 #include <util\SBUtil.h>
+
 
 #include "TerrainGenerator.h"
 #include "RandomMover.h"
@@ -31,6 +33,7 @@ TestApp::TestApp()
 
   m_pCamera = nullptr;
   m_pDrawable = nullptr;
+  m_pRenderer = nullptr;
 }
 
 TestApp::~TestApp()
@@ -42,9 +45,18 @@ TestApp::~TestApp()
   {
     delete *it++;
   }
-
   m_lights.clear();
 
+  //for(auto it = m_drawables.begin(); it != m_drawables.end(); ++it)
+  //{
+  //  delete *it;
+  //}
+
+  m_drawables.clear();
+
+  
+
+  delete m_pRenderer;
   delete m_pWorldManager;
   delete m_pCamera;
   delete m_pDrawable;
@@ -153,44 +165,48 @@ bool TestApp::OnInitialize()
   #pragma region MaterialConfig
   m_grassMaterial = 0x03036804;
   m_metalMaterial = 0x43423838;
-  m_shinyMaterial = 0xFFAAAAAA;
+  m_shinyMaterial = 0x44AAAAAA;
   #pragma endregion
 
-  Renderer *pRenderer = GetRenderer();
-  
-  m_pDrawable = DBG_NEW TestDrawable();
+  m_pRenderer = DBG_NEW Renderer(GetGraphicsProvider());
+  m_pRenderer->Initialize();
 
-  pRenderer->AddDrawable(m_pDrawable);
+  m_pDrawable = DBG_NEW TestDrawable();
+  m_drawables.push_back(m_pDrawable);
+  m_pRenderer->AddDrawable(m_pDrawable);
 
   // Create a camera.
   Size wSize = GetWindow()->GetSize();
   float aspect = (float)wSize.width / (float)wSize.height;
-  m_pCamera = DBG_NEW Camera(aspect, 60.0f, 1.0f, 1000.0f);
+  m_pCamera = DBG_NEW Camera(aspect, 60.0f, 1.0f, 100.0f);
   m_pCamera->SetDebugMode(true);
 
   Mesh *pMesh = DBG_NEW Mesh(GetGraphicsProvider());
   Block b(0);
-
   b.SetMaterial(m_shinyMaterial);
   CreateCube(0, 0, 0, b, pMesh, 0);
   pMesh->UpdateBuffers();
   m_pDrawable->SetMesh(pMesh);
 
-  pRenderer->SetCamera(m_pCamera);
+  m_pRenderer->SetCamera(m_pCamera);
 
   
-  pRenderer->AddLight(DBG_NEW BaseLight(D3DXCOLOR(0.15f, 0.15f, 0.15f, 1.0f)));
-  pRenderer->AddLight(DBG_NEW DirectionalLight(
-    D3DXCOLOR(0.25f, 0.25f, 0.25f, 1.0f), Vector3(1.0f, -0.7f, -1.0f))
-  );
+  //m_pRenderer->AddLight(DBG_NEW BaseLight(D3DXCOLOR(0.1f, 0.1f, 0.13f, 1.0f)));
+  //m_pRenderer->AddLight(DBG_NEW DirectionalLight(
+  //  D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), Vector3(1.0f, -0.7f, -1.0f))
+  //);
 
-  pRenderer->AddLight(DBG_NEW PointLight(
-    D3DXCOLOR(0.5f, 0.65f, 0.5f, 1.0f), Vector3(0.0f, 9.5f, 0.0f), 0.0f, 35.0f));
+  //PointLight *pLight = DBG_NEW PointLight(
+  //  D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), Vector3(0.0f, 2.0f, 0.0f), 2.0f, 50.0f);
+  //m_pRenderer->AddLight(pLight);
 
-  m_pWorldManager = DBG_NEW WorldManager(GetGraphicsProvider(), GetRenderer());
-  m_pWorldManager->Generate(8, 8);
+  //m_pDrawable->m_world = Mat4x4::CreateScale(1.0f) *
+  //  Mat4x4::CreateTranslation(pLight->m_position + Vector3::kUnitX);
 
-  CreateLights();
+  m_pWorldManager = DBG_NEW WorldManager(GetGraphicsProvider(), m_pRenderer);
+  m_pWorldManager->Generate(4, 4);
+
+  //CreateLights();
 
   // Initialization successful.
   return true;
@@ -199,7 +215,7 @@ bool TestApp::OnInitialize()
 void TestApp::CreateLights()
 {
   D3DXCOLOR color;
-  for(int i = 0; i < 200; ++i)
+  for(int i = 0; i < 25; ++i)
   {
     float r = (rand() % 100 + 155) / 255.0f;
     float g = (rand() % 100 + 155) / 255.0f;
@@ -209,8 +225,8 @@ void TestApp::CreateLights()
     PointLight *pLight = DBG_NEW PointLight(
       D3DXCOLOR(r, g, b, 1.0f), Vector3::kZero, 0.0f, 35.0f);
 
-    m_lights.push_back(DBG_NEW RandomMover(pLight, Vector3::kUnitY * 10.0f, 50.0f));
-    GetRenderer()->AddLight(pLight);
+    m_lights.push_back(DBG_NEW RandomMover(pLight, Vector3::kUnitY * 5.0f, 50.0f));
+    m_pRenderer->AddLight(pLight);
   }
 }
 
@@ -242,7 +258,16 @@ void TestApp::OnUpdate(double elapsedSeconds)
 
 void TestApp::OnRender()
 {
+  // Clear backbuffer to black.
+  m_pRenderer->Clear(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+  m_pRenderer->BeginScene();
 
+  m_pRenderer->RenderScene();
+
+  RenderDiagnostics();
+
+  m_pRenderer->EndScene();
+  m_pRenderer->Present();  
 }
 
 void TestApp::OnDeviceReset()

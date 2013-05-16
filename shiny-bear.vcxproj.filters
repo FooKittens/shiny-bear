@@ -52,6 +52,9 @@
     <Filter Include="Source\graphics\lighting">
       <UniqueIdentifier>{d7f75e8f-ae6b-4c3f-8f88-4451974f9177}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\graphics\effects">
+      <UniqueIdentifier>{9d8802fb-051e-486d-a171-befeb6f36319}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\util\SBUtil.h">
@@ -189,7 +192,13 @@
     <ClInclude Include="Source\graphics\render\QuadRenderer.h">
       <Filter>Source\graphics\render</Filter>
     </ClInclude>
-    <ClInclude Include="source\graphics\DeferredShader.h">
+    <ClInclude Include="Source\graphics\effects\DeferredShader.h">
+      <Filter>Source\graphics\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\effects\SSAOShader.h">
+      <Filter>Source\graphics\effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\graphics\Texture.h">
       <Filter>Source\graphics</Filter>
     </ClInclude>
   </ItemGroup>
@@ -287,7 +296,13 @@
     <ClCompile Include="Source\graphics\render\QuadRenderer.cpp">
       <Filter>Source\graphics\render</Filter>
     </ClCompile>
-    <ClCompile Include="source\graphics\DeferredShader.cpp">
+    <ClCompile Include="Source\graphics\effects\DeferredShader.cpp">
+      <Filter>Source\graphics\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\graphics\effects\SSAOShader.cpp">
+      <Filter>Source\graphics\effects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\graphics\Texture.cpp">
       <Filter>Source\graphics</Filter>
     </ClCompile>
   </ItemGroup>

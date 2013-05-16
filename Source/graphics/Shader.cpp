@@ -18,7 +18,7 @@ Shader::~Shader()
   RELEASECOM(m_pEffect);
 }
 
-void Shader::LoadFromFile(const wchar_t *pFileName)
+void Shader::LoadFromFile(const char *pFileName)
 {
   assert(!m_pEffect && "Shader already loaded!");
 
@@ -29,7 +29,7 @@ void Shader::LoadFromFile(const wchar_t *pFileName)
 
   ID3DXBuffer *pCompErrors;
 
-  HR(D3DXCreateEffectFromFileW(
+  HR(D3DXCreateEffectFromFile(
     m_pProvider->GetDevice(),
     pFileName,
     0,

@@ -10,6 +10,7 @@ namespace shinybear
 { 
   class BaseGame; class IGraphicsResource;
   class GraphicsProvider;
+  class Shader;
 }
 
 
@@ -25,6 +26,7 @@ public:
 
   static void Initialize(BaseGame *pGame);
 
+  
   // Registers a resource with a key.
   static void RegisterResource(IResource  *pResource,
     ResourceKey name);
@@ -35,10 +37,9 @@ public:
   static void DeleteResource(IResource *pResource);
   static void DeleteResource(ResourceKey name);
 
-  // Deletes all resources.
-  static void Cleanup();
-
 private:
+  static const wchar_t *kShadersPath;
+
   typedef std::map<ResourceKey, IResource *> ResourceMap;
   typedef std::pair<ResourceKey, IResource *> ResourceMapping;
 

@@ -86,7 +86,7 @@ public:
   {
     att0 = m_dim;
     att1 = 4.5f / m_range;
-    att2 = 85.0f / (m_range * m_range);
+    att2 = 75.0f / (m_range * m_range);
   }
   
   // For easy editing.

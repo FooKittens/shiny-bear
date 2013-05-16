@@ -34,10 +34,10 @@ void QuadRenderer::Render(const Vector2 &min, const Vector2 &max)
 {
   Vector4 verts[] = 
   {
-    Vector4(max.x, min.y, 0, 1),
     Vector4(min.x, min.y, 0, 1),
-    Vector4(max.x, max.y, 0, 1),
     Vector4(min.x, max.y, 0, 1),
+    Vector4(max.x, min.y, 0, 1),
+    Vector4(max.x, max.y, 0, 1),
   };
 
 

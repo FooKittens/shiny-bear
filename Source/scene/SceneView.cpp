@@ -32,21 +32,15 @@ SceneView::SceneView(GraphicsProvider *pProvider, SceneManager *pScene)
   m_isRendering = false;
   m_pScreenVBuffer = nullptr;
 
-  wchar_t *pBuffer;
-  GetAbsolutePath(L"res\\shaders\\LightShader.fx", &pBuffer);
   m_pLightShader = DBG_NEW Shader(pProvider);
-  m_pLightShader->LoadFromFile(pBuffer);
-  delete[] pBuffer;
+  m_pLightShader->LoadFromFile("res\\shaders\\LightShader.fx");
 
-  GetAbsolutePath(L"res\\shaders\\GBufferShader.fx", &pBuffer);
   m_pGBufferShader = DBG_NEW Shader(pProvider);
-  m_pGBufferShader->LoadFromFile(pBuffer);
-  delete[] pBuffer;
+  m_pGBufferShader->LoadFromFile("res\\shaders\\GBufferShader.fx");
 
-  GetAbsolutePath(L"res\\shaders\\CombineShader.fx", &pBuffer);
+
   m_pCombineShader = DBG_NEW Shader(pProvider);
-  m_pCombineShader->LoadFromFile(pBuffer);
-  delete[] pBuffer;
+  m_pCombineShader->LoadFromFile("res\\shaders\\CombineShader.fx");
 
   m_pQuadVolume = DBG_NEW LightVolume(pProvider);
   m_pSphereVolume = DBG_NEW LightVolume(pProvider);

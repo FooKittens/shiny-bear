@@ -40,6 +40,7 @@ protected:
   
   virtual void OnUpdate(double) = 0;
   virtual void OnRender() = 0;
+
   virtual void RenderDiagnostics();
 
   // Called to close application.
@@ -50,7 +51,6 @@ protected:
   // Retrieve the games window.
   virtual GameWindow *GetWindow() const;
   virtual GraphicsProvider *GetGraphicsProvider() const;
-  virtual Renderer *GetRenderer() const;
 
   virtual float GetCurrentFps();
 
@@ -71,9 +71,6 @@ private:
   HRESULT CheckDeviceState();
 
   GraphicsProvider *m_pGraphicsProvider;
-
-  // Renderer used to render the game scene. (Not UI related.)
-  Renderer *m_pRenderer;
 
   GameTimer *m_pGameTimer;
   GameWindow *m_pGameWindow;
@@ -126,12 +123,6 @@ inline float BaseGame::GetCurrentFps()
 {
   return static_cast<float>(m_currentFrame + m_lastFps * (1.0f - m_fpsTimer));
 }
-
-inline Renderer *BaseGame::GetRenderer() const
-{
-  return m_pRenderer;
-}
-
 
 } // namespace shinybear
 

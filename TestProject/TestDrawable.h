@@ -18,9 +18,10 @@ public:
 
   void SetMesh(shinybear::Mesh *pMesh) {  m_pMesh = pMesh; }
 
+   shinybear::Mat4x4 m_world;
 private:
 
-  shinybear::Mat4x4 m_world;
+ 
   shinybear::Mesh *m_pMesh;
 };
 

@@ -34,7 +34,15 @@ VertexManager::VertexManager(GraphicsProvider *pProvider)
 
 VertexManager::~VertexManager()
 {
+  auto it = m_declCollection.begin();
+  auto end = m_declCollection.end();
 
+  while(it != end)
+  {
+    delete it++->second;
+  }
+
+  m_declCollection.clear();
 }
 
 void VertexManager::CreateDefaultDecl()

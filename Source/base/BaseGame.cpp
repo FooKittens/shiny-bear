@@ -31,7 +31,7 @@ BaseGame::~BaseGame()
   SAFEDELETE(m_pGraphicsProvider);
   SAFEDELETE(m_pGameWindow);
   delete[] m_pConfigPath;
-  delete m_pRenderer;
+  delete m_pFont;
 }
 
 void BaseGame::SaveConfig(const Config &cfg) const
@@ -79,7 +79,7 @@ bool BaseGame::Initialize()
   InputManager::Initialize(*m_pGameWindow);
 
   // Initialize sound manager
-  SoundManager::Initialize(m_pGameWindow->GetWindowHandle());
+  //SoundManager::Initialize(m_pGameWindow->GetWindowHandle());
 
   // Create the directx wrapper.
   m_pGraphicsProvider = DBG_NEW GraphicsProvider(m_pGameWindow->GetWindowHandle());
@@ -108,9 +108,6 @@ bool BaseGame::Initialize()
   // Initialize the resource manager.
   ResourceManager::Initialize(this);
   LoadDefaultResources();
-
-  m_pRenderer = DBG_NEW Renderer(m_pGraphicsProvider);
-  m_pRenderer->Initialize();
 
   // Call derived method.
   if(!OnInitialize())
@@ -170,21 +167,8 @@ bool BaseGame::Run()
     // This will reset the device if necessary.
     if(CheckDeviceState() == S_OK)
     {
-      HR(m_pGraphicsProvider->GetDevice()->BeginScene());
       // call virtual method to delegate rendering to derived classes.
-      //OnRender();
-
-      m_pGraphicsProvider->Clear(Color4f(0.0f, 0.25f, 0.0f, 1.0f));
-      m_pRenderer->RenderScene();
-
-      if(m_doRenderDiagnostics)
-      {
-        RenderDiagnostics();
-      }
-
-      HR(m_pGraphicsProvider->GetDevice()->EndScene());
-
-      m_pGraphicsProvider->Present();
+      OnRender();
     }
 
     //Sleep(11);
@@ -192,9 +176,6 @@ bool BaseGame::Run()
     if(m_isQuitting)
     {
       SoundManager::Shutdown();
-
-      // Clean up all resources.
-      ResourceManager::Cleanup();
 
       // Clean up allocated vertex declarations.
       VertexManager::Cleanup();
@@ -322,26 +303,6 @@ void BaseGame::LoadDefaultResources()
 
   m_pFont = DBG_NEW FontProxy(nullptr, fontdesc);
   ResourceManager::RegisterResource(m_pFont, "BaseGameFont");
-
-  wchar_t *pBuffer;
-  GetAbsolutePath(L"res\\shaders\\DLighting.fx", &pBuffer);
-  Shader *pLightShader = DBG_NEW Shader(m_pGraphicsProvider);
-  pLightShader->LoadFromFile(pBuffer);
-  delete[] pBuffer;
-
-  GetAbsolutePath(L"res\\shaders\\GBufferShader.fx", &pBuffer);
-  Shader *pGBufferShader = DBG_NEW Shader(m_pGraphicsProvider);
-  pGBufferShader->LoadFromFile(pBuffer);
-  delete[] pBuffer;
-
-  GetAbsolutePath(L"res\\shaders\\CombineShader.fx", &pBuffer);
-  Shader *pCombineShader = DBG_NEW Shader(m_pGraphicsProvider);
-  pCombineShader->LoadFromFile(pBuffer);
-  delete[] pBuffer;
-
-  ResourceManager::RegisterResource(pLightShader, "DeferredLightShader");
-  ResourceManager::RegisterResource(pGBufferShader, "DeferredGBufferShader");
-  ResourceManager::RegisterResource(pCombineShader, "DeferredCombineShader");
 
   // Initialize vertex manager, which creates the default vertex formats in use.
   VertexManager::Initialize(m_pGraphicsProvider);

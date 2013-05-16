@@ -43,9 +43,6 @@ public:
   // Stop light pass.
   void EndLightPass();
 
-  // Renders the composite image of the gbuffer and light buffer.
-  void RenderCompositeImage();
-
   void SetCamera(Camera *pCamera);
 
   void OnDeviceLost();
@@ -55,10 +52,6 @@ public:
   RenderTarget * const GetLightTarget() const;
   RenderTarget * const GetDepthTarget() const;
   RenderTarget * const GetMaterialTarget() const;
-
-  // used for debugging.
-  void DisplayRenderTarget(RenderTarget *pTarget);
-
 private:
   enum Passes
   {
@@ -85,7 +78,6 @@ private:
 
   Shader *m_pGBufferShader;
   Shader *m_pLightShader;
-  Shader *m_pCombineShader;
 
   LightVolume *m_pSphereVolume;
 

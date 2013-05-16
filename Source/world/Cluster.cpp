@@ -16,8 +16,8 @@ Cluster::Cluster(GraphicsProvider *pProvider)
   m_pMesh = DBG_NEW Mesh(pProvider);  
 
   BlockColor mat;
-  mat = ARGB(0x40, rand() % 255, rand() % 255, rand() % 255);
-  mat = ARGB(0x40, 0x99, 0x99, 0x99);
+  mat = ARGB(0x16, rand() % 255, rand() % 255, rand() % 255);
+  mat = ARGB(0x16, 0x99, 0x99, 0x99);
   m_blocks = DBG_NEW Block**[kSizeX];
   for(int x = 0; x < kSizeX; ++x)
   {
@@ -29,6 +29,19 @@ Cluster::Cluster(GraphicsProvider *pProvider)
       {
         m_blocks[x][y][z].SetMaterial(mat);
         m_blocks[x][y][z].SetVisible(true);
+      }
+    }
+  }
+
+  // Generate visibility
+  for(int x = 0; x < kSizeX; ++x)
+  {
+    for(int z = 0; z < kSizeZ; ++z)
+    {
+      int y = max(1, sinf(x / 8.0f) * cosf(z / 8.0f) * 10);
+      for( ; y < kSizeY; ++y)
+      {
+        m_blocks[x][y][z].SetVisible(false);
       }
     }
   }

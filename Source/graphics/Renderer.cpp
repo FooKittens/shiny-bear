@@ -2,7 +2,8 @@
 #include "graphics\Shader.h"
 #include "graphics\RenderTarget.h"
 #include "graphics\VertexDeclaration.h"
-#include "graphics\DeferredShader.h"
+#include "graphics\effects\DeferredShader.h"
+#include "graphics\effects\SSAOShader.h"
 #include "graphics\render\IDrawable.h"
 #include "graphics\render\QuadRenderer.h"
 #include "resource\ResourceManager.h"
@@ -20,11 +21,14 @@ Renderer::Renderer(GraphicsProvider *pProvider)
   m_pProvider = pProvider;
 
   m_pDShader = nullptr;
-  
+  m_pCombineShader = nullptr;
+
   m_pMeshDecl = nullptr;
 
   m_pCamera = nullptr;
   m_isInitialized = false;
+
+  m_pDevice = pProvider->GetDevice();
 }
 
 Renderer::~Renderer()
@@ -33,7 +37,12 @@ Renderer::~Renderer()
   m_geometryList.clear();
   m_lights.clear();
 
-  //delete m_pQuadRenderer;
+  ResourceManager::DeleteResource(m_pCombineShader);
+
+  delete m_pDShader;
+  delete m_pSSAOShader;
+  delete m_pQuadRenderer;
+  delete m_pCombineShader;
 }
 
 void Renderer::Initialize()
@@ -41,9 +50,17 @@ void Renderer::Initialize()
   m_pDShader = DBG_NEW DeferredShader(m_pProvider);
   m_pDShader->Initialize();
 
-  ResourceManager::RegisterResource(m_pDShader, "DeferredShader");
+  m_pSSAOShader = DBG_NEW SSAOShader(m_pProvider);
+  m_pSSAOShader->Initialize();
+
+  m_pCombineShader = DBG_NEW Shader(m_pProvider);
+  m_pCombineShader->LoadFromFile("res\\shaders\\CombineShader.fx");
+  ResourceManager::RegisterResource(m_pCombineShader, "DS_COMBINESHADER");
 
   m_isInitialized = true;
+
+  m_pQuadRenderer = DBG_NEW QuadRenderer(m_pProvider);
+  m_pQuadRenderer->Initialize();
 }
 
 void Renderer::RenderScene()
@@ -59,12 +76,20 @@ void Renderer::RenderScene()
   RenderGBuffer();
 
   // Render a light accumulation buffer.
-  RenderLightBuffer();
+  //RenderLightBuffer();
 
   // Merge render targets into a final result.
-  m_pDShader->RenderCompositeImage();
-  m_pCamera->RenderFrustum(m_pProvider);
-  //m_pDShader->DisplayRenderTarget(m_pDShader->GetDepthTarget());
+  //RenderComposite();
+
+  m_pSSAOShader->RenderOcclusionMap(
+    m_pDShader->GetDepthTarget(),
+    m_pDShader->GetNormalTarget(),
+    m_pCamera
+  );
+
+  //m_pCamera->RenderFrustum(m_pProvider);
+  //DisplayRenderTarget(m_pDShader->GetLightTarget());
+  DisplayRenderTarget(m_pSSAOShader->GetAOTarget());
   
 }
 
@@ -101,6 +126,52 @@ void Renderer::RenderLightBuffer()
   m_pDShader->EndLightPass();
 }
 
+void Renderer::RenderComposite()
+{
+  IDirect3DDevice9 *pDevice = m_pProvider->GetDevice();
+  pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+
+    // This is needed for mapping pixels to texels in directx9.
+  Vector2 halfPixel(
+    0.5f / (float)m_pProvider->GetDisplayMode().width,
+    0.5f / (float)m_pProvider->GetDisplayMode().height
+  );
+
+  m_pCombineShader->SetTexture("g_lightMap", m_pDShader->GetLightTarget()->GetTexture());
+  m_pCombineShader->SetTexture("g_materialMap", m_pDShader->GetMaterialTarget()->GetTexture());
+  m_pCombineShader->SetVector2("g_halfPixel", halfPixel);
+
+  m_pCombineShader->SetActiveTechnique("CombineTech");
+  m_pCombineShader->Begin();
+  m_pCombineShader->BeginPass(0);
+  m_pQuadRenderer->Render(-Vector2::kOne, Vector2::kOne);
+  m_pCombineShader->EndPass();
+  m_pCombineShader->End();
+
+  pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+}
+
+void Renderer::DisplayRenderTarget(RenderTarget *pTarget)
+{
+  // This is needed for mapping pixels to texels in directx9.
+  Vector2 halfPixel(
+    0.5f / (float)m_pProvider->GetDisplayMode().width,
+    0.5f / (float)m_pProvider->GetDisplayMode().height
+  );
+
+  m_pCombineShader->SetActiveTechnique("RenderToScreen");
+  m_pCombineShader->SetTexture("g_texture", pTarget->GetTexture());
+  m_pCombineShader->SetVector2("g_halfPixel", halfPixel);
+
+  m_pCombineShader->Begin();
+  m_pCombineShader->BeginPass(0);
+
+  // Render a full-screen quad to clear the GBuffer.
+  m_pQuadRenderer->Render(-Vector2::kOne, Vector2::kOne);
+
+  m_pCombineShader->EndPass();
+  m_pCombineShader->End();
+}
 
 // TODO : Perform culling etc.
 void Renderer::UpdateRenderList()

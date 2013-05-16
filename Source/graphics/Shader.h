@@ -19,7 +19,7 @@ public:
   Shader(GraphicsProvider *pProvider);
   ~Shader();
 
-  void LoadFromFile(const wchar_t *pFileName);
+  void LoadFromFile(const char *pFileName);
 
   void SetMatrix(const char *pName, const Mat4x4 &mat);
   void SetVector4(const char *pName, const Vector4 &vec);
