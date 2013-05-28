@@ -181,9 +181,9 @@ void LightVolume::CreateSphereData(UINT levels, std::vector<Vector3> &verts,
   tris.clear();
   tris.shrink_to_fit();
 
-  float t = (1.0f + sqrtf(5.0f)) / 4.0f;
+  float t = (1.0f + sqrtf(5.0f)) / 2.0f;
 
-  float l = 0.5f;
+  float l = 1.0f;
 
   // X-Parallell
   verts.push_back(Vector3(-t, +l, +0)); // p7

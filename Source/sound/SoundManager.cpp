@@ -26,7 +26,8 @@ void SoundManager::Initialize(HWND hwnd)
 	  InitializeDirectSound(hwnd);
  
 	  // Load a wave audio file onto a secondary buffer.
-	  LoadWaveFile("../res/sounds/Wololo.wav", &secondaryBuffer1);
+	  
+	  //LoadWaveFile("res/sounds/Wololo.wav", &secondaryBuffer1);
  
 	  // Play the wave file now that it has been loaded.
 	  //PlayWaveFile();

@@ -61,7 +61,7 @@ struct Light
     lt.type = LightType::LT_POINT;
     lt.color = color;
     lt.position = position;
-    lt.attenuation = Vector3(dimFactor, 4.5f / range, 75.0f / (range * range));
+    lt.attenuation = Vector3(dimFactor, 4.5f / range, 100.0f / (range * range));
     lt.range = range;
     return lt;
   }

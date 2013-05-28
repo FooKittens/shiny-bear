@@ -204,12 +204,12 @@ bool TestApp::OnInitialize()
 void TestApp::CreateLights()
 {
   // Create an ambient light for the scene.
-  m_ambientLight = Light::CreateAmbientLight(D3DXCOLOR(0.15f, 0.15f, 0.19f, 1.0f));
+  m_ambientLight = Light::CreateAmbientLight(D3DXCOLOR(0.09f, 0.07f, 0.09f, 1.0f));
   m_pAmbientLightNode = DBG_NEW LightNode(m_ambientLight);
 
   // Create light to act as "sun"
-  m_sunLight = Light::CreateDirectionalLight(D3DXCOLOR(0.30f, 0.35f, 0.30f, 1.0f),
-    Vector3(0, -1, 0));
+  m_sunLight = Light::CreateDirectionalLight(D3DXCOLOR(0.15f, 0.15f, 0.15f, 1.0f),
+    Vector3(0.5f, -1, 1));
   m_pSunLightNode = DBG_NEW LightNode(m_sunLight);
 
   m_playerLight = Light::CreatePointLight(D3DXCOLOR(0.95f, 0.95f, 0.95f, 1.0f),
@@ -221,7 +221,8 @@ void TestApp::CreateLights()
 
 void TestApp::CreateRandomLights()
 {
-  for(int i = 0; i < 25; ++i)
+  int count = rand() % 3 + 1;
+  for(int i = 0; i < count; ++i)
   {
     RandomMover *pMover = DBG_NEW RandomMover(Vector3(0, -7.5f, 0), 70.0f);
     float r = (rand() % 100 + 155) / 255.0f;
@@ -333,6 +334,11 @@ void TestApp::OnUpdate(double elapsedSeconds)
        m_pCamera->LoadIdentity();
     }
     m_pCamera->SetFreeCam(!isFree);
+  }
+
+  if(m_newKeys.IsKeyDown(Keys::K_L) && !m_oldKeys.IsKeyDown(Keys::K_L))
+  {
+	CreateRandomLights();
   }
 
   if(m_newKeys.IsKeyDown(Keys::K_ESCAPE) || m_gamePadState.IsButtonDown(ControllerButtons::BACK))

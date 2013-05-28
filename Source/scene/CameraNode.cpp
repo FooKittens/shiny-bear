@@ -8,7 +8,7 @@ CameraNode::CameraNode(GameWindow *pWindow, SceneNode *pTarget)
   m_upVector = Vector3::kUnitY;
   m_position = Vector3::kZero;
   m_targetPosition = Vector3::kZero;
-  m_followSpeed = 10.0f;
+  m_followSpeed = 18.0f;
   m_pTarget = pTarget;
   SetFieldOfView(66.77790f);
   SetAspectRatio(pWindow->GetSize());
