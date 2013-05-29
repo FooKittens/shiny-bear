@@ -15,8 +15,9 @@ OggFile::OggFile()
 }
 
 OggFile *OggFile::LoadFromFile(wchar_t *filename, SoundProvider *pSoundProvider)
-{
+{  
   OggFile *pResult = DBG_NEW OggFile;
+  pResult->m_pSoundProvider = pSoundProvider;
   OggVorbis_File *oggFile = DBG_NEW OggVorbis_File;
 
   // Open the file

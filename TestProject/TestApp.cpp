@@ -282,6 +282,7 @@ void TestApp::CreateCubes()
 
 const float kPlayerSpeed = 9.5f;
 const float kPlayerAngSpeed = 2.5f;
+unsigned long frequency = 0;
 
 void TestApp::OnUpdate(double elapsedSeconds) 
 {
@@ -305,10 +306,15 @@ void TestApp::OnUpdate(double elapsedSeconds)
   z -= kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.leftTrigger;
   z += kPlayerSpeed * (float)elapsedSeconds * m_gamePadState.rightTrigger;
 
+  frequency = 44100 + m_gamePadState.leftThumbstick.y * 11025;
+  ResourceManager::GetResource<ISoundResource>("Wololo")->SetFreq(frequency);
+  ResourceManager::GetResource<ISoundResource>("Blues")->SetFreq(frequency);
+  ResourceManager::GetResource<ISoundResource>("Roggan")->SetFreq(frequency);
+
   m_gamePadState.Vibrate(m_gamePadState.leftTrigger,
     m_gamePadState.rightTrigger);
 
-  if(m_newKeys.IsKeyDown(Keys::K_NUMPAD0) && !m_oldKeys.IsKeyDown(Keys::K_NUMPAD0))
+  if(m_gamePadState.IsButtonDown(ControllerButtons::GAMEPAD_A) && !m_oldKeys.IsKeyDown(Keys::K_NUMPAD0))
   {
     ResourceManager::GetResource<ISoundResource>("Wololo")->Play();
   }

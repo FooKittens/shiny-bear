@@ -101,4 +101,9 @@ IDirectSoundBuffer8 *ISoundResource::CreateSecondaryBuffer(char *pPCMData, DSBUF
   return resultBuffer;
 }
 
+void ISoundResource::SetFreq(DWORD freq)
+{
+	m_pSecondaryBuffer->SetFrequency(freq);
+}
+
 } // namespace shinybear

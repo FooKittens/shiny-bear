@@ -23,7 +23,7 @@ public:
   //virtual void OnDeviceLost() = 0;
 
   ResourceType::Enum GetType() const { return ResourceType::RT_SOUND; }
-
+  virtual void SetFreq(DWORD freq);
   virtual void Play();
 protected:
   ISoundResource();
